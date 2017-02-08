@@ -8,38 +8,50 @@
     var svg = d3.select("#graph").append("svg")
     var chartLayer = svg.append("g").classed("chartLayer", true)
     
+    var data
+
     main()
     
     function main() {
+
         var range = 50
         var totalGroup = 5
-        var data = {
-            nodes:d3.range(0, range).map(function(d){ return {
-                label: "l"+d ,
-                x: d*10,
-                y: d*2,
-                fixed: "TRUE",
-                r:~~d3.randomUniform(8, 20)(), 
-                group: ~~(d/(range/totalGroup)),
 
-            }}), 
-            // links:d3.range(0, range).map(function(){ return {source:~~d3.randomUniform(range)(), target:~~d3.randomUniform(range)()} })        
-            links:d3.range(1, range).map(function(d){ return {
-                source:d, 
-                target:d-1,
-                // value:
-                } })      //form a chain for debugging
-        }
-        console.log(data)
-
-        
         svg.append("text")
              .text("hello dad and hello mom i'm da dadadadadata points")
              .attr("x",10)
              .attr("y",15);
 
-        setChartSize(data)
-        drawChart(data)    
+        ////fake some random data 
+        // var data = {
+        //     nodes:d3.range(0, range).map(function(d){ return {
+        //         label: "l"+d ,
+        //         fx: d*10,
+        //         fy: d*2,
+        //         r:~~d3.randomUniform(8, 20)(), 
+        //         group: ~~(d/(range/totalGroup)),
+
+        //     }}), 
+        //     // links:d3.range(0, range).map(function(){ return {source:~~d3.randomUniform(range)(), target:~~d3.randomUniform(range)()} })        
+        //     links:d3.range(1, range).map(function(d){ return {
+        //         source:d, 
+        //         target:d-1,
+        //         // value:
+        //         } })      //form a chain for debugging
+        // }
+
+        d3.json("data/data.json", function(error, dataset){
+            if (error) {
+                console.log(error);
+            }else{
+                console.log(dataset);
+                data = dataset ;
+                setChartSize(data)
+                drawChart(data)    
+
+            }
+        });
+
     }
     
     function setChartSize(data) {
@@ -141,6 +153,13 @@
             d.fx = null;
             d.fy = null;
         } 
-                
+
     }
+
 }());
+
+function addBubble(){
+    console.log("biu");
+}
+
+

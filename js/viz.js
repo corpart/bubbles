@@ -26,9 +26,9 @@
         // var data = {
         //     nodes:d3.range(0, range).map(function(d){ return {
         //         label: "l"+d ,
-        //         fx: d*10,
-        //         fy: d*2,
-        //         r:~~d3.randomUniform(8, 20)(), 
+        //         // fx: d*10,
+        //         // fy: d*2,
+        //         r:~~d3.randomUniform(8, 30)(), 
         //         group: ~~(d/(range/totalGroup)),
 
         //     }}), 
@@ -40,25 +40,83 @@
         //         } })      //form a chain for debugging
         // }
 
-        d3.json("data/data.json", function(error, dataset){
-            if (error) {
-                console.log(error);
-            }else{
-                console.log(dataset);
-                data = dataset ;
-                setChartSize(data)
-                drawChart(data)    
+     
+        // setChartSize(data)
 
-            }
-        });
+        // drawChart(data)    
+
+        ////load data from json  
+        d3.json("data/data.json", function(error, dataset){
+                if (error) {
+                    console.log(error);
+                }else{
+                    console.log(dataset);
+                    data = dataset ;
+                    setChartSize(data)
+                    
+                    d3.selectAll(".add-data")
+                        .on("click", function() {
+                        bubble(data);
+                    })
+
+                    drawChart(data)    
+
+                }
+            });
+        
+
+    }
+     
+
+    function bubble(data){
+        console.log(data)
+                    
+        // var obj = {
+        //    'id':~~d3.randomUniform(10)(),
+        //    'r': ~~d3.randomUniform(10,20)() ,
+        //    'fx': 100,
+        //    'fy': 100,
+        //    'group': ~~d3.randomUniform(0,5)()
+        // }
+        //  console.log(obj);
+        //  data.nodes.push(obj)
+
+        //   var obj = {
+        //    'source':~~d3.randomUniform(5)(),
+        //    'target': ~~d3.randomUniform(5)(),
+        //    'value': ~~d3.randomUniform(0,5)()
+        // }
+        //  console.log(obj);
+        //  data.links.push(obj)
+
+        // restart(data);
+
 
     }
     
+    function restart(data) {
+
+      // Apply the general update pattern to the nodes.
+      var node = node.data(data.nodes, function(d) { return d.id;});
+      node.exit().remove();
+      node = node.enter().append("circle").attr("fill", function(d) { return color(d.id); }).attr("r", 8).merge(node);
+
+      // Apply the general update pattern to the links.
+      var link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
+      link.exit().remove();
+      link = link.enter().append("line").merge(link);
+
+      // Update and restart the simulation.
+      simulation.nodes(data.nodes);
+      simulation.force("link").links(data.links);
+      simulation.alpha(1).restart();
+    }
+
     function setChartSize(data) {
         width = document.querySelector("#graph").clientWidth
         height = document.querySelector("#graph").clientHeight
     
-        margin = {top:0, left:0, bottom:0, right:0 }
+        margin = {top:10, left:10, bottom:0, right:0 }
         
         chartWidth = width - (margin.left+margin.right)
         chartHeight = height - (margin.top+margin.bottom)
@@ -73,7 +131,8 @@
             
             
     }
-    
+
+
     function drawChart(data) {
         
         // https://github.com/d3/d3-force/blob/master/README.md#forceCollide
@@ -84,9 +143,11 @@
             .force("center", d3.forceCenter(chartWidth / 2, chartWidth / 2))
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0))
+            // .alphaTarget(1)
+            .on("tick", ticked);
 
+        
         var color = d3.scaleOrdinal(d3.schemeCategory20);
-
         // var colors = d3.scale.category10()
         //          .range(["#FFFF00",  //YELLOW
         //                  "#377eb8",  //BLUE
@@ -114,9 +175,11 @@
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));    
-        
+
         
         var ticked = function() {
+            console.log("ticked")
+
             link
                 .attr("x1", function(d) { return d.source.x; })
                 .attr("y1", function(d) { return d.source.y; })
@@ -156,10 +219,22 @@
 
     }
 
+
+
+
 }());
 
-function addBubble(){
-    console.log("biu");
-}
+// function addBubble(){
+    
+//     obj = {
+//        'id':~~d3.randomUniform(10)(),
+//        'r': ~~d3.randomUniform(10,20)() ,
+//        'group': ~~d3.randomUniform(0,5)()
+//     }
+//     // console.log(obj);
+//     data.push(obj)
+//     // refreshGraph()
+
+// }
 
 

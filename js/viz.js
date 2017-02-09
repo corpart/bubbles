@@ -39,10 +39,7 @@
         //         // value:
         //         } })      //form a chain for debugging
         // }
-
-     
         // setChartSize(data)
-
         // drawChart(data)    
 
         ////load data from json  
@@ -53,11 +50,7 @@
                     console.log(dataset);
                     data = dataset ;
                     setChartSize(data)
-                    
-                    d3.selectAll(".add-data")
-                        .on("click", function() {
-                        bubble(data);
-                    })
+
 
                     drawChart(data)    
 
@@ -65,52 +58,15 @@
             });
         
 
+      
+
+
     }
      
 
-    function bubble(data){
-        console.log(data)
-                    
-        // var obj = {
-        //    'id':~~d3.randomUniform(10)(),
-        //    'r': ~~d3.randomUniform(10,20)() ,
-        //    'fx': 100,
-        //    'fy': 100,
-        //    'group': ~~d3.randomUniform(0,5)()
-        // }
-        //  console.log(obj);
-        //  data.nodes.push(obj)
 
-        //   var obj = {
-        //    'source':~~d3.randomUniform(5)(),
-        //    'target': ~~d3.randomUniform(5)(),
-        //    'value': ~~d3.randomUniform(0,5)()
-        // }
-        //  console.log(obj);
-        //  data.links.push(obj)
-
-        // restart(data);
-
-
-    }
+  
     
-    function restart(data) {
-
-      // Apply the general update pattern to the nodes.
-      var node = node.data(data.nodes, function(d) { return d.id;});
-      node.exit().remove();
-      node = node.enter().append("circle").attr("fill", function(d) { return color(d.id); }).attr("r", 8).merge(node);
-
-      // Apply the general update pattern to the links.
-      var link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
-      link.exit().remove();
-      link = link.enter().append("line").merge(link);
-
-      // Update and restart the simulation.
-      simulation.nodes(data.nodes);
-      simulation.force("link").links(data.links);
-      simulation.alpha(1).restart();
-    }
 
     function setChartSize(data) {
         width = document.querySelector("#graph").clientWidth
@@ -134,7 +90,7 @@
 
 
     function drawChart(data) {
-        
+
         // https://github.com/d3/d3-force/blob/master/README.md#forceCollide
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function(d) { return d.index }))
@@ -178,7 +134,7 @@
 
         
         var ticked = function() {
-            console.log("ticked")
+            // console.log("ticked")
 
             link
                 .attr("x1", function(d) { return d.source.x; })
@@ -199,7 +155,67 @@
             .links(data.links);    
         
         
-        
+          d3.selectAll(".pop-data")
+            .on("click", function() {
+            pop(data);
+        })
+
+        function pop(data){
+            // console.log(data.links)
+
+            // data.links.push({source: "1", target: "4", value: 1});
+            //  console.log(data.links)
+            
+            // console.log(data.nodes)
+
+            // data.nodes.push({id: "6", r:100, group:3});
+            data.nodes.pop();
+             // console.log(data)
+
+
+            // var obj = {
+            //    'id':~~d3.randomUniform(10)(),
+            //    'r': ~~d3.randomUniform(10,20)() ,
+            //    'fx': 100,
+            //    'fy': 100,
+            //    'group': ~~d3.randomUniform(0,5)()
+            // }
+            //  console.log(obj);
+            //  data.nodes.push(obj)
+
+            //   var obj = {
+            //    'source':~~d3.randomUniform(5)(),
+            //    'target': ~~d3.randomUniform(5)(),
+            //    'value': ~~d3.randomUniform(0,5)()
+            // }
+            //  console.log(obj);
+            //  data.links.push(obj)
+
+            restart(data);
+
+
+        }
+
+
+        function restart(data) {
+          console.log(data);
+
+          // Apply the general update pattern to the nodes.
+            node = node.data(data.nodes, function(d) { return d.id;});
+          node.exit().remove();
+          node = node.enter().append("circle").attr("fill", function(d) { return color(d.id); }).attr("r", 8).merge(node);
+
+          // Apply the general update pattern to the links.
+           link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
+          link.exit().remove();
+          link = link.enter().append("line").merge(link);
+
+          // Update and restart the simulation.
+          simulation.nodes(data.nodes);
+          simulation.force("link").links(data.links);
+          simulation.alpha(1).restart();
+        }
+
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;

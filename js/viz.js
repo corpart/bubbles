@@ -65,8 +65,6 @@
      
 
 
-  
-    
 
     function setChartSize(data) {
         width = document.querySelector("#graph").clientWidth
@@ -155,55 +153,49 @@
             .links(data.links);    
         
         
-          d3.selectAll(".pop-data")
+        d3.selectAll(".pop-data")
             .on("click", function() {
-            pop(data);
+            popBubble(data);
+        })
+        
+        d3.selectAll(".push-data")
+            .on("click", function() {
+            pushBubble(data);
         })
 
-        function pop(data){
-            // console.log(data.links)
-
-            // data.links.push({source: "1", target: "4", value: 1});
-            //  console.log(data.links)
-            
-            // console.log(data.nodes)
-
-            // data.nodes.push({id: "6", r:100, group:3});
+        function popBubble(data){
             data.nodes.pop();
-             // console.log(data)
-
-
-            // var obj = {
-            //    'id':~~d3.randomUniform(10)(),
-            //    'r': ~~d3.randomUniform(10,20)() ,
-            //    'fx': 100,
-            //    'fy': 100,
-            //    'group': ~~d3.randomUniform(0,5)()
-            // }
-            //  console.log(obj);
-            //  data.nodes.push(obj)
-
-            //   var obj = {
-            //    'source':~~d3.randomUniform(5)(),
-            //    'target': ~~d3.randomUniform(5)(),
-            //    'value': ~~d3.randomUniform(0,5)()
-            // }
-            //  console.log(obj);
-            //  data.links.push(obj)
-
+            //TODO needs to pop links too
             restart(data);
 
 
         }
 
+        function pushBubble(data){
+            console.log("add a bubble")
+            data.nodes.push({
+                id: ~~d3.randomUniform(50)(), 
+                r: ~~d3.randomUniform(10,20)(), 
+                x:100,
+                y:800,
+                group:  3});
+
+            // data.links.push({source: "6", target: "1", value: 1});
+            // data.links.push({source: "6", target: "5", value: 1});
+            restart(data);
+        }
+
 
         function restart(data) {
-          console.log(data);
+          // console.log(data);
 
           // Apply the general update pattern to the nodes.
             node = node.data(data.nodes, function(d) { return d.id;});
           node.exit().remove();
-          node = node.enter().append("circle").attr("fill", function(d) { return color(d.id); }).attr("r", 8).merge(node);
+          node = node.enter().append("circle")
+            .attr("r", function(d){  return d.r })
+            .attr("fill", function(d) { return color(d.group); })
+            .merge(node);
 
           // Apply the general update pattern to the links.
            link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });

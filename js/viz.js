@@ -11,9 +11,9 @@
     var data
 
     var buttonData = [
-                {id: 0, label: "addBubble",  x: 100, y: 600 },
-                {id: 1, label: "addbubble1", x: 160, y: 600 },
-                {id: 2, label: "addbubble2", x: 220, y: 600 }
+                {id: 0, label: "addBubble",  x: 100, y: 800 },
+                {id: 1, label: "addbubble1", x: 160, y: 800 },
+                {id: 2, label: "addbubble2", x: 220, y: 800 }
                 ];
 
     main()
@@ -57,30 +57,23 @@
                     // console.log(dataset);
                     data = dataset ;
                     setChartSize(data)
-
-
                     drawChart(data)    
 
                 }
         });
 
-        d3.select("body").select("#option")
+        d3.select("body").select("#option").append("svg")
+            .selectAll("rect")
             .data(buttonData)
             .enter()
-            .append("div")
+            .append("rect")
             .attr("class", "button")
-            .attr("id", function(d){
-                return d.id;
-            })
-            .attr("x",function(d){
-                return d.x;
-            })
-            .attr("y",function(d){
-                return d.y;
-            })
-
-            ;
-        
+            .attr("id", function(d){ return d.id;}  )
+            .attr("x",function(d){return d.x} )
+            .attr("y",function(d){return d.y} )
+            .attr("fill", function (d,i){ return "rgb(0,0," + i*60 + ")";})
+            ; 
+         
         
     }
      
@@ -179,7 +172,7 @@
         
         d3.selectAll(".button")
             .on("click", function() {
-            console.log("id:" + d3.select(this).attr("id"));
+            console.log("id:" + d3.select(this).attr("id") + " x:" +d3.select(this).attr("x"));
             pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"));
         })
 

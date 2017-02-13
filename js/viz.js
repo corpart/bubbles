@@ -10,6 +10,12 @@
     
     var data
 
+    var buttonData = [
+                {id: 0, label: "addBubble",  x: 100, y: 600 },
+                {id: 1, label: "addbubble1", x: 160, y: 600 },
+                {id: 2, label: "addbubble2", x: 220, y: 600 }
+                ];
+
     main()
     
     function main() {
@@ -42,12 +48,13 @@
         // setChartSize(data)
         // drawChart(data)    
 
+       
         ////load data from json  
         d3.json("data/data.json", function(error, dataset){
                 if (error) {
                     console.log(error);
                 }else{
-                    console.log(dataset);
+                    // console.log(dataset);
                     data = dataset ;
                     setChartSize(data)
 
@@ -55,16 +62,28 @@
                     drawChart(data)    
 
                 }
-            });
+        });
+
+        d3.select("body").select("#option")
+            .data(buttonData)
+            .enter()
+            .append("div")
+            .attr("class", "button")
+            .attr("id", function(d){
+                return d.id;
+            })
+            .attr("x",function(d){
+                return d.x;
+            })
+            .attr("y",function(d){
+                return d.y;
+            })
+
+            ;
         
-
-      
-
-
+        
     }
      
-
-
 
     function setChartSize(data) {
         width = document.querySelector("#graph").clientWidth
@@ -124,11 +143,11 @@
             .enter().append("circle")
             .attr("r", function(d){  return d.r })
             .attr("fill", function(d) { return color(d.group); })
-              // Mousover Node - highlight node by fading the node colour during mouseover
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));    
+
+            // .call(d3.drag()
+            //     .on("start", dragstarted)
+            //     .on("drag", dragged)
+            //     .on("end", dragended));    
 
         
         var ticked = function() {
@@ -158,26 +177,27 @@
             popBubble(data);
         })
         
-        d3.selectAll(".push-data")
+        d3.selectAll(".button")
             .on("click", function() {
-            pushBubble(data);
+            console.log("id:" + d3.select(this).attr("id"));
+            pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"));
         })
 
-        function popBubble(data){
+        function popBubble(){
             data.nodes.pop();
             //TODO needs to pop links too
-            restart(data);
+            restart();
 
 
         }
 
-        function pushBubble(data){
-            console.log("add a bubble")
+        function pushBubble(bx,by){
+            // console.log("add a bubble")
             data.nodes.push({
                 id: ~~d3.randomUniform(50)(), 
                 r: ~~d3.randomUniform(10,20)(), 
-                x:100,
-                y:800,
+                x:bx,
+                y:by,
                 group:  3});
 
             // data.links.push({source: "6", target: "1", value: 1});

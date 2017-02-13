@@ -12,7 +12,7 @@
 
     var buttonData = [
                 {id: 0, label: "addBubble",  x: 10, y: 500 },
-                {id: 1, label: "addbubble1", x: 100, y: 500 },
+                {id: 1, label: "addbubble1", x: 80, y: 500 },
                 {id: 2, label: "addbubble2", x: 190, y: 500 }
                 ];
 
@@ -140,7 +140,7 @@
             .attr("id", function(d){ return d.id;}  )
             .attr("x",function(d){return d.x} )
             .attr("y",function(d){return d.y} )
-            .attr("fill", function (d,i){ return "rgb(0,0," + i*60 + ")";})
+            .attr("fill", function (d,i){ return color(i); })
             ; 
 
 
@@ -174,7 +174,7 @@
         d3.selectAll(".button")
             .on("click", function() {
             console.log("id:" + d3.select(this).attr("id") + " x:" +d3.select(this).attr("x"));
-            pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"));
+            pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), d3.select(this).attr("id"));
         })
 
         function popBubble(){
@@ -185,14 +185,14 @@
 
         }
 
-        function pushBubble(bx,by){
+        function pushBubble(bx,by, bi){
             // console.log("add a bubble")
             data.nodes.push({
                 id: ~~d3.randomUniform(50)(), 
                 r: ~~d3.randomUniform(10,20)(), 
                 x:bx,
                 y:by,
-                group:  3});
+                group:  bi });
 
             // data.links.push({source: "6", target: "1", value: 1});
             // data.links.push({source: "6", target: "5", value: 1});

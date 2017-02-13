@@ -13,7 +13,10 @@
     var buttonData = [
                 {id: 0, label: "addBubble",  x: 10, y: 500 },
                 {id: 1, label: "addbubble1", x: 80, y: 500 },
-                {id: 2, label: "addbubble2", x: 190, y: 500 }
+                {id: 2, label: "addbubble2", x: 190, y: 500 },
+                {id: 3, label: "addbubble2", x: 260, y: 500 },
+                {id: 4, label: "addbubble2", x: 370, y: 500 },
+                {id: 5, label: "addbubble2", x: 430, y: 500 }
                 ];
 
     main()

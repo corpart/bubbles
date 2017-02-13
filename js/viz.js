@@ -11,9 +11,9 @@
     var data
 
     var buttonData = [
-                {id: 0, label: "addBubble",  x: 100, y: 800 },
-                {id: 1, label: "addbubble1", x: 160, y: 800 },
-                {id: 2, label: "addbubble2", x: 220, y: 800 }
+                {id: 0, label: "addBubble",  x: 10, y: 500 },
+                {id: 1, label: "addbubble1", x: 100, y: 500 },
+                {id: 2, label: "addbubble2", x: 190, y: 500 }
                 ];
 
     main()
@@ -61,18 +61,6 @@
 
                 }
         });
-
-        d3.select("body").select("#option").append("svg")
-            .selectAll("rect")
-            .data(buttonData)
-            .enter()
-            .append("rect")
-            .attr("class", "button")
-            .attr("id", function(d){ return d.id;}  )
-            .attr("x",function(d){return d.x} )
-            .attr("y",function(d){return d.y} )
-            .attr("fill", function (d,i){ return "rgb(0,0," + i*60 + ")";})
-            ; 
          
         
     }
@@ -137,12 +125,25 @@
             .attr("r", function(d){  return d.r })
             .attr("fill", function(d) { return color(d.group); })
 
-            // .call(d3.drag()
+             // .call(d3.drag()
             //     .on("start", dragstarted)
             //     .on("drag", dragged)
             //     .on("end", dragended));    
 
-        
+            //buttons 
+            svg
+            .selectAll("rect")
+            .data(buttonData)
+            .enter()
+            .append("rect")
+            .attr("class", "button")
+            .attr("id", function(d){ return d.id;}  )
+            .attr("x",function(d){return d.x} )
+            .attr("y",function(d){return d.y} )
+            .attr("fill", function (d,i){ return "rgb(0,0," + i*60 + ")";})
+            ; 
+
+
         var ticked = function() {
             // console.log("ticked")
 

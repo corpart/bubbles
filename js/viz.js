@@ -96,11 +96,13 @@
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function(d) { return d.index }))
             .force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(2) ) //16
-            .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(chartWidth / 2, chartWidth / 2))
+            .force("charge", d3.forceManyBody(0)
+                .strength(-30)  //negative:repell 
+                // .distanceMax(100)
+                )
+            .force("center", d3.forceCenter(chartWidth / 2, chartWidth / 2-100)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
-            .force("x", d3.forceX(0))
-            // .alphaTarget(1)
+            .force("x", d3.forceX(0).strength(0.05))
             .on("tick", ticked);
 
         
@@ -176,7 +178,7 @@
         
         d3.selectAll(".button")
             .on("click", function() {
-            console.log("id:" + d3.select(this).attr("id") + " x:" +d3.select(this).attr("x"));
+            console.log("id:" + d3.select(this).attr("id") );
             pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), d3.select(this).attr("id"));
         })
 
@@ -188,7 +190,7 @@
 
         }
 
-        function pushBubble(bx,by, bi){
+        function pushBubble(bx, by, bi){
             // console.log("add a bubble")
             data.nodes.push({
                 id: ~~d3.randomUniform(50)(), 
@@ -197,6 +199,12 @@
                 y:by,
                 group:  bi });
 
+            //link to other nodes with same group 
+            // d3.selectAll(".nodes")
+            // data.nodes
+            //     .each(function(d){
+            //          console.log(d.attr("id"));
+            //      });
             // data.links.push({source: "6", target: "1", value: 1});
             // data.links.push({source: "6", target: "5", value: 1});
             restart(data);
@@ -205,14 +213,19 @@
 
         function restart(data) {
           // console.log(data);
-
+        
           // Apply the general update pattern to the nodes.
             node = node.data(data.nodes, function(d) { return d.id;});
-          node.exit().remove();
-          node = node.enter().append("circle")
-            .attr("r", function(d){  return d.r })
-            .attr("fill", function(d) { return color(d.group); })
-            .merge(node);
+            node.exit().remove();
+            node = node.enter().append("circle")
+                .attr("r", function(d){  return d.r })
+                .attr("fill", function(d) { return color(d.group); })
+                // .attr("fill", function(d) { return color(~~d3.randomUniform(20)()); })
+                .merge(node);
+            
+            // node.each(function(d){
+            //         console.log(d);
+            //     });
 
           // Apply the general update pattern to the links.
            link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });

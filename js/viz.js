@@ -214,15 +214,21 @@
                 x:bx,
                 y:by,
                 group:  bi });
-            // console.log(data.nodes)
+            
             //link to other nodes with same group 
             var sameGroup = data.nodes.filter ( 
                     function(d){ return +d.group == bi; } //turn string to number
                 )
-            console.log( sameGroup)
-            if (sameGroup.length>1){
-                console.log("connecting " + newID + " & " + sameGroup[0].id ); 
-                data.links.push ({source: newID , target: sameGroup[0].id, value:1 })
+            if (sameGroup.length>0){
+                var j = ~~d3.randomUniform(0, sameGroup.length)(); 
+                // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
+                data.links.push ({source: newID , target: sameGroup[j].id, value:1 })
+
+                j = ~~d3.randomUniform(0, sameGroup.length)(); 
+                // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
+                data.links.push ({source: newID , target: sameGroup[j].id, value:1 })
+
+
 
                 //data.links.push ({source: newID , target: sameGroup[sameGroup.length-1].id , value:1 })
             }

@@ -79,22 +79,54 @@
         chartHeight = height - (margin.top+margin.bottom)
         
         svg.attr("width", width).attr("height", height)
-        
-        
+          
         chartLayer
             .attr("width", chartWidth)
             .attr("height", chartHeight)
             .attr("transform", "translate("+[margin.left, margin.top]+")")
-            
-            
+                
     }
 
 
     function drawChart(data) {
 
-        // https://github.com/d3/d3-force/blob/master/README.md#forceCollide
+        
+        var color = d3.scaleOrdinal(d3.schemeCategory20);     
+        // var colors = d3.scale.category10()
+        //          .range(["#FFFF00",  //YELLOW
+        //                  "#377eb8",  //BLUE
+        //                  "#4daf4a",  //GREEN
+        //                  "#e41a1c"  //red
+        //                  ]);
+
+        var link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(data.links)
+            .enter()
+            .append("line")
+            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+        var node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(data.nodes)
+            .enter().
+            append("circle")
+            .attr("r", function(d){  return d.r })
+            .attr("fill", function(d) { return color(d.group); })
+             // .call(d3.drag()
+            //     .on("start", dragstarted)
+            //     .on("drag", dragged)
+            //     .on("end", dragended));    
+
         var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function(d) { return d.index }))
+            .force("link", d3.forceLink()
+                .id(function(d) { return d.index })
+                .distance(function(d){return d.value})
+                .strength(0.1)
+                )
+
             .force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(2) ) //16
             .force("charge", d3.forceManyBody(0)
                 .strength(-30)  //negative:repell 
@@ -105,38 +137,43 @@
             .force("x", d3.forceX(0).strength(0.05))
             .on("tick", ticked);
 
-        
-        var color = d3.scaleOrdinal(d3.schemeCategory20);
-        // var colors = d3.scale.category10()
-        //          .range(["#FFFF00",  //YELLOW
-        //                  "#377eb8",  //BLUE
-        //                  "#4daf4a",  //GREEN
-        //                  "#e41a1c"  //red
-        //                  ]);
+
+        var ticked = function() {
+            // console.log("ticked")
+            //fullspeed 
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
     
-        var link = svg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(data.links)
-            .enter()
-            .append("line")
-            .attr("stroke", "grey")
+            node
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
 
-        var node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(data.nodes)
-            .enter().append("circle")
-            .attr("r", function(d){  return d.r })
-            .attr("fill", function(d) { return color(d.group); })
+             
+            //   link.transition().ease('linear').duration(400)
+            // .attr('x1', function(d) { return d.source.x; })
+            // .attr('y1', function(d) { return d.source.y; })
+            // .attr('x2', function(d) { return d.target.x; })
+            // .attr('y2', function(d) { return d.target.y; });
 
-             // .call(d3.drag()
-            //     .on("start", dragstarted)
-            //     .on("drag", dragged)
-            //     .on("end", dragended));    
+            // node.transition().ease('linear').duration(400)
+            // .attr('cx', function(d) { return d.x; })
+            // .attr('cy', function(d) { return d.y; });
 
+        }  
+        
+        simulation
+            .nodes(data.nodes)
+            .on("tick", ticked);
+    
+        simulation
+            .force("link")
+            .links(data.links);
+        
             //buttons 
-            svg
+        svg
             .selectAll("rect")
             .data(buttonData)
             .enter()
@@ -148,28 +185,6 @@
             .attr("fill", function (d,i){ return color(i); })
             ; 
 
-
-        var ticked = function() {
-            // console.log("ticked")
-
-            link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
-    
-            node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
-        }  
-        
-        simulation
-            .nodes(data.nodes)
-            .on("tick", ticked);
-    
-        simulation.force("link")
-            .links(data.links);    
-        
         
         d3.selectAll(".pop-data")
             .on("click", function() {
@@ -178,7 +193,7 @@
         
         d3.selectAll(".button")
             .on("click", function() {
-            console.log("id:" + d3.select(this).attr("id") );
+            // console.log("button clicked: " + d3.select(this).attr("id") );
             pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), d3.select(this).attr("id"));
         })
 
@@ -191,29 +206,34 @@
         }
 
         function pushBubble(bx, by, bi){
-            // console.log("add a bubble")
+            
+            var newID = data.nodes.length;
             data.nodes.push({
-                id: ~~d3.randomUniform(50)(), 
+                id:  newID, 
                 r: ~~d3.randomUniform(10,20)(), 
                 x:bx,
                 y:by,
                 group:  bi });
-
+            // console.log(data.nodes)
             //link to other nodes with same group 
-            // d3.selectAll(".nodes")
-            // data.nodes
-            //     .each(function(d){
-            //          console.log(d.attr("id"));
-            //      });
-            // data.links.push({source: "6", target: "1", value: 1});
-            // data.links.push({source: "6", target: "5", value: 1});
+            var sameGroup = data.nodes.filter ( 
+                    function(d){ return +d.group == bi; } //turn string to number
+                )
+            console.log( sameGroup)
+            if (sameGroup.length>1){
+                console.log("connecting " + newID + " & " + sameGroup[0].id ); 
+                data.links.push ({source: newID , target: sameGroup[0].id, value:1 })
+
+                //data.links.push ({source: newID , target: sameGroup[sameGroup.length-1].id , value:1 })
+            }
+            
             restart(data);
         }
 
 
+
         function restart(data) {
-          // console.log(data);
-        
+          
           // Apply the general update pattern to the nodes.
             node = node.data(data.nodes, function(d) { return d.id;});
             node.exit().remove();
@@ -222,20 +242,16 @@
                 .attr("fill", function(d) { return color(d.group); })
                 // .attr("fill", function(d) { return color(~~d3.randomUniform(20)()); })
                 .merge(node);
-            
-            // node.each(function(d){
-            //         console.log(d);
-            //     });
-
+    
           // Apply the general update pattern to the links.
-           link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
-          link.exit().remove();
-          link = link.enter().append("line").merge(link);
+            link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
+            link.exit().remove();
+            link = link.enter().append("line").merge(link);
 
           // Update and restart the simulation.
-          simulation.nodes(data.nodes);
-          simulation.force("link").links(data.links);
-          simulation.alpha(1).restart();
+            simulation.nodes(data.nodes);
+            simulation.force("link").links(data.links);
+            simulation.alpha(1).restart();
         }
 
         function dragstarted(d) {

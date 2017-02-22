@@ -10,6 +10,8 @@
     
     var data
 
+    var buttons 
+
     var buttonData = [
                 {id: 0, label: "addBubble",  x: 10, y: 500 },
                 {id: 1, label: "addbubble1", x: 80, y: 500 },
@@ -52,7 +54,7 @@
         // drawChart(data)    
 
        
-        ////load data from json  
+        //load data from json  
         d3.json("data/data.json", function(error, dataset){
                 if (error) {
                     console.log(error);
@@ -116,9 +118,9 @@
             .attr("r", function(d){  return d.r })
             .attr("fill", function(d) { return color(d.group); })
              // .call(d3.drag()
-            //     .on("start", dragstarted)
-            //     .on("drag", dragged)
-            //     .on("end", dragended));    
+             //    .on("start", dragstarted)
+             //    .on("drag", dragged)
+             //    .on("end", dragended));    
 
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink()
@@ -135,12 +137,12 @@
             .force("center", d3.forceCenter(chartWidth / 2, chartWidth / 2-100)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0).strength(0.05))
-            .on("tick", ticked);
+            // .on("tick", ticked);
 
 
         var ticked = function() {
             // console.log("ticked")
-            //fullspeed 
+            // fullspeed 
             link
                 .attr("x1", function(d) { return d.source.x; })
                 .attr("y1", function(d) { return d.source.y; })
@@ -151,29 +153,32 @@
                 .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
 
+            // //slow down 
+            // link
+            //     .transition().duration(300)
+            //     .attr("x1", function(d) { return d.source.x; })
+            //     .attr("y1", function(d) { return d.source.y; })
+            //     .attr("x2", function(d) { return d.target.x; })
+            //     .attr("y2", function(d) { return d.target.y; });
+    
+            // node
+            //     .transition ().duration(300)
+            //     .attr("cx", function(d) { return d.x; })
+            //     .attr("cy", function(d) { return d.y; });
              
-            //   link.transition().ease('linear').duration(400)
-            // .attr('x1', function(d) { return d.source.x; })
-            // .attr('y1', function(d) { return d.source.y; })
-            // .attr('x2', function(d) { return d.target.x; })
-            // .attr('y2', function(d) { return d.target.y; });
 
-            // node.transition().ease('linear').duration(400)
-            // .attr('cx', function(d) { return d.x; })
-            // .attr('cy', function(d) { return d.y; });
-
+     
         }  
         
         simulation
             .nodes(data.nodes)
-            .on("tick", ticked);
-    
-        simulation
+            .on("tick", ticked)
             .force("link")
             .links(data.links);
         
+
             //buttons 
-        svg
+        buttons = svg
             .selectAll("rect")
             .data(buttonData)
             .enter()
@@ -183,6 +188,10 @@
             .attr("x",function(d){return d.x} )
             .attr("y",function(d){return d.y} )
             .attr("fill", function (d,i){ return color(i); })
+            .attr("startTime", undefined )
+            .attr("elapsed", 0 )
+            .attr("scale",1)
+            .attr("touching", false)
             ; 
 
         
@@ -192,16 +201,33 @@
         })
         
         d3.selectAll(".button")
-            .on("click", function() {
+            .on("mousedown", function(){
+                console.log("mousedown on button: " + d3.select(this).attr("id") );
+                //record time 
+                // d3.select(this).attr("touchStartTime") = new Date().getTime();  
+                
+            })
+            .on("mouseup", function() {
             // console.log("button clicked: " + d3.select(this).attr("id") );
             pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), d3.select(this).attr("id"));
         })
+
+        // d3.timer(buttonTick);
+
+        // function buttonTick(){
+        //     // buttons.forEach(function (d) {
+        //     //     console.log(d.id);
+        //     // })
+        //     console.log(buttons)
+
+
+        // }
+
 
         function popBubble(){
             data.nodes.pop();
             //TODO needs to pop links too
             restart();
-
 
         }
 
@@ -235,6 +261,7 @@
             
             restart(data);
         }
+
 
 
 
@@ -283,18 +310,5 @@
 
 
 }());
-
-// function addBubble(){
-    
-//     obj = {
-//        'id':~~d3.randomUniform(10)(),
-//        'r': ~~d3.randomUniform(10,20)() ,
-//        'group': ~~d3.randomUniform(0,5)()
-//     }
-//     // console.log(obj);
-//     data.push(obj)
-//     // refreshGraph()
-
-// }
 
 

@@ -40,7 +40,7 @@ html, body, #graph {
 <script src="js/libs/stats.min.js"></script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>    
-<script src="js/viz.js"></script>
+<!-- <script src="js/viz.js"></script> -->
 
 
 <script>
@@ -74,10 +74,7 @@ html, body, #graph {
 
         scene = new THREE.Scene();
 
-        particles = new Array();
-
-
-        
+        particles = new Array();       
       
 
         //load data from json  
@@ -107,6 +104,7 @@ html, body, #graph {
         } );
 
 
+        /////floor
         var i = 0;
 
         for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
@@ -142,62 +140,65 @@ html, body, #graph {
 
     function prep(data){
         // console.log(data);
-
-        // var simulation = d3.forceSimulation()
-        //     .force("link", d3.forceLink()
-        //         .id(function(d) { return d.index })
-        //         .distance(function(d){return d.value})
-        //         .strength(0.1)
-        //         )
-
-        //     .force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(2) ) //16
-        //     .force("charge", d3.forceManyBody(0)
-        //         .strength(-30)  //negative:repell 
-        //         // .distanceMax(100)
-        //         )
-        //     .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2-100)) // keeps nodes in the center of the viewport
-        //     .force("y", d3.forceY(0))
-        //     .force("x", d3.forceX(0).strength(0.05))
-
         var material = new THREE.SpriteCanvasMaterial( {
 
             color: 0xff0000,
             program: function ( context ) {
                 context.beginPath();
-                context.arc( 0, 0, 5, 0, PI2, true );
+                context.arc( 0, 0, 20, 0, PI2, true );
                 context.fill();
 
             }
-
         } );
 
         for (var i =0; i < data.nodes.length; i++){
             
             particle = particles[ i ] = new THREE.Sprite( material );
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
-            particle.position.y = ~~d3.randomUniform(-30, 30)(); //data.nodes[i].y;
+            particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
             scene.add( particle );
             // console.log(i+" "+ data.nodes[i].x+ " " + data.nodes[i].y);
+            console.log("initializing THREE particles"); 
             console.log(i+" "+ particle.position.x + " " + particle.position.y );
         }
     
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink()
+                .id(function(d) { return d.index })
+                .distance(function(d){return d.value})
+                .strength(0.1)
+                )
 
-        var ticked = function() { ///TODO funcion??
-            console.log("updating: " + data.nodes[0].x ); 
+            .force("collide",d3.forceCollide( function(d){return d.r + 80 }).iterations(2) ) //16
+            .force("charge", d3.forceManyBody(0)
+                .strength(-30)  //negative:repell 
+                // .distanceMax(100)
+                )
+            .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2-100)) // keeps nodes in the center of the viewport
+            .force("y", d3.forceY(0))
+            .force("x", d3.forceX(0).strength(0.05))
+
+        var ticked = function() { ///TODO function??
+            
+
+            for (var i =0; i < data.nodes.length; i++){
+                
+                
+                particles[ i ].position.x = data.nodes[i].x;
+                particles[ i ].position.y = data.nodes[i].y;
+                // console.log("updating: " + data.nodes[0].x ); 
+            }
             
             // debugger
-            
-
-
         }  
         
 
 
-        // simulation
-        //     .nodes(data.nodes)
-        //     .on("tick", ticked)
-        //     .force("link")
-        //     .links(data.links);
+        simulation
+            .nodes(data.nodes)
+            .on("tick", ticked)
+            .force("link")
+            .links(data.links);
 
         
     }

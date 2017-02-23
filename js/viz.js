@@ -52,7 +52,7 @@
         // }
         // setChartSize(data)
         // drawChart(data)    
-
+        
        
         //load data from json  
         d3.json("data/data.json", function(error, dataset){
@@ -63,7 +63,7 @@
                     data = dataset ;
                     setChartSize(data)
                     drawChart(data)    
-
+                    
                 }
         });
          

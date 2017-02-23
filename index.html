@@ -55,6 +55,8 @@ html, body/*, #graph */{
 
     var mouseX = 0, mouseY = 0;
 
+
+
     var windowHalfX = window.innerWidth / 2;
     var windowHalfY = window.innerHeight / 2;
 
@@ -77,9 +79,11 @@ html, body/*, #graph */{
         scene = new THREE.Scene();
 
         particles = new Array();
-        lines = new Array();       
-      
+        lines = new Array();    
 
+
+      
+        drawBackground();
         //load data from json  
         d3.json("data/data.json", function(error, dataset){
                 if (error) {
@@ -92,27 +96,6 @@ html, body/*, #graph */{
                 }
         });
          
-
-       /////base wall
-        var material = new THREE.SpriteCanvasMaterial( { 
-            color: 0xffffff,
-            program: function ( context ) {
-                context.beginPath();
-                context.arc( 0, 0, 1, 0, PI2, true );
-                context.fill();
-            }
-        } );
-        
-        for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
-            for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
-                particle = new THREE.Sprite( material );
-                particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
-                particle.position.y = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
-                scene.add( particle );
-            }
-        }
-
-
         ///THREEJS 
         renderer = new THREE.CanvasRenderer();
         renderer.setPixelRatio( window.devicePixelRatio );
@@ -157,17 +140,24 @@ html, body/*, #graph */{
         var lineMaterial = new THREE.LineBasicMaterial({
             color: 0x0000ff
         });
-        var geometry = new THREE.Geometry()
-
+       
+        var lineTemp; 
+        var l = 0; 
         data.links.forEach(function(d){
-            // console.log('data link' + d.target)
-
-            geometry.vertices.push(
-                particle
+            var geometryLine = new THREE.Geometry()
+            var t = particles[d.target];
+            var s = particles[d.source];
+            geometryLine.vertices.push(
+                new THREE.Vector3( t.position.x, t.position.y, t.position.z ),
+                new THREE.Vector3( s.position.x, s.position.y, s.position.z )
             );
 
+            // debugger 
+            lineTemp = lines[l++] = new THREE.Line(geometryLine, lineMaterial)
+            scene.add(lineTemp);
+                    
         })
-
+  
         
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink()
@@ -185,7 +175,7 @@ html, body/*, #graph */{
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0).strength(0.05))
 
-        // var ticked = function() { ///TODO function??
+        // var ticked = function() { ///TODO function?
         // }  
 
         simulation
@@ -248,6 +238,29 @@ html, body/*, #graph */{
 
     }
 
+    function drawBackground(){
+           /////base wall
+        var material = new THREE.SpriteCanvasMaterial( { 
+            color: 0xffffff,
+            program: function ( context ) {
+                context.beginPath();
+                context.arc( 0, 0, 1, 0, PI2, true );
+                context.fill();
+            }
+        } );
+        
+        for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
+            for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
+                particle = new THREE.Sprite( material );
+                particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
+                particle.position.y = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+                scene.add( particle );
+            }
+        }
+
+
+    }
+
     //
 
     function animate() {
@@ -266,11 +279,33 @@ html, body/*, #graph */{
         camera.lookAt( scene.position );
 
         if (isDataReady){
+            //update dots 
             for (var i =0; i < data.nodes.length; i++){
                 particles[ i ].position.x = data.nodes[i].x;
                 particles[ i ].position.y = data.nodes[i].y;
                 // console.log("updating: " + data.nodes[0].x ); 
-            }    
+            } 
+            
+            //update lines connecting dots 
+            data.links.forEach(function(d,i){
+                // debugger
+                var t = particles[d.target.id];
+                var s = particles[d.source.id];
+
+                lines[i].geometry.vertices[0].x = s.position.x;
+                lines[i].geometry.vertices[0].y = s.position.y;
+                lines[i].geometry.vertices[0].z = s.position.z;
+
+                lines[i].geometry.vertices[1].x = t.position.x;
+                lines[i].geometry.vertices[1].y = t.position.y;
+                lines[i].geometry.vertices[1].z = t.position.z;
+
+                // lines[i].geometry.verticesNeedUpdate = true; 
+
+
+            });   
+
+           
         }
         
             

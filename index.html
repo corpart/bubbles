@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <title>bubbles</title>
 <style>
-html, body, #graph {
+html, body/*, #graph */{
     width: 800px;
     height: 600px;
 }
@@ -39,7 +39,7 @@ html, body, #graph {
 <script src="js/renderers/CanvasRenderer.js"></script>
 <script src="js/libs/stats.min.js"></script>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>    
+<script src="js/libs/d3.min.js"></script>    
 <!-- <script src="js/viz.js"></script> -->
 
 
@@ -51,6 +51,7 @@ html, body, #graph {
     var camera, scene, renderer;
 
     var particles, particle, count = 0;
+
 
     var mouseX = 0, mouseY = 0;
 
@@ -75,7 +76,8 @@ html, body, #graph {
 
         scene = new THREE.Scene();
 
-        particles = new Array();       
+        particles = new Array();
+        lines = new Array();       
       
 
         //load data from json  
@@ -91,37 +93,27 @@ html, body, #graph {
         });
          
 
-       
-        var material = new THREE.SpriteCanvasMaterial( {
-
+       /////base wall
+        var material = new THREE.SpriteCanvasMaterial( { 
             color: 0xffffff,
             program: function ( context ) {
-
                 context.beginPath();
                 context.arc( 0, 0, 1, 0, PI2, true );
                 context.fill();
-
             }
-
         } );
-
-
-        /////floor
-        var i = 0;
-
+        
         for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
-
             for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
-
-                particle = particles[ i ++ ] = new THREE.Sprite( material );
+                particle = new THREE.Sprite( material );
                 particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
                 particle.position.y = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
                 scene.add( particle );
-
             }
-
         }
 
+
+        ///THREEJS 
         renderer = new THREE.CanvasRenderer();
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
@@ -142,30 +134,41 @@ html, body, #graph {
 
     function prep(data){
         // console.log(data);
-        var material = new THREE.SpriteCanvasMaterial( {
-
+        var particleMaterial = new THREE.SpriteCanvasMaterial( {
             color: 0xff0000,
             program: function ( context ) {
                 context.beginPath();
                 context.arc( 0, 0, 10, 0, PI2, true );
                 context.fill();
-
             }
         } );
-
-        for (var i =0; i < data.nodes.length; i++){
-            
-            particle = particles[ i ] = new THREE.Sprite( material );
+       
+        for (var i =0; i < data.nodes.length; i++){          
+            particle = particles[ i ] = new THREE.Sprite( particleMaterial );
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
-            particle.position.z = ~~d3.randomUniform(-50, 50)();
-            scene.add( particle );
-            
+            particle.position.z = ~~d3.randomUniform(-70, 70)();
+            scene.add( particle );           
             // console.log("initializing THREE particles"); 
             // console.log(i+" "+ data.nodes[i].x+ " " + data.nodes[i].y);
             // console.log(i+" "+ particle.position.x + " " + particle.position.y );
         }
-    
+
+        var lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x0000ff
+        });
+        var geometry = new THREE.Geometry()
+
+        data.links.forEach(function(d){
+            // console.log('data link' + d.target)
+
+            geometry.vertices.push(
+                particle
+            );
+
+        })
+
+        
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink()
                 .id(function(d) { return d.index })
@@ -182,25 +185,12 @@ html, body, #graph {
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0).strength(0.05))
 
-        var ticked = function() { ///TODO function??
-            
-
-            for (var i =0; i < data.nodes.length; i++){
-                
-                
-                particles[ i ].position.x = data.nodes[i].x;
-                particles[ i ].position.y = data.nodes[i].y;
-                // console.log("updating: " + data.nodes[0].x ); 
-            }
-            
-            // debugger
-        }  
-        
-
+        // var ticked = function() { ///TODO function??
+        // }  
 
         simulation
             .nodes(data.nodes)
-            // .on("tick", ticked)
+            // .on("tick", ticked) //updates are handled by the THREE render function 
             .force("link")
             .links(data.links);
 
@@ -275,21 +265,6 @@ html, body, #graph {
         camera.position.y += ( - mouseY - camera.position.y ) * .05;
         camera.lookAt( scene.position );
 
-        // var i = 0;
-
-        // for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
-
-        //     for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
-
-        //         particle = particles[ i++ ];
-        //         particle.position.y = ( Math.sin( ( ix + count ) * 0.3 ) * 50 ) +
-        //             ( Math.sin( ( iy + count ) * 0.5 ) * 50 );
-        //         particle.scale.x = particle.scale.y = ( Math.sin( ( ix + count ) * 0.3 ) + 1 ) * 4 +
-        //             ( Math.sin( ( iy + count ) * 0.5 ) + 1 ) * 4;
-
-        //     }
-
-        // }
         if (isDataReady){
             for (var i =0; i < data.nodes.length; i++){
                 particles[ i ].position.x = data.nodes[i].x;

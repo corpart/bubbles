@@ -45,7 +45,7 @@ html, body, #graph {
 
 <script>
 
-    var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50;
+    var SEPARATION = 100, AMOUNTX = 20, AMOUNTY = 20;
 
     var container, stats;
     var camera, scene, renderer;
@@ -58,6 +58,7 @@ html, body, #graph {
     var windowHalfY = window.innerHeight / 2;
 
     var data
+    var isDataReady = false; 
 
     var PI2 = Math.PI * 2;
 
@@ -82,6 +83,7 @@ html, body, #graph {
                 if (error) {
                     console.log(error);
                 }else{
+                    isDataReady = true; 
                     data = dataset ;
                     prep(data);
                        
@@ -96,7 +98,7 @@ html, body, #graph {
             program: function ( context ) {
 
                 context.beginPath();
-                context.arc( 0, 0, 0.5, 0, PI2, true );
+                context.arc( 0, 0, 1, 0, PI2, true );
                 context.fill();
 
             }
@@ -113,7 +115,7 @@ html, body, #graph {
 
                 particle = particles[ i ++ ] = new THREE.Sprite( material );
                 particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
-                particle.position.z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+                particle.position.y = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
                 scene.add( particle );
 
             }
@@ -145,7 +147,7 @@ html, body, #graph {
             color: 0xff0000,
             program: function ( context ) {
                 context.beginPath();
-                context.arc( 0, 0, 20, 0, PI2, true );
+                context.arc( 0, 0, 10, 0, PI2, true );
                 context.fill();
 
             }
@@ -156,10 +158,12 @@ html, body, #graph {
             particle = particles[ i ] = new THREE.Sprite( material );
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
+            particle.position.z = ~~d3.randomUniform(-50, 50)();
             scene.add( particle );
+            
+            // console.log("initializing THREE particles"); 
             // console.log(i+" "+ data.nodes[i].x+ " " + data.nodes[i].y);
-            console.log("initializing THREE particles"); 
-            console.log(i+" "+ particle.position.x + " " + particle.position.y );
+            // console.log(i+" "+ particle.position.x + " " + particle.position.y );
         }
     
         var simulation = d3.forceSimulation()
@@ -196,7 +200,7 @@ html, body, #graph {
 
         simulation
             .nodes(data.nodes)
-            .on("tick", ticked)
+            // .on("tick", ticked)
             .force("link")
             .links(data.links);
 
@@ -286,6 +290,17 @@ html, body, #graph {
         //     }
 
         // }
+        if (isDataReady){
+            for (var i =0; i < data.nodes.length; i++){
+                particles[ i ].position.x = data.nodes[i].x;
+                particles[ i ].position.y = data.nodes[i].y;
+                // console.log("updating: " + data.nodes[0].x ); 
+            }    
+        }
+        
+            
+
+
 
         renderer.render( scene, camera );
 

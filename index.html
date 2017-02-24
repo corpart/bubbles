@@ -60,19 +60,22 @@ svg{
 
     var data
     var isDataReady = false; 
+    var    particleMaterial
+    var lineMaterial
 
+    var simulation
 
     var buttons 
 
     var svg 
 
     var buttonData = [
-                {id: 0, label: "addBubble",  x: 10, y: 700 },
-                {id: 1, label: "addbubble1", x: 80, y: 700 },
-                {id: 2, label: "addbubble2", x: 190, y: 700 },
-                {id: 3, label: "addbubble2", x: 260, y: 700 },
-                {id: 4, label: "addbubble2", x: 370, y: 700 },
-                {id: 5, label: "addbubble2", x: 430, y: 700 }
+                {id: 0, label: "addBubble",  x: 10, y:500 },
+                {id: 1, label: "addbubble1", x: 80, y: 500 },
+                {id: 2, label: "addbubble2", x: 190, y: 500 },
+                {id: 3, label: "addbubble2", x: 260, y: 500 },
+                {id: 4, label: "addbubble2", x: 370, y: 500 },
+                {id: 5, label: "addbubble2", x: 430, y: 500 }
                 ];
 
     var PI2 = Math.PI * 2;
@@ -96,7 +99,9 @@ svg{
         particles = new Array();
         lines = new Array();    
 
-
+        lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x0000ff
+        });
       
         drawBackground();
         //load data from json  
@@ -133,7 +138,7 @@ svg{
 
     function prep(data){
         // console.log(data);
-        var particleMaterial = new THREE.SpriteCanvasMaterial( {
+         particleMaterial = new THREE.SpriteCanvasMaterial( {
             color: 0xff0000,
             program: function ( context ) {
                 context.beginPath();
@@ -146,16 +151,14 @@ svg{
             particle = particles[ i ] = new THREE.Sprite( particleMaterial );
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
-            particle.position.z = ~~d3.randomUniform(-70, 70)();
+            particle.position.z = ~~d3.randomUniform(-150, 150)();
             scene.add( particle );           
             // console.log("initializing THREE particles"); 
             // console.log(i+" "+ data.nodes[i].x+ " " + data.nodes[i].y);
             // console.log(i+" "+ particle.position.x + " " + particle.position.y );
         }
 
-        var lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x0000ff
-        });
+        
        
         var lineTemp; 
         var l = 0; 
@@ -175,7 +178,7 @@ svg{
         })
   
         
-        var simulation = d3.forceSimulation()
+        simulation = d3.forceSimulation()
             .force("link", d3.forceLink()
                 .id(function(d) { return d.index })
                 .distance(function(d){return d.value})
@@ -255,7 +258,7 @@ svg{
     }
 
     function pushBubble(bx, by, bi){
-            debugger
+            
             var newID = data.nodes.length;
             data.nodes.push({
                 id:  newID, 
@@ -264,23 +267,55 @@ svg{
                 y:by,
                 group:  bi });
             
+            var particle = particles[ newID ] = new THREE.Sprite( particleMaterial );
+            particle.position.x = bx;
+            particle.position.y = by; 
+            particle.position.z = ~~d3.randomUniform(-70, 70)();
+            scene.add( particle );       
+            // debugger
             //link to other nodes with same group 
             var sameGroup = data.nodes.filter ( 
-                    function(d){ return +d.group == bi; } //turn string to number
+                
+                    function(d){ 
+                    
+                    return +d.group == bi; } //turn string to number
                 )
+            
             if (sameGroup.length>0){
+                
+                var lineTemp
+                var geometryLine = new THREE.Geometry()
+                //add first link 
                 var j = ~~d3.randomUniform(0, sameGroup.length)(); 
                 // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
                 data.links.push ({source: newID , target: sameGroup[j].id, value:1 })
+                
+                var s = particles[newID];
+                var t = particles[sameGroup[j].id];
+                geometryLine.vertices.push(
+                    new THREE.Vector3( t.position.x, t.position.y, t.position.z ),
+                    new THREE.Vector3( s.position.x, s.position.y, s.position.z )
+                );
 
+                lineTemp = lines[lines.length] = new THREE.Line(geometryLine, lineMaterial)
+                scene.add(lineTemp)
+
+                //add second link
                 j = ~~d3.randomUniform(0, sameGroup.length)(); 
                 // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
                 data.links.push ({source: newID , target: sameGroup[j].id, value:1 })
+                t = particles[sameGroup[j].id];
+                geometryLine.vertices.push(
+                    new THREE.Vector3( t.position.x, t.position.y, t.position.z ),
+                    new THREE.Vector3( s.position.x, s.position.y, s.position.z )
+                );
+                lineTemp = lines[lines.length] = new THREE.Line(geometryLine, lineMaterial)
+                scene.add(lineTemp)
 
 
 
-                //data.links.push ({source: newID , target: sameGroup[sameGroup.length-1].id , value:1 })
             }
+
             
             restart(data);
         }
@@ -290,19 +325,19 @@ svg{
 
         function restart(data) {
           
-          // Apply the general update pattern to the nodes.
-            node = node.data(data.nodes, function(d) { return d.id;});
-            node.exit().remove();
-            node = node.enter().append("circle")
-                .attr("r", function(d){  return d.r })
-                .attr("fill", function(d) { return color(d.group); })
-                // .attr("fill", function(d) { return color(~~d3.randomUniform(20)()); })
-                .merge(node);
+          // // Apply the general update pattern to the nodes.
+          //   node = node.data(data.nodes, function(d) { return d.id;});
+          //   node.exit().remove();
+          //   node = node.enter().append("circle")
+          //       .attr("r", function(d){  return d.r })
+          //       .attr("fill", function(d) { return color(d.group); })
+          //       // .attr("fill", function(d) { return color(~~d3.randomUniform(20)()); })
+          //       .merge(node);
     
-          // Apply the general update pattern to the links.
-            link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
-            link.exit().remove();
-            link = link.enter().append("line").merge(link);
+          // // Apply the general update pattern to the links.
+          //   link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
+          //   link.exit().remove();
+          //   link = link.enter().append("line").merge(link);
 
           // Update and restart the simulation.
             simulation.nodes(data.nodes);

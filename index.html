@@ -21,7 +21,7 @@ html, body/*, #graph */{
   stroke-opacity: 0.3;
 }
 
-#option{
+svg{
     position:absolute;
     width: 800px;
     height: 900px;
@@ -32,7 +32,7 @@ html, body/*, #graph */{
 </head>
 
 <body>
-<div id="graph"></div>    
+ 
 
 <script src="build/three.js"></script>    
 <script src="js/renderers/Projector.js"></script>
@@ -55,13 +55,25 @@ html, body/*, #graph */{
 
     var mouseX = 0, mouseY = 0;
 
-
-
     var windowHalfX = window.innerWidth / 2;
     var windowHalfY = window.innerHeight / 2;
 
     var data
     var isDataReady = false; 
+
+
+    var buttons 
+
+    var svg 
+
+    var buttonData = [
+                {id: 0, label: "addBubble",  x: 10, y: 700 },
+                {id: 1, label: "addbubble1", x: 80, y: 700 },
+                {id: 2, label: "addbubble2", x: 190, y: 700 },
+                {id: 3, label: "addbubble2", x: 260, y: 700 },
+                {id: 4, label: "addbubble2", x: 370, y: 700 },
+                {id: 5, label: "addbubble2", x: 430, y: 700 }
+                ];
 
     var PI2 = Math.PI * 2;
 
@@ -71,6 +83,9 @@ html, body/*, #graph */{
     function init() {
 
         container = document.createElement( 'div' );
+        container.setAttribute("z-index", 1);
+
+
         document.body.appendChild( container );
 
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -96,6 +111,7 @@ html, body/*, #graph */{
                 }
         });
          
+        drawForeground();
         ///THREEJS 
         renderer = new THREE.CanvasRenderer();
         renderer.setPixelRatio( window.devicePixelRatio );
@@ -237,6 +253,99 @@ html, body/*, #graph */{
         }
 
     }
+
+    function pushBubble(bx, by, bi){
+            debugger
+            var newID = data.nodes.length;
+            data.nodes.push({
+                id:  newID, 
+                r: ~~d3.randomUniform(10,20)(), 
+                x:bx,
+                y:by,
+                group:  bi });
+            
+            //link to other nodes with same group 
+            var sameGroup = data.nodes.filter ( 
+                    function(d){ return +d.group == bi; } //turn string to number
+                )
+            if (sameGroup.length>0){
+                var j = ~~d3.randomUniform(0, sameGroup.length)(); 
+                // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
+                data.links.push ({source: newID , target: sameGroup[j].id, value:1 })
+
+                j = ~~d3.randomUniform(0, sameGroup.length)(); 
+                // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
+                data.links.push ({source: newID , target: sameGroup[j].id, value:1 })
+
+
+
+                //data.links.push ({source: newID , target: sameGroup[sameGroup.length-1].id , value:1 })
+            }
+            
+            restart(data);
+        }
+
+
+
+
+        function restart(data) {
+          
+          // Apply the general update pattern to the nodes.
+            node = node.data(data.nodes, function(d) { return d.id;});
+            node.exit().remove();
+            node = node.enter().append("circle")
+                .attr("r", function(d){  return d.r })
+                .attr("fill", function(d) { return color(d.group); })
+                // .attr("fill", function(d) { return color(~~d3.randomUniform(20)()); })
+                .merge(node);
+    
+          // Apply the general update pattern to the links.
+            link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
+            link.exit().remove();
+            link = link.enter().append("line").merge(link);
+
+          // Update and restart the simulation.
+            simulation.nodes(data.nodes);
+            simulation.force("link").links(data.links);
+            simulation.alpha(1).restart();
+        }
+
+
+
+    function drawForeground(){
+         svg = d3.select('body').append('svg')
+         var color = d3.scaleOrdinal(d3.schemeCategory20);     
+         buttons = svg
+            .selectAll("rect")
+            .data(buttonData)
+            .enter()
+            .append("rect")
+            .attr("class", "button")
+            .attr("id", function(d){ return d.id;}  )
+            .attr("x",function(d){return d.x} )
+            .attr("y",function(d){return d.y} )
+            .attr("fill", function (d,i){ return color(i); })
+            .attr("startTime", undefined )
+            .attr("elapsed", 0 )
+            .attr("scale",1)
+            .attr("touching", false)
+            ; 
+         
+         d3.selectAll(".button")
+            .on("mousedown", function(){
+                console.log("mousedown on button: " + d3.select(this).attr("id") );
+                //record time 
+                // d3.select(this).attr("touchStartTime") = new Date().getTime();  
+                
+            })
+            .on("mouseup", function() {
+            // console.log("button clicked: " + d3.select(this).attr("id") );
+            pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), d3.select(this).attr("id"));
+        })
+
+    }
+
+
 
     function drawBackground(){
            /////base wall

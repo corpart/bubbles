@@ -177,7 +177,7 @@
             .links(data.links);
         
 
-            //buttons 
+        //buttons 
         buttons = svg
             .selectAll("rect")
             .data(buttonData)
@@ -219,8 +219,6 @@
         //     //     console.log(d.id);
         //     // })
         //     console.log(buttons)
-
-
         // }
 
 

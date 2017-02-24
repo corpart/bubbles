@@ -60,7 +60,8 @@ svg{
 
     var data
     var isDataReady = false; 
-    var    particleMaterial
+    
+    var particleMaterial
     var lineMaterial
 
     var simulation
@@ -100,7 +101,7 @@ svg{
         lines = new Array();    
 
         lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x0000ff
+            color: 0xaaaaaa
         });
       
         drawBackground();
@@ -160,21 +161,10 @@ svg{
 
         
        
-        var lineTemp; 
-        var l = 0; 
+        
+        
         data.links.forEach(function(d){
-            var geometryLine = new THREE.Geometry()
-            var t = particles[d.target];
-            var s = particles[d.source];
-            geometryLine.vertices.push(
-                new THREE.Vector3( t.position.x, t.position.y, t.position.z ),
-                new THREE.Vector3( s.position.x, s.position.y, s.position.z )
-            );
-
-            // debugger 
-            lineTemp = lines[l++] = new THREE.Line(geometryLine, lineMaterial)
-            scene.add(lineTemp);
-                    
+           addLinkBetweenTwoParticles(d.source, d.target);
         })
   
         
@@ -204,6 +194,25 @@ svg{
             .links(data.links);
 
         
+    }
+
+    function addLinkBetweenTwoParticles(sourceInd,targetInd){
+        //make sure indexes are in range
+        debugger
+        if (sourceInd < particles.length && targetInd < particles.length){
+            var newLineIndex = lines.length; 
+            var geometryLine = new THREE.Geometry()
+            var t = particles[targetInd];
+            var s = particles[sourceInd];
+            geometryLine.vertices.push(
+                new THREE.Vector3( t.position.x, t.position.y, t.position.z ),
+                new THREE.Vector3( s.position.x, s.position.y, s.position.z )
+            );
+
+            var lineTemp = lines[newLineIndex] = new THREE.Line(geometryLine, lineMaterial)
+            scene.add(lineTemp);
+        }
+      
     }
 
 

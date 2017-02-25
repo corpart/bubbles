@@ -51,6 +51,7 @@ svg{
     var camera, scene, renderer;
 
     var particles, particle, count = 0;
+    var lines; 
 
 
     var mouseX = 0, mouseY = 0;
@@ -158,16 +159,11 @@ svg{
             // console.log(i+" "+ data.nodes[i].x+ " " + data.nodes[i].y);
             // console.log(i+" "+ particle.position.x + " " + particle.position.y );
         }
-
-        
-       
-        
         
         data.links.forEach(function(d){
-           addLinkBetweenTwoParticles(d.source, d.target);
+           addLineBetweenTwoParticles(d.source, d.target);
         })
-  
-        
+          
         simulation = d3.forceSimulation()
             .force("link", d3.forceLink()
                 .id(function(d) { return d.index })
@@ -175,12 +171,12 @@ svg{
                 .strength(0.1)
                 )
 
-            .force("collide",d3.forceCollide( function(d){return d.r + 80 }).iterations(2) ) //16
+            .force("collide",d3.forceCollide( function(d){  return d.r + 40 }).iterations(2) ) //16
             .force("charge", d3.forceManyBody(0)
                 .strength(-30)  //negative:repell 
-                // .distanceMax(100)
+                .distanceMax(200)
                 )
-            .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2-100)) // keeps nodes in the center of the viewport
+            .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0).strength(0.05))
 
@@ -196,9 +192,8 @@ svg{
         
     }
 
-    function addLinkBetweenTwoParticles(sourceInd,targetInd){
+    function addLineBetweenTwoParticles(sourceInd,targetInd){
         //make sure indexes are in range
-        debugger
         if (sourceInd < particles.length && targetInd < particles.length){
             var newLineIndex = lines.length; 
             var geometryLine = new THREE.Geometry()
@@ -211,12 +206,10 @@ svg{
 
             var lineTemp = lines[newLineIndex] = new THREE.Line(geometryLine, lineMaterial)
             scene.add(lineTemp);
+            console.log("line " + newLineIndex + " added between " + sourceInd + " & " + targetInd) ; 
         }
       
     }
-
-
-
 
 
     function onWindowResize() {
@@ -268,15 +261,15 @@ svg{
 
     function pushBubble(bx, by, bi){
             
-            var newID = data.nodes.length;
+            var newNodeID = data.nodes.length; 
             data.nodes.push({
-                id:  newID, 
-                r: ~~d3.randomUniform(10,20)(), 
+                id:  newNodeID, 
+                r: ~~d3.randomUniform(10,60)(), 
                 x:bx,
                 y:by,
                 group:  bi });
             
-            var particle = particles[ newID ] = new THREE.Sprite( particleMaterial );
+            var particle = particles[ newNodeID ] = new THREE.Sprite( particleMaterial );
             particle.position.x = bx;
             particle.position.y = by; 
             particle.position.z = ~~d3.randomUniform(-70, 70)();
@@ -284,42 +277,26 @@ svg{
             // debugger
             //link to other nodes with same group 
             var sameGroup = data.nodes.filter ( 
-                
                     function(d){ 
-                    
-                    return +d.group == bi; } //turn string to number
+                    return +d.group == bi; } // +turn string to number
                 )
             
             if (sameGroup.length>0){
-                
-                var lineTemp
-                var geometryLine = new THREE.Geometry()
+               
                 //add first link 
                 var j = ~~d3.randomUniform(0, sameGroup.length)(); 
+                var targetInd = sameGroup[j].id; 
                 // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
-                data.links.push ({source: newID , target: sameGroup[j].id, value:1 })
-                
-                var s = particles[newID];
-                var t = particles[sameGroup[j].id];
-                geometryLine.vertices.push(
-                    new THREE.Vector3( t.position.x, t.position.y, t.position.z ),
-                    new THREE.Vector3( s.position.x, s.position.y, s.position.z )
-                );
-
-                lineTemp = lines[lines.length] = new THREE.Line(geometryLine, lineMaterial)
-                scene.add(lineTemp)
+                data.links.push ({source: newNodeID , target: targetInd, value:1 })
+                addLineBetweenTwoParticles(newNodeID, targetInd)
+              
 
                 //add second link
                 j = ~~d3.randomUniform(0, sameGroup.length)(); 
+                targetInd = sameGroup[j].id; 
                 // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
-                data.links.push ({source: newID , target: sameGroup[j].id, value:1 })
-                t = particles[sameGroup[j].id];
-                geometryLine.vertices.push(
-                    new THREE.Vector3( t.position.x, t.position.y, t.position.z ),
-                    new THREE.Vector3( s.position.x, s.position.y, s.position.z )
-                );
-                lineTemp = lines[lines.length] = new THREE.Line(geometryLine, lineMaterial)
-                scene.add(lineTemp)
+                data.links.push ({source: newNodeID , target: targetInd, value:1 })
+                addLineBetweenTwoParticles(newNodeID, targetInd)
 
 
 

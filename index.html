@@ -71,14 +71,14 @@ svg{
 
     var svg 
 
-    var buttonData = [
-                {id: 0, label: "addBubble",  x: 10, y:500 },
-                {id: 1, label: "addbubble1", x: 80, y: 500 },
-                {id: 2, label: "addbubble2", x: 190, y: 500 },
-                {id: 3, label: "addbubble2", x: 260, y: 500 },
-                {id: 4, label: "addbubble2", x: 370, y: 500 },
-                {id: 5, label: "addbubble2", x: 430, y: 500 }
-                ];
+    // var buttonData = [
+    //             {id: 0, label: "addBubble",  x: 10, y:500 },
+    //             {id: 1, label: "addbubble1", x: 80, y: 500 },
+    //             {id: 2, label: "addbubble2", x: 190, y: 500 },
+    //             {id: 3, label: "addbubble2", x: 260, y: 500 },
+    //             {id: 4, label: "addbubble2", x: 370, y: 500 },
+    //             {id: 5, label: "addbubble2", x: 430, y: 500 }
+    //             ];
 
     var PI2 = Math.PI * 2;
 
@@ -336,33 +336,46 @@ svg{
     function drawForeground(){
          svg = d3.select('body').append('svg')
          var color = d3.scaleOrdinal(d3.schemeCategory20);     
-         buttons = svg
-            .selectAll("rect")
-            .data(buttonData)
-            .enter()
-            .append("rect")
-            .attr("class", "button")
-            .attr("id", function(d){ return d.id;}  )
-            .attr("x",function(d){return d.x} )
-            .attr("y",function(d){return d.y} )
-            .attr("fill", function (d,i){ return color(i); })
-            .attr("startTime", undefined )
-            .attr("elapsed", 0 )
-            .attr("scale",1)
-            .attr("touching", false)
-            ; 
-         
-         d3.selectAll(".button")
-            .on("mousedown", function(){
-                console.log("mousedown on button: " + d3.select(this).attr("id") );
-                //record time 
-                // d3.select(this).attr("touchStartTime") = new Date().getTime();  
-                
-            })
-            .on("mouseup", function() {
-            // console.log("button clicked: " + d3.select(this).attr("id") );
-            pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), d3.select(this).attr("id"));
-        })
+        
+         d3.json("data/buttons.json", function(error, dataset){
+             
+                if (error) {
+                    console.log(error);
+                }else{
+                   
+                                
+                     buttons = svg
+                        .selectAll("rect")
+                        .data(dataset)
+                        .enter()
+                        .append("rect")
+                        .attr("class", "button")
+                        .attr("id", function(d){ return d.id;}  )
+                        .attr("x",function(d){return d.x} )
+                        .attr("y",function(d){return d.y} )
+                        .attr("fill", function (d,i){ return color(i); })
+                        // .attr("startTime", undefined )
+                        // .attr("elapsed", 0 )
+                        // .attr("scale",1)
+                        // .attr("touching", false)
+                        ; 
+                      console.log(buttons);
+                     d3.selectAll(".button")
+                        .on("mousedown", function(){
+                            console.log("mousedown on button: " + d3.select(this).attr("id") );
+                            //record time 
+                            // d3.select(this).attr("touchStartTime") = new Date().getTime();  
+                            
+                        })
+                        .on("mouseup", function() {
+                        // console.log("button clicked: " + d3.select(this).attr("id") );
+                        pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), d3.select(this).attr("id"));
+                    })
+                       
+                }
+        });
+
+
 
     }
 
@@ -408,7 +421,7 @@ svg{
         camera.position.y += ( - mouseY - camera.position.y ) * .05;
         camera.lookAt( scene.position );
 
-        if (isDataReady){
+        if (isDataReady){ //render could be called few times before json is loaded, causing errors. 
             //update dots 
             for (var i =0; i < data.nodes.length; i++){
                 particles[ i ].position.x = data.nodes[i].x;

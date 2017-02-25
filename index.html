@@ -71,15 +71,7 @@ svg{
 
     var svg 
 
-    // var buttonData = [
-    //             {id: 0, label: "addBubble",  x: 10, y:500 },
-    //             {id: 1, label: "addbubble1", x: 80, y: 500 },
-    //             {id: 2, label: "addbubble2", x: 190, y: 500 },
-    //             {id: 3, label: "addbubble2", x: 260, y: 500 },
-    //             {id: 4, label: "addbubble2", x: 370, y: 500 },
-    //             {id: 5, label: "addbubble2", x: 430, y: 500 }
-    //             ];
-
+  
     var PI2 = Math.PI * 2;
 
     init();
@@ -345,24 +337,48 @@ svg{
                 if (error) {
                     console.log(error);
                 }else{
-                   
-                                
-                     buttons = svg
-                        .selectAll("rect")
-                        .data(dataset)
+                    
+                    buttons = svg
+                        .selectAll("polygon")
+                        .data(dataset.buttons)
                         .enter()
-                        .append("rect")
+                        .append("polygon")
                         .attr("class", "button")
                         .attr("id", function(d){ return d.id;}  )
-                        .attr("x",function(d){return d.x} )
-                        .attr("y",function(d){return d.y} )
+                        .attr("transform", function(d){
+                             // "translate(480,480)scale(23)rotate(180)"
+                             var s = "translate("
+                              s +=d.x
+                              s +=","
+                              s +=d.y
+                              s +=")scale(0.5)"
+                             return s
+
+                        })
+                        .attr("points", function(d){
+                            console.log(d.poly)
+                            return d.poly;
+                        })
                         .attr("fill", function (d,i){ return color(i); })
-                        // .attr("startTime", undefined )
-                        // .attr("elapsed", 0 )
-                        // .attr("scale",1)
-                        // .attr("touching", false)
-                        ; 
-                      console.log(buttons);
+                        ;        
+
+
+
+                    
+                    // buttons = svg
+                    //     .selectAll("rect")
+                    //     .data(dataset)
+                    //     .enter()
+                    //     .append("rect")
+                    //     .attr("class", "button")
+                    //     .attr("id", function(d,i){ return d.buttons[i].id;}  )
+                    //     .attr("x",function(d,i){return d.buttons[i].x} )
+                    //     .attr("y",function(d,i){return d.buttons[i].y} )
+                    //     .attr("fill", function (d,i){ return color(i); })
+                    //     ;                       
+
+
+
                      d3.selectAll(".button")
                         .on("mousedown", function(){
                             console.log("mousedown on button: " + d3.select(this).attr("id") );

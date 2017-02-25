@@ -292,12 +292,15 @@ svg{
               
 
                 //add second link
-                j = ~~d3.randomUniform(0, sameGroup.length)(); 
-                targetInd = sameGroup[j].id; 
-                // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
-                data.links.push ({source: newNodeID , target: targetInd, value:1 })
-                addLineBetweenTwoParticles(newNodeID, targetInd)
-
+                var k = ~~d3.randomUniform(0, sameGroup.length)(); 
+                if (k!=j){
+                    targetInd = sameGroup[k].id; 
+                    // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
+                    data.links.push ({source: newNodeID , target: targetInd, value:1 })
+                    addLineBetweenTwoParticles(newNodeID, targetInd)
+                   
+                }
+ 
 
 
             }

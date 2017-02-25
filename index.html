@@ -275,7 +275,9 @@ svg{
             
             if (sameGroup.length>0){
                
+                //TODO DONT ADD LINK TO IT SELF 
                 //add first link 
+
                 var j = ~~d3.randomUniform(0, sameGroup.length)(); 
                 var targetInd = sameGroup[j].id; 
                 // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
@@ -356,10 +358,11 @@ svg{
 
                         })
                         .attr("points", function(d){
-                            console.log(d.poly)
+                            // console.log(d.poly)
                             return d.poly;
                         })
                         .attr("fill", function (d,i){ return color(i); })
+                        // .attr("radius",10)
                         ;        
 
 

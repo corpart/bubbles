@@ -186,8 +186,8 @@ svg{
         })
           
         //testing one triangle
-        triangleGeom.faces.push( new THREE.Face3( 0, 1, 2) );
-        triangleGeom.computeFaceNormals();
+        // triangleGeom.faces.push( new THREE.Face3( 0, 1, 2) );
+        // triangleGeom.computeFaceNormals();
         
         //add triangle mesh one time 
         //this will be automatically updated as new triangles gets added to triangleGeom
@@ -350,28 +350,34 @@ svg{
                 }
             }
 
-            // add new triangle
-
             triangleGeom.vertices.push(particles[newNodeID].position);
-          
-            triangleGeom.faces.push( new THREE.Face3( 0, 1, newNodeID ) );
-            // triangleGeom.computeFaceNormals();
 
+
+            //find non repeating random numbers 
+            var a = ~~d3.randomUniform(0, sameGroup.length)(); 
+            var b = ~~d3.randomUniform(0, sameGroup.length)();
+            var c = ~~d3.randomUniform(0, sameGroup.length)(); 
             
+            if (a!=b && b!=c && c!=a){
+
+                addTriangle(sameGroup[a].id,sameGroup[b].id,sameGroup[c].id);     
+            }
+            
+
+            restart(data);
+        }
+
+
+        function addTriangle(a,b,c ){         
+          
+            triangleGeom.faces.push( new THREE.Face3( a,b,c ) );
+            // triangleGeom.computeFaceNormals();  
 
             // var mesh= new THREE.Mesh( triangleGeom, mashMaterial );
             // scene.add(mesh)
 
 
-
-
-
-            
-            restart(data);
         }
-
-
-
 
         function restart(data) {
           

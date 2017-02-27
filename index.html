@@ -71,6 +71,7 @@ svg{
 
     var svg 
 
+    var colors 
   
     var PI2 = Math.PI * 2;
 
@@ -96,6 +97,19 @@ svg{
         lineMaterial = new THREE.LineBasicMaterial({
             color: 0xaaaaaa
         });
+
+        colors = [
+                 "#53777A", 
+                 "#542437",
+                 "#C02942",
+                 "#D95B43",
+                 "#ECD078",
+                 "#A8DBA8",  
+                 "#79BD9A",
+                 "#3B8686",
+                 "#0B486B"
+                ];
+
       
         drawBackground();
         //load data from json  
@@ -130,19 +144,28 @@ svg{
 
     }
 
-    function prep(data){
-        // console.log(data);
-         particleMaterial = new THREE.SpriteCanvasMaterial( {
-            color: 0xff0000,
+    function spriteMaterial( r, groupID ){
+        
+        // var color = d3.scaleOrdinal(d3.schemeCategory20);  
+        
+
+        return  new THREE.SpriteCanvasMaterial( {
+            // color: color(groupID),
+            color: colors[groupID], 
             program: function ( context ) {
                 context.beginPath();
-                context.arc( 0, 0, 10, 0, PI2, true );
+                context.arc( 0, 0, r, 0, PI2, true );
                 context.fill();
             }
         } );
+
+    }
+
+    function prep(data){
+  
        
         for (var i =0; i < data.nodes.length; i++){          
-            particle = particles[ i ] = new THREE.Sprite( particleMaterial );
+            particle = particles[ i ] = new THREE.Sprite( spriteMaterial( data.nodes[i].r , data.nodes[i].group ));
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
             particle.position.z = ~~d3.randomUniform(-150, 150)();
@@ -251,17 +274,17 @@ svg{
 
     }
 
-    function pushBubble(bx, by, bi){
+    function pushBubble(bx, by, br, bi){
             
             var newNodeID = data.nodes.length; 
             data.nodes.push({
                 id:  newNodeID, 
-                r: ~~d3.randomUniform(10,60)(), 
+                r:  br, 
                 x:bx,
                 y:by,
                 group:  bi });
             
-            var particle = particles[ newNodeID ] = new THREE.Sprite( particleMaterial );
+            var particle = particles[ newNodeID ] = new THREE.Sprite( spriteMaterial( br , bi ) ); 
             particle.position.x = bx;
             particle.position.y = by; 
             particle.position.z = ~~d3.randomUniform(-70, 70)();
@@ -280,6 +303,7 @@ svg{
 
                 var j = ~~d3.randomUniform(0, sameGroup.length)(); 
                 var targetInd = sameGroup[j].id; 
+
                 // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
                 data.links.push ({source: newNodeID , target: targetInd, value:1 })
                 addLineBetweenTwoParticles(newNodeID, targetInd)
@@ -332,7 +356,7 @@ svg{
 
     function drawForeground(){
          svg = d3.select('body').append('svg')
-         var color = d3.scaleOrdinal(d3.schemeCategory20);     
+        // var color = d3.scaleOrdinal(d3.schemeCategory20);     
         
          d3.json("data/buttons.json", function(error, dataset){
              
@@ -361,7 +385,7 @@ svg{
                             // console.log(d.poly)
                             return d.poly;
                         })
-                        .attr("fill", function (d,i){ return color(i); })
+                        .attr("fill", function (d,i){ return colors[i]; })
                         // .attr("radius",10)
                         ;        
 
@@ -391,7 +415,7 @@ svg{
                         })
                         .on("mouseup", function() {
                         // console.log("button clicked: " + d3.select(this).attr("id") );
-                        pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), d3.select(this).attr("id"));
+                        pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), ~~d3.randomUniform(10,60)(), d3.select(this).attr("id"));
                     })
                        
                 }

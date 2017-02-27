@@ -73,6 +73,15 @@ svg{
     var THREEcenterShiftY = -10 ;
 
 
+    var triangleGeom ;
+
+    var mashMaterial = new THREE.MeshStandardMaterial( {
+                    color: 0xaa0000,
+                    opacity: .1,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending 
+
+                } );
 
     init();
     animate();
@@ -93,9 +102,12 @@ svg{
         particles = new Array();
         lines = new Array();    
 
+
         lineMaterial = new THREE.LineBasicMaterial({
             color: 0X666666//0xaaaaaa
         });
+
+        triangleGeom = new THREE.Geometry();
 
         colors = [
                  "#53777A",  
@@ -165,42 +177,21 @@ svg{
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
             particle.position.z = ~~d3.randomUniform(-300, 300)();
             scene.add( particle );           
-            // console.log("initializing THREE particles"); 
-            // console.log(i+" "+ data.nodes[i].x+ " " + data.nodes[i].y);
-            // console.log(i+" "+ particle.position.x + " " + particle.position.y );
+
+            triangleGeom.vertices.push(particles[i].position);
         }
         
         data.links.forEach(function(d){
            addLineBetweenTwoParticles(d.source, d.target);
         })
           
-        //test triangle
-        var geom = new THREE.Geometry();
-        // var v1 = new THREE.Vector3(0,0,0);
-        // var v2 = new THREE.Vector3(300,0,0);
-        // var v3 = new THREE.Vector3(300,300,100);
+        //testing one triangle
+        triangleGeom.faces.push( new THREE.Face3( 0, 1, 2) );
+        triangleGeom.computeFaceNormals();
         
-        // geom.vertices.push(v1);
-        // geom.vertices.push(v2);
-        // geom.vertices.push(v3);
-        geom.vertices.push(particles[0].position);
-        geom.vertices.push(particles[1].position);
-        geom.vertices.push(particles[2].position);
-
-        // debugger
-     
-        geom.faces.push( new THREE.Face3( 0, 1, 2) );
-        // geom.computeFaceNormals();
-
-        var mashMaterial = new THREE.MeshStandardMaterial( {
-                    color: 0xaa0000,
-                    opacity: .25,
-                    transparent: true,
-                    blending: THREE.AdditiveBlending 
-
-                } );
-
-        var mesh= new THREE.Mesh( geom, mashMaterial );
+        //add triangle mesh one time 
+        //this will be automatically updated as new triangles gets added to triangleGeom
+        var mesh= new THREE.Mesh( triangleGeom, mashMaterial );
         scene.add(mesh)
 
 
@@ -338,7 +329,7 @@ svg{
             scene.add( particle );       
             // debugger
 
-            
+            //2d links  & 3D lines 
             if (sameGroup.length>0){
                 //add first link 
                 var j = ~~d3.randomUniform(0, sameGroup.length)(); 
@@ -357,10 +348,23 @@ svg{
                     addLineBetweenTwoParticles(newNodeID, targetInd)
                    
                 }
- 
-
-
             }
+
+            // add new triangle
+
+            triangleGeom.vertices.push(particles[newNodeID].position);
+          
+            triangleGeom.faces.push( new THREE.Face3( 0, 1, newNodeID ) );
+            // triangleGeom.computeFaceNormals();
+
+            
+
+            // var mesh= new THREE.Mesh( triangleGeom, mashMaterial );
+            // scene.add(mesh)
+
+
+
+
 
             
             restart(data);
@@ -417,7 +421,7 @@ svg{
                               s +=d.x               //location in html space
                               s +=","
                               s +=d.y
-                              s +=")scale(0.5)"
+                              s +=")scale(8)"
                              return s
 
                         })

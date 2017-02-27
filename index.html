@@ -174,18 +174,23 @@ svg{
            addLineBetweenTwoParticles(d.source, d.target);
         })
           
-        //add triangle
+        //test triangle
         var geom = new THREE.Geometry();
-        var v1 = new THREE.Vector3(0,0,0);
-        var v2 = new THREE.Vector3(300,0,0);
-        var v3 = new THREE.Vector3(300,300,100);
+        // var v1 = new THREE.Vector3(0,0,0);
+        // var v2 = new THREE.Vector3(300,0,0);
+        // var v3 = new THREE.Vector3(300,300,100);
         
-        geom.vertices.push(v1);
-        geom.vertices.push(v2);
-        geom.vertices.push(v3);
+        // geom.vertices.push(v1);
+        // geom.vertices.push(v2);
+        // geom.vertices.push(v3);
+        geom.vertices.push(particles[0].position);
+        geom.vertices.push(particles[1].position);
+        geom.vertices.push(particles[2].position);
+
+        // debugger
      
         geom.faces.push( new THREE.Face3( 0, 1, 2) );
-        geom.computeFaceNormals();
+        // geom.computeFaceNormals();
 
         var mashMaterial = new THREE.MeshStandardMaterial( {
                     color: 0xaa0000,
@@ -340,7 +345,7 @@ svg{
                 var targetInd = sameGroup[j].id; 
                 data.links.push ({source: newNodeID , 
                     target: targetInd, 
-                    value:~~d3.randomUniform(1, 10)()
+                    value:~~d3.randomUniform(1, 5)()
                 })
                 addLineBetweenTwoParticles(newNodeID, targetInd)
 
@@ -437,7 +442,7 @@ svg{
                         pushBubble(
                             +d3.select(this).attr("x3"), //turn string to int 
                             +d3.select(this).attr("y3"), 
-                            ~~d3.randomUniform(5,30)(), 
+                            ~~d3.randomUniform(5,20)(), 
                             d3.select(this).attr("id"));
                     })
                        
@@ -498,32 +503,28 @@ svg{
                 // console.log("updating: " + data.nodes[0].x ); 
             } 
             
-            //update lines connecting dots 
-            data.links.forEach(function(d,i){
-                // debugger
-                var t = particles[d.target.id];
-                var s = particles[d.source.id];
+            if(showDataLinksInLines){
+                //update lines connecting dots 
+                data.links.forEach(function(d,i){
+                    // debugger
+                    var t = particles[d.target.id];
+                    var s = particles[d.source.id];
 
-                lines[i].geometry.vertices[0].x = s.position.x;
-                lines[i].geometry.vertices[0].y = s.position.y;
-                lines[i].geometry.vertices[0].z = s.position.z;
+                    lines[i].geometry.vertices[0].x = s.position.x;
+                    lines[i].geometry.vertices[0].y = s.position.y;
+                    lines[i].geometry.vertices[0].z = s.position.z;
 
-                lines[i].geometry.vertices[1].x = t.position.x;
-                lines[i].geometry.vertices[1].y = t.position.y;
-                lines[i].geometry.vertices[1].z = t.position.z;
+                    lines[i].geometry.vertices[1].x = t.position.x;
+                    lines[i].geometry.vertices[1].y = t.position.y;
+                    lines[i].geometry.vertices[1].z = t.position.z;
 
-                // lines[i].geometry.verticesNeedUpdate = true; 
+                    // lines[i].geometry.verticesNeedUpdate = true; 
 
 
-            });   
-
-           
+                });   
+            }
         }
-        
-            
-
-
-
+   
         renderer.render( scene, camera );
 
         // count += 0.1;

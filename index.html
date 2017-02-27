@@ -275,15 +275,25 @@ svg{
     }
 
     function pushBubble(bx, by, br, bi){
-            // bx = -500
-            // by = -300
+           
             var newNodeID = data.nodes.length; 
+             
+            //find other nodes within the same group 
+            //do this before adding itself to avoiding linking to self
+            var sameGroup = data.nodes.filter ( 
+                    function(d){ 
+                        return +d.group == bi; 
+                    } // +turn string to number
+                )
+
             data.nodes.push({
                 id:  newNodeID, 
                 r: br, 
                 x: bx,
                 y: by,
                 group:  bi });
+
+
             
             var particle = particles[ newNodeID ] = new THREE.Sprite( spriteMaterial( br , bi ) ); 
             particle.position.x = bx;
@@ -291,11 +301,7 @@ svg{
             particle.position.z = ~~d3.randomUniform(-70, 70)();
             scene.add( particle );       
             // debugger
-            //link to other nodes with same group 
-            var sameGroup = data.nodes.filter ( 
-                    function(d){ 
-                    return +d.group == bi; } // +turn string to number
-                )
+
             
             if (sameGroup.length>0){
                
@@ -371,13 +377,13 @@ svg{
                         .enter()
                         .append("polygon")
                         .attr("class", "button")
-                        .attr("x3", function(d){ return d.x3;}) //for 3d position of bubble
+                        .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space 
                         .attr("y3", function(d){ return d.y3;})
                         .attr("id", function(d){ return d.id;}  )
                         .attr("transform", function(d){
                              // "translate(480,480)scale(23)rotate(180)"
                              var s = "translate("
-                              s +=d.x
+                              s +=d.x               //location in html space
                               s +=","
                               s +=d.y
                               s +=")scale(0.5)"

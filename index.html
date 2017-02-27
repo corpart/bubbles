@@ -95,7 +95,7 @@ svg{
         lines = new Array();    
 
         lineMaterial = new THREE.LineBasicMaterial({
-            color: 0xaaaaaa
+            color: 0X666666//0xaaaaaa
         });
 
         colors = [
@@ -168,7 +168,7 @@ svg{
             particle = particles[ i ] = new THREE.Sprite( spriteMaterial( data.nodes[i].r , data.nodes[i].group ));
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
-            particle.position.z = ~~d3.randomUniform(-150, 150)();
+            particle.position.z = ~~d3.randomUniform(-200, 200)();
             scene.add( particle );           
             // console.log("initializing THREE particles"); 
             // console.log(i+" "+ data.nodes[i].x+ " " + data.nodes[i].y);
@@ -275,13 +275,14 @@ svg{
     }
 
     function pushBubble(bx, by, br, bi){
-            
+            // bx = -500
+            // by = -300
             var newNodeID = data.nodes.length; 
             data.nodes.push({
                 id:  newNodeID, 
-                r:  br, 
-                x:bx,
-                y:by,
+                r: br, 
+                x: bx,
+                y: by,
                 group:  bi });
             
             var particle = particles[ newNodeID ] = new THREE.Sprite( spriteMaterial( br , bi ) ); 
@@ -370,6 +371,8 @@ svg{
                         .enter()
                         .append("polygon")
                         .attr("class", "button")
+                        .attr("x3", function(d){ return d.x3;}) //for 3d position of bubble
+                        .attr("y3", function(d){ return d.y3;})
                         .attr("id", function(d){ return d.id;}  )
                         .attr("transform", function(d){
                              // "translate(480,480)scale(23)rotate(180)"
@@ -388,6 +391,7 @@ svg{
                         .attr("fill", function (d,i){ return colors[i]; })
                         // .attr("radius",10)
                         ;        
+
 
 
 
@@ -414,8 +418,12 @@ svg{
                             
                         })
                         .on("mouseup", function() {
-                        // console.log("button clicked: " + d3.select(this).attr("id") );
-                        pushBubble(d3.select(this).attr("x"),d3.select(this).attr("y"), ~~d3.randomUniform(10,60)(), d3.select(this).attr("id"));
+                        //function pushBubble(bx, by, br, bi){
+                        pushBubble(
+                            +d3.select(this).attr("x3"), //turn string to int 
+                            +d3.select(this).attr("y3"), 
+                            ~~d3.randomUniform(10,60)(), 
+                            d3.select(this).attr("id"));
                     })
                        
                 }

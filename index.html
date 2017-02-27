@@ -10,15 +10,7 @@ html, body/*, #graph */{
     height: 600px;
 }
 .button{
-    
-    height: 50px;
-    width: 50px;
-    margin: 5px;
-}
-
-.links line {
-  stroke: #999;
-  stroke-opacity: 0.3;
+   
 }
 
 svg{
@@ -50,7 +42,7 @@ svg{
     var container, stats;
     var camera, scene, renderer;
 
-    var particles, particle, count = 0;
+    var particles, particle; //, count = 0;
     var lines; 
 
 
@@ -183,7 +175,7 @@ svg{
             .force("link", d3.forceLink()
                 .id(function(d) { return d.index })
                 .distance(function(d){return d.value})
-                .strength(0.05)
+                .strength(0.2)
                 // .strength(function(d){
                 //     return .1/d.value 
                 // })
@@ -194,7 +186,7 @@ svg{
                 .strength(-30)  //negative:repell 
                 .distanceMax(20)
                 )
-            .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2)) // keeps nodes in the center of the viewport
+            .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2 - 10)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0).strength(0.05))
 
@@ -328,7 +320,7 @@ svg{
                 var k = ~~d3.randomUniform(0, sameGroup.length)(); 
                 if ( k> sameGroup.length*.5 && k!=j){
                     targetInd = sameGroup[k].id; 
-                    data.links.push ({source: newNodeID , target: targetInd, value:~~d3.randomUniform(1, 10)() })
+                    data.links.push ({source: newNodeID , target: targetInd, value:~~d3.randomUniform(1, 5 )() })
                     addLineBetweenTwoParticles(newNodeID, targetInd)
                    
                 }
@@ -363,7 +355,7 @@ svg{
           // Update and restart the simulation.
             simulation.nodes(data.nodes);
             simulation.force("link").links(data.links);
-            simulation.alpha(1).restart();
+            // simulation.alpha(1).restart();
         }
 
 
@@ -404,23 +396,6 @@ svg{
                         .attr("fill", function (d,i){ return colors[i]; })
                         // .attr("radius",10)
                         ;        
-
-
-
-
-                    
-                    // buttons = svg
-                    //     .selectAll("rect")
-                    //     .data(dataset)
-                    //     .enter()
-                    //     .append("rect")
-                    //     .attr("class", "button")
-                    //     .attr("id", function(d,i){ return d.buttons[i].id;}  )
-                    //     .attr("x",function(d,i){return d.buttons[i].x} )
-                    //     .attr("y",function(d,i){return d.buttons[i].y} )
-                    //     .attr("fill", function (d,i){ return color(i); })
-                    //     ;                       
-
 
 
                      d3.selectAll(".button")
@@ -524,7 +499,7 @@ svg{
 
         renderer.render( scene, camera );
 
-        count += 0.1;
+        // count += 0.1;
 
     }
 

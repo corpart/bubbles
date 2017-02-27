@@ -75,13 +75,19 @@ svg{
 
     var triangleGeom ;
 
-    var mashMaterial = new THREE.MeshStandardMaterial( {
-                    color: 0xaa0000,
-                    opacity: .1,
-                    transparent: true,
-                    blending: THREE.AdditiveBlending 
 
-                } );
+
+    var materialIndex = 0
+    var materialIndex1 = 1 
+
+    var materials = [
+
+                new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.3, wireframe: true,
+                 side: THREE.DoubleSide 
+             } ),
+                new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.2,transparent: true, blending: THREE.AdditiveBlending } )
+            ];
+
 
     init();
     animate();
@@ -122,7 +128,7 @@ svg{
                 ];
 
       
-        drawBackground();
+       drawBackground();
         //load data from json  
         d3.json("data/data.json", function(error, dataset){
                 if (error) {
@@ -191,8 +197,13 @@ svg{
         
         //add triangle mesh one time 
         //this will be automatically updated as new triangles gets added to triangleGeom
-        var mesh= new THREE.Mesh( triangleGeom, mashMaterial );
+        // var mesh= new THREE.Mesh( triangleGeom, mashMaterial );
+        var mesh= new THREE.Mesh( triangleGeom,  materials[materialIndex] );
         scene.add(mesh)
+
+        mesh= new THREE.Mesh( triangleGeom,  materials[materialIndex1] );
+        scene.add(mesh)
+
 
 
         simulation = d3.forceSimulation()
@@ -212,14 +223,14 @@ svg{
                 )
             .force("center", d3.forceCenter(windowHalfX / 2 + THREEcenterShiftX, windowHalfY / 2 + THREEcenterShiftY)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
-            .force("x", d3.forceX(0).strength(0.05))
+            .force("x", d3.forceX(0).strength(0.01)) //0.05
 
         // var ticked = function() { ///TODO function?
         // }  
 
         simulation
             .velocityDecay(0.6) //default 0.4
-            .alphaTarget(0.1) //defaualt 0
+            .alphaTarget(0.2) //defaualt 0
             .nodes(data.nodes)
             // .on("tick", ticked) //updates are handled by the THREE render function 
             .force("link")

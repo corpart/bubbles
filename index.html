@@ -175,13 +175,13 @@ svg{
             .force("link", d3.forceLink()
                 .id(function(d) { return d.index })
                 .distance(function(d){return d.value})
-                .strength(0.2)
+                .strength(0.3)
                 // .strength(function(d){
                 //     return .1/d.value 
                 // })
                 )
 
-            .force("collide",d3.forceCollide( function(d){  return d.r + 40 }).iterations(2) ) //16
+            .force("collide",d3.forceCollide( function(d){  return d.r + 40 }).iterations(5) ) //2//16
             .force("charge", d3.forceManyBody(0)
                 .strength(-30)  //negative:repell 
                 .distanceMax(20)
@@ -189,12 +189,6 @@ svg{
             .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2 - 10)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0).strength(0.05))
-
- // force.linkStrength(function(link) {
- //        if (link.className === 'red')  return 0.1;
- //        return 1;
- //    });
-
 
         // var ticked = function() { ///TODO function?
         // }  
@@ -318,7 +312,7 @@ svg{
 
                 //add second link
                 var k = ~~d3.randomUniform(0, sameGroup.length)(); 
-                if ( k> sameGroup.length*.5 && k!=j){
+                if ( k!=j){
                     targetInd = sameGroup[k].id; 
                     data.links.push ({source: newNodeID , target: targetInd, value:~~d3.randomUniform(1, 5 )() })
                     addLineBetweenTwoParticles(newNodeID, targetInd)

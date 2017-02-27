@@ -168,7 +168,7 @@ svg{
             particle = particles[ i ] = new THREE.Sprite( spriteMaterial( data.nodes[i].r , data.nodes[i].group ));
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
-            particle.position.z = ~~d3.randomUniform(-200, 200)();
+            particle.position.z = ~~d3.randomUniform(-300, 300)();
             scene.add( particle );           
             // console.log("initializing THREE particles"); 
             // console.log(i+" "+ data.nodes[i].x+ " " + data.nodes[i].y);
@@ -183,22 +183,33 @@ svg{
             .force("link", d3.forceLink()
                 .id(function(d) { return d.index })
                 .distance(function(d){return d.value})
-                .strength(0.1)
+                .strength(0.05)
+                // .strength(function(d){
+                //     return .1/d.value 
+                // })
                 )
 
             .force("collide",d3.forceCollide( function(d){  return d.r + 40 }).iterations(2) ) //16
             .force("charge", d3.forceManyBody(0)
                 .strength(-30)  //negative:repell 
-                .distanceMax(200)
+                .distanceMax(20)
                 )
             .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0).strength(0.05))
 
+ // force.linkStrength(function(link) {
+ //        if (link.className === 'red')  return 0.1;
+ //        return 1;
+ //    });
+
+
         // var ticked = function() { ///TODO function?
         // }  
 
         simulation
+            .velocityDecay(0.6) //default 0.4
+            .alphaTarget(0.1) //defaualt 0
             .nodes(data.nodes)
             // .on("tick", ticked) //updates are handled by the THREE render function 
             .force("link")
@@ -221,7 +232,7 @@ svg{
 
             var lineTemp = lines[newLineIndex] = new THREE.Line(geometryLine, lineMaterial)
             scene.add(lineTemp);
-            console.log("line " + newLineIndex + " added between " + sourceInd + " & " + targetInd) ; 
+        //    console.log("line " + newLineIndex + " added between " + sourceInd + " & " + targetInd) ; 
         }
       
     }
@@ -304,24 +315,20 @@ svg{
 
             
             if (sameGroup.length>0){
-               
-                //TODO DONT ADD LINK TO IT SELF 
                 //add first link 
-
                 var j = ~~d3.randomUniform(0, sameGroup.length)(); 
                 var targetInd = sameGroup[j].id; 
-
-                // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
-                data.links.push ({source: newNodeID , target: targetInd, value:1 })
+                data.links.push ({source: newNodeID , 
+                    target: targetInd, 
+                    value:~~d3.randomUniform(1, 10)()
+                })
                 addLineBetweenTwoParticles(newNodeID, targetInd)
-              
 
                 //add second link
                 var k = ~~d3.randomUniform(0, sameGroup.length)(); 
-                if (k!=j){
+                if ( k> sameGroup.length*.5 && k!=j){
                     targetInd = sameGroup[k].id; 
-                    // console.log("connecting " + newID + " & " + sameGroup[j].id ); 
-                    data.links.push ({source: newNodeID , target: targetInd, value:1 })
+                    data.links.push ({source: newNodeID , target: targetInd, value:~~d3.randomUniform(1, 10)() })
                     addLineBetweenTwoParticles(newNodeID, targetInd)
                    
                 }
@@ -428,7 +435,7 @@ svg{
                         pushBubble(
                             +d3.select(this).attr("x3"), //turn string to int 
                             +d3.select(this).attr("y3"), 
-                            ~~d3.randomUniform(10,60)(), 
+                            ~~d3.randomUniform(5,30)(), 
                             d3.select(this).attr("id"));
                     })
                        

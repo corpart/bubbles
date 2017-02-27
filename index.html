@@ -45,6 +45,8 @@ svg{
     var particles, particle; //, count = 0;
     var lines; 
 
+    var showDataLinksInLines = false; 
+
 
     var mouseX = 0, mouseY = 0;
 
@@ -66,6 +68,11 @@ svg{
     var colors 
   
     var PI2 = Math.PI * 2;
+
+    var THREEcenterShiftX = -300;
+    var THREEcenterShiftY = -10 ;
+
+
 
     init();
     animate();
@@ -137,12 +144,8 @@ svg{
     }
 
     function spriteMaterial( r, groupID ){
-        
-        // var color = d3.scaleOrdinal(d3.schemeCategory20);  
-        
-
+      
         return  new THREE.SpriteCanvasMaterial( {
-            // color: color(groupID),
             color: colors[groupID], 
             program: function ( context ) {
                 context.beginPath();
@@ -171,6 +174,31 @@ svg{
            addLineBetweenTwoParticles(d.source, d.target);
         })
           
+        //add triangle
+        var geom = new THREE.Geometry();
+        var v1 = new THREE.Vector3(0,0,0);
+        var v2 = new THREE.Vector3(300,0,0);
+        var v3 = new THREE.Vector3(300,300,100);
+        
+        geom.vertices.push(v1);
+        geom.vertices.push(v2);
+        geom.vertices.push(v3);
+     
+        geom.faces.push( new THREE.Face3( 0, 1, 2) );
+        geom.computeFaceNormals();
+
+        var mashMaterial = new THREE.MeshStandardMaterial( {
+                    color: 0xaa0000,
+                    opacity: .25,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending 
+
+                } );
+
+        var mesh= new THREE.Mesh( geom, mashMaterial );
+        scene.add(mesh)
+
+
         simulation = d3.forceSimulation()
             .force("link", d3.forceLink()
                 .id(function(d) { return d.index })
@@ -186,7 +214,7 @@ svg{
                 .strength(-30)  //negative:repell 
                 .distanceMax(20)
                 )
-            .force("center", d3.forceCenter(windowHalfX / 2, windowHalfY / 2 - 10)) // keeps nodes in the center of the viewport
+            .force("center", d3.forceCenter(windowHalfX / 2 + THREEcenterShiftX, windowHalfY / 2 + THREEcenterShiftY)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0).strength(0.05))
 
@@ -205,6 +233,7 @@ svg{
     }
 
     function addLineBetweenTwoParticles(sourceInd,targetInd){
+
         //make sure indexes are in range
         if (sourceInd < particles.length && targetInd < particles.length){
             var newLineIndex = lines.length; 
@@ -217,7 +246,12 @@ svg{
             );
 
             var lineTemp = lines[newLineIndex] = new THREE.Line(geometryLine, lineMaterial)
-            scene.add(lineTemp);
+
+            if (showDataLinksInLines ){
+                scene.add(lineTemp);
+            }
+            
+        
         //    console.log("line " + newLineIndex + " added between " + sourceInd + " & " + targetInd) ; 
         }
       
@@ -356,7 +390,6 @@ svg{
 
     function drawForeground(){
          svg = d3.select('body').append('svg')
-        // var color = d3.scaleOrdinal(d3.schemeCategory20);     
         
          d3.json("data/buttons.json", function(error, dataset){
              

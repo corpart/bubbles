@@ -34,7 +34,7 @@ svg{
 
 <script>
 
-    var SEPARATION = 100, AMOUNTX = 20, AMOUNTY = 20;
+    var SEPARATION = 100, AMOUNTX = 40, AMOUNTY = 40;
     var MIN_R = 5, MAX_R = 15;
     var TOTAL_ANSWERS =12;
 
@@ -579,7 +579,7 @@ svg{
     function drawBackground(){
            /////base wall
         var material = new THREE.SpriteCanvasMaterial( { 
-            color: 0xffffff,
+            color: 0x000000,//0xffffff,
             program: function ( context ) {
                 context.beginPath();
                 context.arc( 0, 0, 1, 0, PI2, true );
@@ -618,9 +618,9 @@ svg{
         // camera.position.y += ( - mouseY - camera.position.y ) * .05;
         
         //timer controlled camera pan
-        var timer = 0.0003 * Date.now();
-        camera.position.x = Math.cos( timer ) * 130;
-        camera.position.y = Math.sin( timer ) * 80;
+        var timer = 0.0003 * Date.now(); //0.0003 * Date.now();
+        camera.position.x = Math.cos( timer ) * 800;  //130
+        camera.position.y = Math.sin( timer ) * 400; //80
 
         camera.lookAt( scene.position );
 

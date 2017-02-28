@@ -81,7 +81,7 @@ svg{
                  side: THREE.DoubleSide ,
                  // blending: THREE.AdditiveBlending
              } ),
-                new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.2,transparent: true, blending: THREE.AdditiveBlending } )
+                new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.2, side: THREE.DoubleSide , transparent: true, blending: THREE.AdditiveBlending } )
             ];
 
 
@@ -175,7 +175,7 @@ svg{
 
     }
 
-    function spriteMaterial( r, groupID ){
+    function getSpriteMaterial( r, groupID ){
       
         return  new THREE.SpriteCanvasMaterial( {
             color: colors[groupID], 
@@ -190,17 +190,42 @@ svg{
 
     }
 
+
+            
+
+    //for the triangles
+    function getEdgeMaterial (groupID){
+        return new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.3, wireframe: true,
+                 side: THREE.DoubleSide ,
+                 // blending: THREE.AdditiveBlending
+             } )
+    }
+
+    function getFaceMaterial (groupID){
+        return new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.2,transparent: true, blending: THREE.AdditiveBlending } );
+
+
+    }
+
     function prep(data){
-  
+        var mesh;
        
         for (var i =0; i < data.nodes.length; i++){          
-            particle = particles[ i ] = new THREE.Sprite( spriteMaterial( data.nodes[i].r , data.nodes[i].group ));
+            particle = particles[ i ] = new THREE.Sprite( getSpriteMaterial( data.nodes[i].r , data.nodes[i].group ));
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
             particle.position.z = ~~d3.randomUniform(-300, 300)();
             scene.add( particle );           
 
             triangleGeom.vertices.push(particles[i].position);
+
+
+            // mesh= new THREE.Mesh( triangleGeom, getEdgeMaterial( data.nodes[i].group));
+            // scene.add(mesh)
+            
+            // mesh= new THREE.Mesh( triangleGeom, getFaceMaterial( data.nodes[i].group));
+            // scene.add(mesh)
+
         }
         
         data.links.forEach(function(d){
@@ -210,11 +235,15 @@ svg{
        
         //add triangle mesh one time 
         //this will be automatically updated as new triangles gets added to triangleGeom
-         materials.forEach(function(m){
-            var mesh= new THREE.Mesh( triangleGeom, m );
-            debugger            
-            scene.add(mesh)
-        })
+       
+
+        // var mesh= new THREE.Mesh( triangleGeom, getEdgeMaterial());
+        mesh= new THREE.Mesh( triangleGeom, materials[0]);
+        scene.add(mesh)
+        
+        // mesh= new THREE.Mesh( triangleGeom, getFaceMaterial());
+          mesh= new THREE.Mesh( triangleGeom, materials[1]);
+        scene.add(mesh)
       
 
         simulation = d3.forceSimulation()
@@ -344,7 +373,7 @@ svg{
 
 
             
-            var particle = particles[ newNodeID ] = new THREE.Sprite( spriteMaterial( br , bi ) ); 
+            var particle = particles[ newNodeID ] = new THREE.Sprite( getSpriteMaterial( br , bi ) ); 
             particle.position.x = bx;
             particle.position.y = by; 
             particle.position.z = ~~d3.randomUniform(-70, 70)();
@@ -378,11 +407,12 @@ svg{
             //find non repeating random numbers 
             var a = ~~d3.randomUniform(0, sameGroup.length)(); 
             var b = ~~d3.randomUniform(0, sameGroup.length)();
-            var c = ~~d3.randomUniform(0, sameGroup.length)(); 
+            // var c = ~~d3.randomUniform(0, sameGroup.length)(); 
             
-            if (a!=b && b!=c && c!=a){
+            // if (a!=b && b!=c && c!=a){
+            if (a!=b ){
 
-                addTriangle(sameGroup[a].id,sameGroup[b].id,sameGroup[c].id);     
+                addTriangle(sameGroup[a].id,sameGroup[b].id,newNodeID);     
             }
             
 

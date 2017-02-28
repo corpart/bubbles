@@ -9,9 +9,6 @@ html, body/*, #graph */{
     width: 800px;
     height: 600px;
 }
-.button{
-   
-}
 
 svg{
     position:absolute;
@@ -75,7 +72,7 @@ svg{
 
 
     var triangleGroups ; //geometry 
-    var objects;
+    var edgeObjects, faceObjects;
 
 
     init();
@@ -97,7 +94,8 @@ svg{
         particles = new Array();
         lines = new Array();    
         triangleGroups = new Array();
-        objects = new Array();
+        edgeObjects = new Array();
+        faceObjects = new Array();
 
         lineMaterial = new THREE.LineBasicMaterial({
             color: 0X666666//0xaaaaaa
@@ -194,16 +192,6 @@ svg{
     }
 
 
-    // var materials = [
-
-    //     new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.3, wireframe: true,
-    //      // side: THREE.DoubleSide ,
-    //      // blending: THREE.AdditiveBlending
-    //  } ),
-    //     new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.2, side: THREE.DoubleSide , transparent: true, blending: THREE.AdditiveBlending } )
-    // ];
-
-
     //for the triangles
     function getEdgeMaterial (groupID){
         return new THREE.MeshBasicMaterial( { 
@@ -229,12 +217,22 @@ svg{
         //this will be automatically updated as new triangles gets added to triangleGeom
         for (var i = 0; i< TOTAL_ANSWERS; i ++){
             triangleGroups[i] = new THREE.Geometry();
-            mesh = new THREE.Mesh( triangleGroups[i], getFaceMaterial(i));
+            // var materials = [ 
+            //     getEdgeMaterial(i),
+            //     getFaceMaterial(i)
+                
+            //     ];
+            // mesh = new THREE.Mesh( triangleGroups[i], new THREE.MultiMaterial( materials ) );
+            // scene.add(mesh);
 
-            scene.add(mesh);
             mesh = new THREE.Mesh( triangleGroups[i], getEdgeMaterial(i));
-            objects.push(mesh);
+            edgeObjects.push(mesh);
             scene.add(mesh);
+
+            mesh = new THREE.Mesh( triangleGroups[i], getFaceMaterial(i));
+            faceObjects.push(mesh);
+            scene.add(mesh);
+
 
 
         }
@@ -261,15 +259,6 @@ svg{
            addLineBetweenTwoParticles(d.source, d.target);
         })
           
-           
-
-        // // var mesh= new THREE.Mesh( triangleGeom, getEdgeMaterial());
-        // mesh= new THREE.Mesh( triangleGeom, materials[0]);
-        // scene.add(mesh)
-        
-        // // mesh= new THREE.Mesh( triangleGeom, getFaceMaterial());
-        //   mesh= new THREE.Mesh( triangleGeom, materials[1]);
-        // scene.add(mesh)
       
 
         simulation = d3.forceSimulation()
@@ -468,6 +457,17 @@ svg{
             //     addTriangle(a, b, newNodeID);     
             // }
             
+            for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
+
+                var object = edgeObjects[ i ];
+
+                // object.rotation.x += 0.01;
+                // object.rotation.y += 0.005;
+                object.rotation.x = 0.05;
+                object.rotation.y = 0.1;
+
+            }
+
 
             restart(data);
         }
@@ -611,8 +611,14 @@ svg{
 
     function render() {
 
-        camera.position.x += ( mouseX - camera.position.x ) * .05;
-        camera.position.y += ( - mouseY - camera.position.y ) * .05;
+        // camera.position.x += ( mouseX - camera.position.x ) * .05;
+        // camera.position.y += ( - mouseY - camera.position.y ) * .05;
+        var timer = 0.001 * Date.now();
+
+        camera.position.x = Math.cos( timer ) * 100;
+        camera.position.y = Math.sin( timer ) * 100;
+        // camera.position.z = Math.sin( timer ) * 1000;
+
         camera.lookAt( scene.position );
 
 
@@ -654,15 +660,21 @@ svg{
 
                 });   
             }
-            for ( var i = 0, l = objects.length; i < l; i ++ ) {
 
-                var object = objects[ i ];
 
-                object.rotation.x += 0.01;
-                object.rotation.y += 0.005;
+
+            for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
+
+                var object = edgeObjects[ i ];
+
+                // object.rotation.x += 0.01;
+                // object.rotation.y += 0.005;
+                object.rotation.x = 0.05;
+                object.rotation.y = 0.1 * Math.cos( timer );
 
             }
 
+           
 
         }
    

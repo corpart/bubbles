@@ -20,7 +20,7 @@
 
 <script src="js/libs/d3.min.js"></script>    
 <!-- <script src="js/viz.js"></script> -->
-<script src="js/glow.js"></script>
+
 
 <script>
 
@@ -522,7 +522,7 @@
                         .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space 
                         .attr("y3", function(d){ return d.y3;})
                         .attr("id", function(d){ return d.id;}  )
-
+                        .attr("class", "glow")  //add a glow effect
                         .attr("transform", function(d){
                              // "translate(480,480)scale(23)rotate(180)"
                              var s = "translate("
@@ -538,8 +538,7 @@
                             return d.poly;
                         })
                         .attr("fill", function (d,i){ return colors[i]; })
-                    
-
+                
    
 
                      d3.selectAll(".button")

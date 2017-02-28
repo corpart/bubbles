@@ -78,7 +78,7 @@ svg{
     var materials = [
 
                 new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.3, wireframe: true,
-                 side: THREE.DoubleSide ,
+                 // side: THREE.DoubleSide ,
                  // blending: THREE.AdditiveBlending
              } ),
                 new THREE.MeshBasicMaterial( { color: 0x53777A, opacity:0.2, side: THREE.DoubleSide , transparent: true, blending: THREE.AdditiveBlending } )
@@ -378,9 +378,10 @@ svg{
             particle.position.y = by; 
             particle.position.z = ~~d3.randomUniform(-70, 70)();
             scene.add( particle );       
-            // debugger
+            
 
             //2d links  & 3D lines 
+
             if (sameGroup.length>0){
                 //add first link 
                 var j = ~~d3.randomUniform(0, sameGroup.length)(); 
@@ -403,17 +404,40 @@ svg{
 
             triangleGeom.vertices.push(particles[newNodeID].position);
 
-
-            //find non repeating random numbers 
-            var a = ~~d3.randomUniform(0, sameGroup.length)(); 
-            var b = ~~d3.randomUniform(0, sameGroup.length)();
-            // var c = ~~d3.randomUniform(0, sameGroup.length)(); 
             
-            // if (a!=b && b!=c && c!=a){
-            if (a!=b ){
-
-                addTriangle(sameGroup[a].id,sameGroup[b].id,newNodeID);     
+            // var nearestPointInd = 0 ;
+            // var nearestDistSq = -1;
+            // sameGroup.forEach(function(target){
+                
+            //     var x = target.x - bx;
+            //     var y = target.y - by;
+            //     var tempDistSq  =  x * x + y * y
+            //     if (nearestDistSq < 0){
+            //         nearestDistSq =  tempDistSq ;
+            //     }
+            //     else if ((x * x + y * y) < nearestDistSq) {
+            //         nearestPointInd = target.id;
+            //         nearestDistSq = (x * x + y * y);
+            //     }
+            // });
+            // debugger
+            // //find non repeating random numbers 
+            // // var a = ~~d3.randomUniform(0, sameGroup.length)(); 
+            // var a = nearestPointInd;
+            // var b = sameGroup[~~d3.randomUniform(0, sameGroup.length)()].id;
+            // var b = sameGroup[sameGroup.length-1]
+            // var c = ~~d3.randomUniform(0, sameGroup.length)(); 
+            if (sameGroup.length>1 && d3.randomUniform(0, 1)()>0.5){
+                var a = sameGroup[sameGroup.length-1].id;
+                var b = sameGroup[sameGroup.length-2].id;
+                addTriangle(a,b,newNodeID);
             }
+
+            // if (a!=b && b!=c && c!=a){
+            // if (a!=b ){
+
+            //     addTriangle(a, b, newNodeID);     
+            // }
             
 
             restart(data);

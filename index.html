@@ -522,7 +522,7 @@
                         .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space 
                         .attr("y3", function(d){ return d.y3;})
                         .attr("id", function(d){ return d.id;}  )
-                        // .attr("class", "glow")  //add a glow effect
+                        // .attr("class", "glow")  //add a glow effect ///TODO this breaks the button?
                         .attr("transform", function(d){
                              // "translate(480,480)scale(23)rotate(180)"
                              var s = "translate("
@@ -543,6 +543,7 @@
 
                      d3.selectAll(".button")
                         .on("mousedown", function(){
+                            
                             console.log("mousedown on button: " + d3.select(this).attr("id") );
                             //record time 
                             // d3.select(this).attr("touchStartTime") = new Date().getTime();  

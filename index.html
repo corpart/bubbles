@@ -74,7 +74,8 @@ svg{
     var THREEcenterShiftY = -10 ;
 
 
-    var triangleGroups ;
+    var triangleGroups ; //geometry 
+    var objects;
 
 
     init();
@@ -96,6 +97,7 @@ svg{
         particles = new Array();
         lines = new Array();    
         triangleGroups = new Array();
+        objects = new Array();
 
         lineMaterial = new THREE.LineBasicMaterial({
             color: 0X666666//0xaaaaaa
@@ -204,7 +206,11 @@ svg{
 
     //for the triangles
     function getEdgeMaterial (groupID){
-        return new THREE.MeshBasicMaterial( { color: colors[groupID], opacity:0.3, wireframe: true
+        return new THREE.MeshBasicMaterial( { 
+            color: colors[groupID], 
+            // color: 0X666666, 
+            opacity:0.3, 
+            wireframe: true
              } )
     }
 
@@ -224,9 +230,13 @@ svg{
         for (var i = 0; i< TOTAL_ANSWERS; i ++){
             triangleGroups[i] = new THREE.Geometry();
             mesh = new THREE.Mesh( triangleGroups[i], getFaceMaterial(i));
+
             scene.add(mesh);
             mesh = new THREE.Mesh( triangleGroups[i], getEdgeMaterial(i));
+            objects.push(mesh);
             scene.add(mesh);
+
+
         }
 
         for (var i =0; i < data.nodes.length; i++){          
@@ -272,7 +282,7 @@ svg{
                 // })
                 )
 
-            .force("collide",d3.forceCollide( function(d){  return d.r + 40 }).iterations(5) ) //2//16
+            .force("collide",d3.forceCollide( function(d){  return d.r + 20 }).iterations(5) ) //2//16
             .force("charge", d3.forceManyBody(0)
                 .strength(-30)  //negative:repell 
                 .distanceMax(20)
@@ -463,7 +473,7 @@ svg{
         }
 
         function addTriangle(groupID ){  
-            debugger
+            
             var l = triangleGroups[groupID].vertices.length;        
              if (l>2 ){  
                 var a = l-1 //the new node
@@ -605,13 +615,24 @@ svg{
         camera.position.y += ( - mouseY - camera.position.y ) * .05;
         camera.lookAt( scene.position );
 
+
         if (isDataReady){ //render could be called few times before json is loaded, causing errors. 
+                       
             //update dots 
+            xMax = 900;
+            xMin = -900;
+            yMax = 900;
+            yMin = -300;
             for (var i =0; i < data.nodes.length; i++){
+                    
+                data.nodes[i].x = Math.max(xMin, Math.min(xMax, data.nodes[i].x)); ;
+                data.nodes[i].y = Math.max(yMin, Math.min(yMax, data.nodes[i].y)); ;
+
                 particles[ i ].position.x = data.nodes[i].x;
                 particles[ i ].position.y = data.nodes[i].y;
-                // console.log("updating: " + data.nodes[0].x ); 
+                
             } 
+            // console.log("updating: " + data.nodes[0].x + " " +data.nodes[0].y); 
             
             if(showDataLinksInLines){
                 //update lines connecting dots 
@@ -633,6 +654,16 @@ svg{
 
                 });   
             }
+            for ( var i = 0, l = objects.length; i < l; i ++ ) {
+
+                var object = objects[ i ];
+
+                object.rotation.x += 0.01;
+                object.rotation.y += 0.005;
+
+            }
+
+
         }
    
         renderer.render( scene, camera );

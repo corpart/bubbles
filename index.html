@@ -35,6 +35,7 @@ svg{
 <script>
 
     var SEPARATION = 100, AMOUNTX = 20, AMOUNTY = 20;
+    var MIN_R = 5, MAX_R = 15;
     var TOTAL_ANSWERS =12;
 
     var container, stats;
@@ -197,7 +198,7 @@ svg{
         return new THREE.MeshBasicMaterial( { 
             color: colors[groupID], 
             // color: 0X666666, 
-            opacity:0.3, 
+            opacity: 0.3,//0.3, 
             wireframe: true
              } )
     }
@@ -217,7 +218,7 @@ svg{
         //this will be automatically updated as new triangles gets added to triangleGeom
         for (var i = 0; i< TOTAL_ANSWERS; i ++){
             triangleGroups[i] = new THREE.Geometry();
-            // var materials = [ 
+            // var materials = [  // SOMEHOW NOT WORKING
             //     getEdgeMaterial(i),
             //     getFaceMaterial(i)
                 
@@ -391,7 +392,7 @@ svg{
             var particle = particles[ newNodeID ] = new THREE.Sprite( getSpriteMaterial( br , bi ) ); 
             particle.position.x = bx;
             particle.position.y = by; 
-            particle.position.z = ~~d3.randomUniform(-70, 70)();
+            particle.position.z = ~~d3.randomUniform(-500, 300)();
             scene.add( particle );       
             
 
@@ -562,7 +563,7 @@ svg{
                         pushBubble(
                             +d3.select(this).attr("x3"), //turn string to int 
                             +d3.select(this).attr("y3"), 
-                            ~~d3.randomUniform(5,20)(), 
+                            ~~d3.randomUniform(MIN_R,MAX_R)(), 
                             d3.select(this).attr("id"));
                     })
                        
@@ -611,20 +612,23 @@ svg{
 
     function render() {
 
+        ////camera
+        //mouse controlled camera pan
         // camera.position.x += ( mouseX - camera.position.x ) * .05;
         // camera.position.y += ( - mouseY - camera.position.y ) * .05;
-        var timer = 0.001 * Date.now();
-
-        camera.position.x = Math.cos( timer ) * 100;
-        camera.position.y = Math.sin( timer ) * 100;
-        // camera.position.z = Math.sin( timer ) * 1000;
+        
+        //timer controlled camera pan
+        var timer = 0.0003 * Date.now();
+        camera.position.x = Math.cos( timer ) * 130;
+        camera.position.y = Math.sin( timer ) * 80;
 
         camera.lookAt( scene.position );
 
 
+        //geometry updates
         if (isDataReady){ //render could be called few times before json is loaded, causing errors. 
                        
-            //update dots 
+            //setting up boundary
             xMax = 900;
             xMin = -900;
             yMax = 900;

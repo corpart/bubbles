@@ -5,19 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <title>bubbles</title>
 <style>
-html, body/*, #graph */{
-    width: 800px;
-    height: 600px;
-}
 
-svg{
-    position:absolute;
-    width: 800px;
-    height: 900px;
-    left : 0px ;
-    top: 0px;
-}
 </style>
+<link rel="stylesheet" href="css/style.css" type="text/css" />
 </head>
 
 <body>
@@ -30,7 +20,7 @@ svg{
 
 <script src="js/libs/d3.min.js"></script>    
 <!-- <script src="js/viz.js"></script> -->
-
+<script src="js/glow.js"></script>
 
 <script>
 
@@ -532,6 +522,7 @@ svg{
                         .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space 
                         .attr("y3", function(d){ return d.y3;})
                         .attr("id", function(d){ return d.id;}  )
+
                         .attr("transform", function(d){
                              // "translate(480,480)scale(23)rotate(180)"
                              var s = "translate("
@@ -547,9 +538,9 @@ svg{
                             return d.poly;
                         })
                         .attr("fill", function (d,i){ return colors[i]; })
-                        // .attr("radius",10)
-                        ;        
+                    
 
+   
 
                      d3.selectAll(".button")
                         .on("mousedown", function(){
@@ -689,6 +680,10 @@ svg{
     }
 
 </script>
- 
+
+<!--    <div class="inner">
+    <p>Experiential</p>
+  </div>
+ -->
 </body>
 </html>

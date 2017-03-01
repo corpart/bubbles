@@ -26,7 +26,8 @@
 
     var SEPARATION = 100, AMOUNTX = 40, AMOUNTY = 40;
     var MIN_R = 5, MAX_R = 15;
-    var TOTAL_ANSWERS =12;
+    var TOTAL_ANSWERS =14;
+    
 
     var container, stats;
     var camera, scene, renderer;
@@ -66,6 +67,8 @@
     var edgeObjects, faceObjects;
 
 
+
+
     init();
     animate();
 
@@ -81,12 +84,14 @@
         camera.position.z = 1000;
 
         scene = new THREE.Scene();
+        // scene.fog = new THREE.FogExp2( 0xff0000 ); //0xefd1b5
 
         particles = new Array();
         lines = new Array();    
         triangleGroups = new Array();
         edgeObjects = new Array();
         faceObjects = new Array();
+        buttons = new Array();
 
         lineMaterial = new THREE.LineBasicMaterial({
             color: 0X666666//0xaaaaaa
@@ -95,20 +100,21 @@
        
 
         colors = [
-                 "#53777A",  
-                 "#542437",
-                 "#C02942",
-                 "#D95B43",
-                 "#ECD078",
-                 "#A8DBA8",  
-                 "#79BD9A",
-                 "#3B8686",
-                 "#0B486B",
-                 "#53777A",  
-                 "#542437",
-                 "#C02942",
-                 "#D95B43",
-                 "#ECD078",
+                 "#009872",  
+                 "#28C17D",
+                 "#225588",
+                 "#22AADD",
+                 "#2CFCFD",
+                 "#FFAA11",  
+                 "#FF5533",
+                 "#EA3040",
+                 "#D948D6",
+                 "#8F319A",  
+                 "#C991D3",
+                 "#4B295E",
+                 "#5C33FB",
+                 "#99BBEE",
+
                  "#A8DBA8",  
                  "#79BD9A",
                  "#3B8686",
@@ -117,6 +123,9 @@
 
         
        drawBackground();
+
+       drawButtons();
+
         //load data from json  
         d3.json("data/data.json", function(error, dataset){
                 if (error) {
@@ -129,7 +138,7 @@
                 }
         });
          
-        drawForeground();
+        
         ///THREEJS 
         // Lights
 
@@ -171,6 +180,7 @@
       
         return  new THREE.SpriteCanvasMaterial( {
             color: colors[groupID], 
+            fog: true,
             // opacity: 0.8,
             // blending: THREE.AdditiveBlending,
             program: function ( context ) {
@@ -224,6 +234,7 @@
             faceObjects.push(mesh);
             scene.add(mesh);
 
+           
 
 
         }
@@ -379,11 +390,11 @@
 
 
             
-            var particle = particles[ newNodeID ] = new THREE.Sprite( getSpriteMaterial( br , bi ) ); 
-            particle.position.x = bx;
-            particle.position.y = by; 
-            particle.position.z = ~~d3.randomUniform(-500, 300)();
-            scene.add( particle );       
+            // var particle = particles[ newNodeID ] = new THREE.Sprite( getSpriteMaterial( br , bi ) ); 
+            // particle.position.x = bx;
+            // particle.position.y = by; 
+            // particle.position.z = ~~d3.randomUniform(-500, 300)();
+            // scene.add( particle );       
             
 
             //2d links  & 3D lines 
@@ -504,7 +515,7 @@
 
 
 
-    function drawForeground(){
+    function drawButtons(){
          svg = d3.select('body').append('svg')
         
          d3.json("data/buttons.json", function(error, dataset){
@@ -512,24 +523,24 @@
                 if (error) {
                     console.log(error);
                 }else{
-                    
-                    buttons = svg
+                        svg
                         .selectAll("polygon")
                         .data(dataset.buttons)
                         .enter()
                         .append("polygon")
                         .attr("class", "button")
-                        .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space 
-                        .attr("y3", function(d){ return d.y3;})
+                        // .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space 
+                        // .attr("y3", function(d){ return d.y3;})
                         .attr("id", function(d){ return d.id;}  )
-                        // .attr("class", "glow")  //add a glow effect ///TODO this breaks the button?
+                        .attr("timer", 0)
+                        // .attr("class", "glow")  //add a glow effect
                         .attr("transform", function(d){
                              // "translate(480,480)scale(23)rotate(180)"
                              var s = "translate("
                               s +=d.x               //location in html space
                               s +=","
                               s +=d.y
-                              s +=")scale(8)"
+                              s +=")scale(6)"
                              return s
 
                         })
@@ -538,24 +549,29 @@
                             return d.poly;
                         })
                         .attr("fill", function (d,i){ return colors[i]; })
-                
-   
+                    
+                    //initialize buttons array
+                    // debugger
+                    for (var i=0; i < dataset.buttons.length ; i ++){
+                        buttons[i] = {
+                            buttonID: i, // out of 6 buttons.
+                            answerID: i, //out of 14 answers
+                            timer: 0, //for button press
+                            particleID: -1 ,// for the new particle being added
+                            r: -1,
+                            x3: dataset.buttons[i].x3,
+                            y3: dataset.buttons[i].y3
+                        };
+
+                    }
+                 
 
                      d3.selectAll(".button")
                         .on("mousedown", function(){
-                            
-                            console.log("mousedown on button: " + d3.select(this).attr("id") );
-                            //record time 
-                            // d3.select(this).attr("touchStartTime") = new Date().getTime();  
-                            
+                           triggerButtonDown(d3.select(this).attr("id"));
                         })
                         .on("mouseup", function() {
-                        //function pushBubble(bx, by, br, bi){
-                        pushBubble(
-                            +d3.select(this).attr("x3"), //turn string to int 
-                            +d3.select(this).attr("y3"), 
-                            ~~d3.randomUniform(MIN_R,MAX_R)(), 
-                            d3.select(this).attr("id"));
+                            triggerButtonUp(d3.select(this).attr("id"));
                     })
                        
                 }
@@ -564,6 +580,38 @@
 
 
     }
+
+    function triggerButtonDown(id){
+        // console.log("mousedown on button: " + id);
+        buttons[id].timer =  Date.now() ;
+        var newNodeID = buttons[id].particleID = particles.length; 
+        var newNodeR = buttons[id].r = ~~d3.randomUniform(MIN_R,MAX_R)();
+
+        //add particle in THREEJS 
+        var particle = particles[ newNodeID ] 
+            = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[id].answerID ) ); 
+        particle.position.x = buttons[id].x3;
+        particle.position.y = buttons[id].y3; 
+        particle.position.z = ~~d3.randomUniform(-500, 300)();
+        scene.add( particle );      
+     
+    }
+    
+
+    function triggerButtonUp(id){
+        
+        
+        pushBubble(
+            buttons[id].x3, //turn string to int 
+            buttons[id].y3, 
+            ~~d3.randomUniform(MIN_R,MAX_R)(), 
+            buttons[id].answerID
+            );
+        //reset
+        buttons[id].timer = 0;
+        buttons[id].particleID = -1;
+    }
+
 
 
 
@@ -609,9 +657,10 @@
         // camera.position.y += ( - mouseY - camera.position.y ) * .05;
         
         //timer controlled camera pan
-        var timer = 0.0003 * Date.now(); //0.0003 * Date.now();
-        camera.position.x = Math.cos( timer ) * 800;  //130
-        camera.position.y = Math.sin( timer ) * 400; //80
+        var currentTime = Date.now();
+        var t = 0.0003 * currentTime; 
+        camera.position.x = Math.cos( t ) * 800;  //130
+        camera.position.y = Math.sin( t ) * 400; //80
 
         camera.lookAt( scene.position );
 
@@ -665,14 +714,24 @@
                 // object.rotation.x += 0.01;
                 // object.rotation.y += 0.005;
                 object.rotation.x = 0.05;
-                object.rotation.y = 0.1 * Math.cos( timer );
+                object.rotation.y = 0.1 * Math.cos( t );
 
             }
 
-           
+            // button updates
+            for (var i = 0; i < buttons.length; i ++) {
+                
+                if (buttons[i].timer > 0){ //button is being pushed
+                  
+                    // console.log(currentTime - buttons[i].timer);
+
+                }
+
+                    
+            }
 
         }
-   
+
         renderer.render( scene, camera );
 
         // count += 0.1;

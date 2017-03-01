@@ -69,6 +69,7 @@
     var triangleGroups ; //geometry 
     var edgeObjects, faceObjects;
 
+    var backgroundGroup;
 
 
 
@@ -659,6 +660,8 @@
 
 
     function drawBackground(){
+        backgroundGroup = new THREE.Group();
+
         //    /////base wall; eliminate clitches.
         // var material = new THREE.SpriteCanvasMaterial( { 
         //     color: 0x000000,//0xffffff,
@@ -689,9 +692,12 @@
                 particle.position.z = doubleZ * (Math.random()-0.5);
 
                 particle.scale.x = particle.scale.y = Math.random() * 8 + 12;
-                scene.add( particle );
+                backgroundGroup.add( particle );
             }
         }
+
+
+        scene.add(backgroundGroup);
 
 
     }
@@ -716,12 +722,15 @@
         
         //timer controlled camera pan
         var currentTime = Date.now();
-        var t = 0.0003 * currentTime; 
-        camera.position.x = Math.cos( t ) * 800;  //130
+        var t = 0.0002 * currentTime; 
+    
+        camera.position.x = Math.cos( t ) * 800 ;  //130
         camera.position.y = Math.sin( t ) * 400; //80
 
         camera.lookAt( scene.position );
 
+        //move all the stars so they look random 
+        backgroundGroup.rotation.z = - Math.cos( 0.1*t )*5;  
 
         //geometry updates
         if (isDataReady){ //render could be called few times before json is loaded, causing errors. 

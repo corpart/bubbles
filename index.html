@@ -25,7 +25,9 @@
 <script>
 
     var SEPARATION = 100, AMOUNTX = 40, AMOUNTY = 40;
-    var MIN_R = 5, MAX_R = 15;
+    var MIN_R = 5, MAX_R = 15; //for edgy
+    // var MIN_R = 48, MAX_R = 96; //for blurry
+    
     var TOTAL_ANSWERS =14;
     
 
@@ -63,8 +65,10 @@
     var THREEcenterShiftY = -10 ;
 
 
+
     var triangleGroups ; //geometry 
     var edgeObjects, faceObjects;
+
 
 
 
@@ -177,10 +181,14 @@
     }
 
     function getSpriteMaterial( r, groupID ){
-      
+       // //blurry sprite  
+       //  return new THREE.SpriteMaterial( {
+       //              map: new THREE.CanvasTexture( generateSprite() ),
+       //              blending: THREE.AdditiveBlending,
+       //          } );
+
         return  new THREE.SpriteCanvasMaterial( {
             color: colors[groupID], 
-            fog: true,
             // opacity: 0.8,
             // blending: THREE.AdditiveBlending,
             program: function ( context ) {
@@ -193,18 +201,19 @@
     }
 
 
+
     //for the triangles
-    function getEdgeMaterial (groupID){
+    function getEdgeMaterial (answerID){
         return new THREE.MeshBasicMaterial( { 
-            color: colors[groupID], 
+            color: colors[answerID], 
             // color: 0X666666, 
             opacity: 0.3,//0.3, 
             wireframe: true
              } )
     }
 
-    function getFaceMaterial (groupID){
-        return new THREE.MeshBasicMaterial( { color: colors[groupID], opacity:0.2,
+    function getFaceMaterial (answerID){
+        return new THREE.MeshBasicMaterial( { color: colors[answerID], opacity:0.2,
             side: THREE.DoubleSide , 
             transparent: true, 
             blending: THREE.AdditiveBlending } );
@@ -626,25 +635,60 @@
         buttons[id].particleID = -1;
     }
 
+    function generateSprite() {
+
+        var canvas = document.createElement( 'canvas' );
+        canvas.width = 16;
+        canvas.height = 16;
+
+        var context = canvas.getContext( '2d' );
+        var gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
+        gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
+        gradient.addColorStop( 0.2, 'rgba(0,255,255,1)' );
+        gradient.addColorStop( 0.4, 'rgba(0,0,64,1)' );
+        gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
+
+        context.fillStyle = gradient;
+        context.fillRect( 0, 0, canvas.width, canvas.height );
+
+        return canvas;
+
+    }
+
 
 
 
     function drawBackground(){
-           /////base wall
-        var material = new THREE.SpriteCanvasMaterial( { 
-            color: 0x000000,//0xffffff,
-            program: function ( context ) {
-                context.beginPath();
-                context.arc( 0, 0, 1, 0, PI2, true );
-                context.fill();
-            }
-        } );
-        
+        //    /////base wall; eliminate clitches.
+        // var material = new THREE.SpriteCanvasMaterial( { 
+        //     color: 0x000000,//0xffffff,
+        //     program: function ( context ) {
+        //         context.beginPath();
+        //         context.arc( 0, 0, 1, 0, 0, true ); //actually not visiable. 
+        //         context.fill(); 
+        //     }
+        // } );
+
+        //blurry sprite  
+         var material = new THREE.SpriteMaterial( {
+                    map: new THREE.CanvasTexture( generateSprite() ),
+                    blending: THREE.AdditiveBlending,
+                } );
+//cx
+        var doubleX = (AMOUNTX * SEPARATION ) * 2 ;
+        var doubleY = (AMOUNTY * SEPARATION ) * 2 ;
+        var doubleZ = doubleY;
+
         for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
             for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
                 particle = new THREE.Sprite( material );
-                particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
-                particle.position.y = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+                // particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
+                // particle.position.y = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+                particle.position.x = doubleX * (Math.random()-0.5) ;
+                particle.position.y = doubleY * (Math.random()-0.5) ;
+                particle.position.z = doubleZ * (Math.random()-0.5);
+
+                particle.scale.x = particle.scale.y = Math.random() * 8 + 12;
                 scene.add( particle );
             }
         }

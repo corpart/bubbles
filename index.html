@@ -718,21 +718,35 @@
 
             }
 
-            var timeToR = d3.scaleLinear()
+            var timeToR = d3.scalePow()
                           .domain([0,1000])
                           .range([MIN_R, MAX_R ]);
             timeToR.clamp(true);
 
+            var timeToC = d3.scalePow() ; // d3.scaleLinear();
+            timeToC.clamp(true);
+        
+           
             // button updates
             for (var i = 0; i < buttons.length; i ++) {
                 
                 if (buttons[i].timer > 0){ //button is being pushed
+
+                    timeToC 
+                      .domain([0,1000])
+                      .range(["white", colors[buttons[i].answerID] ]);
+                    
+
+
                     var deltaT = currentTime - buttons[i].timer;
                     var r = timeToR(deltaT);
+                    var pID = buttons[i].particleID;
                     // console.log(i, deltaT, timeToR(deltaT) )
 
-                    particles [ buttons[i].particleID] .scale. set (r,r,1);
+                    particles [pID] .scale. set (r,r,1);
+                    particles [pID] .material. color . set (timeToC(deltaT));
 
+                   
                 }
 
                     

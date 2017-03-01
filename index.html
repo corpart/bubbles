@@ -23,7 +23,7 @@
 
 
 <script>
-
+    var MOUSE_DOWN = 1, MOUSE_UP = 2
     var SEPARATION = 100, AMOUNTX = 40, AMOUNTY = 40;
     var MIN_R = 5, MAX_R = 15; //for edgy
     // var MIN_R = 48, MAX_R = 96; //for blurry
@@ -566,7 +566,8 @@
                         buttons[i] = {
                             buttonID: i, // out of 6 buttons.
                             answerID: i, //out of 14 answers
-                            timer: 0, //for button press
+                            timer: 0, //for button event 
+                            event: null,
                             particleID: -1 ,// for the new particle being added
                             r: -1,
                             x3: dataset.buttons[i].x3,
@@ -593,7 +594,8 @@
 
     function triggerButtonDown(id){
         // console.log("mousedown on button: " + id);
-        buttons[id].timer =  Date.now() ;
+        buttons[id].event = MOUSE_DOWN;
+        buttons[id].timer = Date.now() ;
         var newNodeID = buttons[id].particleID = particles.length; 
         var newNodeR = buttons[id].r = 1;//~~d3.randomUniform(MIN_R,MAX_R)();
 
@@ -609,10 +611,14 @@
     
 
     function triggerButtonUp(id){
-        if( buttons[id].timer == 0){ 
+        if( buttons[id].timer == 0 || buttons[id].event != MOUSE_DOWN ){ 
             //with mouse event,  button up can be triggered without button down
             return;
         }
+
+        buttons[id].event = MOUSE_UP; 
+        buttons[id].timer = Date.now() ;
+
         var pID = buttons[id].particleID;
         // console.log( particles[pID].scale.x )
         //if (pID < particles.length){
@@ -623,7 +629,8 @@
         // }else {
         //     console.log("fetching", pID, "from particles array. length:", particles.length );
         // }
-     
+        
+
         
         pushBubble(
             buttons[id].x3, //turn string to int 
@@ -631,9 +638,7 @@
             ~~d3.randomUniform(MIN_R,MAX_R)(), 
             buttons[id].answerID
             );
-        //reset
-        buttons[id].timer = 0;
-        buttons[id].particleID = -1;
+      
     }
 
     function generateSprite() {
@@ -797,20 +802,43 @@
             // button updates
             for (var i = 0; i < buttons.length; i ++) {
                 
-                if (buttons[i].timer > 0){ //button is being pushed
-
-                    timeToC 
-                      .domain([0,1000])
-                      .range(["white", colors[buttons[i].answerID] ]);
-
+                if (buttons[i].timer > 0){ 
                     var deltaT = currentTime - buttons[i].timer;
-                    var r = timeToR(deltaT);
-                    var pID = buttons[i].particleID;
-                    // console.log(i, deltaT, timeToR(deltaT) )
 
-                    particles [pID] .scale. set (r,r,1);
-                    particles [pID] .material. color . set (timeToC(deltaT));
+                    if(buttons[i].event == MOUSE_DOWN){
+                        //button is being pushed
 
+                        timeToC 
+                          .domain([0,1000])
+                          .range(["white", colors[buttons[i].answerID] ]);
+
+                        
+                        var r = timeToR(deltaT);
+                        var pID = buttons[i].particleID;
+                        // console.log(i, deltaT, timeToR(deltaT) )
+
+                        particles [pID] .scale. set (r,r,1);
+                        particles [pID] .material. color . set (timeToC(deltaT));
+                    }
+
+
+                    else if(buttons[i].event == MOUSE_UP){
+                        if(deltaT<400){
+                            //do an animation
+                            // backgroundGroup.position.z += 100;// 100*(Math.random()-0.5);
+                            backgroundGroup.position.z += 50;// 100*(Math.random()-0.5);
+                        }else{
+                            //reset
+                            buttons[i].timer = 0;
+                            buttons[i].particleID = -1;
+                            buttons[i].event = null;
+                            }
+                       
+                        
+
+                    }
+
+                    
                    
                 }
 

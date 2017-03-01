@@ -585,14 +585,14 @@
         // console.log("mousedown on button: " + id);
         buttons[id].timer =  Date.now() ;
         var newNodeID = buttons[id].particleID = particles.length; 
-        var newNodeR = buttons[id].r = ~~d3.randomUniform(MIN_R,MAX_R)();
+        var newNodeR = buttons[id].r = 1;//~~d3.randomUniform(MIN_R,MAX_R)();
 
         //add particle in THREEJS 
         var particle = particles[ newNodeID ] 
             = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[id].answerID ) ); 
         particle.position.x = buttons[id].x3;
         particle.position.y = buttons[id].y3; 
-        particle.position.z = ~~d3.randomUniform(-500, 300)();
+        particle.position.z = ~~d3.randomUniform(-500, 300)()
         scene.add( particle );      
      
     }
@@ -718,12 +718,20 @@
 
             }
 
+            var timeToR = d3.scaleLinear()
+                          .domain([0,1000])
+                          .range([MIN_R, MAX_R ]);
+            timeToR.clamp(true);
+
             // button updates
             for (var i = 0; i < buttons.length; i ++) {
                 
                 if (buttons[i].timer > 0){ //button is being pushed
-                  
-                    // console.log(currentTime - buttons[i].timer);
+                    var deltaT = currentTime - buttons[i].timer;
+                    var r = timeToR(deltaT);
+                    // console.log(i, deltaT, timeToR(deltaT) )
+
+                    particles [ buttons[i].particleID] .scale. set (r,r,1);
 
                 }
 

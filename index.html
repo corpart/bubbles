@@ -650,8 +650,8 @@
         var context = canvas.getContext( '2d' );
         var gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
         gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
-        gradient.addColorStop( 0.2, 'rgba(0,255,255,1)' );
-        gradient.addColorStop( 0.4, 'rgba(0,0,64,1)' );
+        gradient.addColorStop( 0.2, 'rgba(100,255,255,1)' );
+        gradient.addColorStop( 0.4, 'rgba(0,0,21,1)' );
         gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
 
         context.fillStyle = gradient;
@@ -823,15 +823,16 @@
 
 
                     else if(buttons[i].event == MOUSE_UP){
-                        var T = 300;
+                        var T = 300* Math.random(0.7,1);
+
                         if(deltaT<T){
-                          
                             //do an animation
-                            // backgroundGroup.position.z = 300 * Math.sin(deltaT*PI2/T);
-                            backgroundGroup.position.z +=100;
+                            // backgroundGroup.position.z += 100 * Math.sin(4*deltaT*PI2/T);
+                            backgroundGroup.position.z +=100 ;
                         }else{
                             //reset
                             backgroundGroup.position.z =0;
+                            backgroundGroup.rotation.x += 1; //
                             buttons[i].timer = 0;
                             buttons[i].particleID = -1;
                             buttons[i].event = null;

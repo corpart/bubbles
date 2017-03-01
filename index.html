@@ -823,12 +823,15 @@
 
 
                     else if(buttons[i].event == MOUSE_UP){
-                        if(deltaT<400){
+                        var T = 300;
+                        if(deltaT<T){
+                          
                             //do an animation
-                            // backgroundGroup.position.z += 100;// 100*(Math.random()-0.5);
-                            backgroundGroup.position.z += 50;// 100*(Math.random()-0.5);
+                            // backgroundGroup.position.z = 300 * Math.sin(deltaT*PI2/T);
+                            backgroundGroup.position.z +=100;
                         }else{
                             //reset
+                            backgroundGroup.position.z =0;
                             buttons[i].timer = 0;
                             buttons[i].particleID = -1;
                             buttons[i].event = null;

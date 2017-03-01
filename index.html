@@ -599,7 +599,21 @@
     
 
     function triggerButtonUp(id){
-        
+        if( buttons[id].timer == 0){ 
+            //with mouse event,  button up can be triggered without button down
+            return;
+        }
+        var pID = buttons[id].particleID;
+        // console.log( particles[pID].scale.x )
+        //if (pID < particles.length){
+            if(particles[pID].scale.x > MAX_R){
+                particles[pID].scale.x = particles[pID].scale.y = MAX_R;
+            }
+            particles[pID].material.color.set(colors[buttons[id].answerID] ); //force into same color //matt
+        // }else {
+        //     console.log("fetching", pID, "from particles array. length:", particles.length );
+        // }
+     
         
         pushBubble(
             buttons[id].x3, //turn string to int 
@@ -718,9 +732,9 @@
 
             }
 
-            var timeToR = d3.scalePow()
+            var timeToR = d3.scalePow() //the growth gets slower over time
                           .domain([0,1000])
-                          .range([MIN_R, MAX_R ]);
+                          .range([MIN_R, MAX_R*3]);
             timeToR.clamp(true);
 
             var timeToC = d3.scalePow() ; // d3.scaleLinear();
@@ -735,8 +749,6 @@
                     timeToC 
                       .domain([0,1000])
                       .range(["white", colors[buttons[i].answerID] ]);
-                    
-
 
                     var deltaT = currentTime - buttons[i].timer;
                     var r = timeToR(deltaT);

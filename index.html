@@ -290,7 +290,7 @@
                 )
             .force("center", d3.forceCenter(windowHalfX / 2 + THREEcenterShiftX, windowHalfY / 2 + THREEcenterShiftY)) // keeps nodes in the center of the viewport
             .force("y", d3.forceY(0))
-            .force("x", d3.forceX(0).strength(0.01)) //0.05
+            .force("x", d3.forceX(0).strength(0.001)) //0.05
 
         // var ticked = function() { ///TODO function?
         // }  
@@ -571,7 +571,8 @@
                             particleID: -1 ,// for the new particle being added
                             r: -1,
                             x3: dataset.buttons[i].x3,
-                            y3: dataset.buttons[i].y3
+                            y3: dataset.buttons[i].y3,
+                            animation: null
                         };
 
                     }
@@ -617,15 +618,16 @@
         }
 
         buttons[id].event = MOUSE_UP; 
-        buttons[id].timer = Date.now() ;
+        buttons[id].animation =  ~~d3.randomUniform(0,5)()
+        buttons[id].timer = Date.now();
 
         var pID = buttons[id].particleID;
         // console.log( particles[pID].scale.x )
         //if (pID < particles.length){
-            if(particles[pID].scale.x > MAX_R){
-                particles[pID].scale.x = particles[pID].scale.y = MAX_R;
-            }
-            particles[pID].material.color.set(colors[buttons[id].answerID] ); //force into same color //matt
+        if(particles[pID].scale.x > MAX_R){
+            particles[pID].scale.x = particles[pID].scale.y = MAX_R;
+        }
+        particles[pID].material.color.set(colors[buttons[id].answerID] ); //force into same color //matt
         // }else {
         //     console.log("fetching", pID, "from particles array. length:", particles.length );
         // }
@@ -823,16 +825,72 @@
 
 
                     else if(buttons[i].event == MOUSE_UP){
-                        var T = 300* Math.random(0.7,1);
-
+                        var T = 300; //* Math.random(0.7,1);
+                        // buttons[i].animation =2
                         if(deltaT<T){
                             //do an animation
-                            // backgroundGroup.position.z += 100 * Math.sin(4*deltaT*PI2/T);
-                            backgroundGroup.position.z +=100 ;
+                            switch ( buttons[i].animation){
+                                case 0: //zoom z 
+                                backgroundGroup.position.z +=100 ;
+                                break;
+
+                                case 1:
+                                backgroundGroup.rotation.y = 0.1 * Math.random();
+                                break;
+
+                                case 2:
+
+                                    timeToC 
+                                      .domain([0,T])
+                                      .range(["white", colors[buttons[i].answerID] ]);
+
+                                    var object = edgeObjects[ buttons[i]. answerID ];
+                                    object.material.color.set(timeToC(deltaT));
+                                     object = faceObjects[ buttons[i]. answerID ];
+                                    object.material.color.set(timeToC(deltaT));
+
+                                    
+
+                                    // object.position.x = 100 * Math.cos( 0.5* PI2* deltaT / T)  ;
+                                    // object.position.y = 100 * Math.sin( PI2* deltaT / T) *Math.random();
+                                    // object.scale .x = object.scale.y = object.scale.z 
+                                    // =Math.random()*3;// Math.cos( 4* PI2* deltaT / T);
+                                    // object.rotation.x = 0.05;
+                                    // object.rotation.y = 0.1;
+
+                                
+                                break;
+                            }
+                            
+                            
                         }else{
                             //reset
-                            backgroundGroup.position.z =0;
-                            backgroundGroup.rotation.x += 1; //
+                            switch ( buttons[i].animation){
+                                case 0: //zoom z 
+                                backgroundGroup.position.z =0;
+                                backgroundGroup.rotation.x += 1; 
+                                break;
+
+                                case 1:
+                                break;
+
+                                case 2:
+
+                                    // var object = faceObjects[ buttons[i]. answerID ];
+                                    // object.material.color.set(colors[buttons[i].answerID]);
+                                    //   object = edgeObjects[ buttons[i]. answerID ];
+                                    // object.material.color.set(colors[buttons[i].answerID]);
+                                    
+
+                                    // var object = edgeObjects[ buttons[i]. answerID ];
+                                    // object.position.x =0 ;
+                                    // object.position.y = 0 ;
+                                    // object.scale .x = object.scale.y = object.scale.z = 1 ;
+                                break;
+                            }
+
+                           
+                           
                             buttons[i].timer = 0;
                             buttons[i].particleID = -1;
                             buttons[i].event = null;

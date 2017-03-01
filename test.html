@@ -1,0 +1,49 @@
+<html>
+<head>
+  <script src="js/libs/d3.min.js"></script>
+  <script src="js/vtr.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        var vsckt = null;
+        var wsuri = "ws://127.0.0.1:8888";
+        var btnfilename = "data/buttons.json";
+        var startvote = function (sid) {
+          console.log("startvote called with sid: " + sid);
+        };
+        var endvote = function (sid) {
+          console.log("endvote called with sid: " + sid);
+        };
+
+
+        window.onload = function() {
+
+            console.log("onload");
+
+            vsckt = new vtr.sckt(wsuri, btnfilename, startvote, endvote);
+
+        };
+
+        function send(msgid) {
+            var msg = document.getElementById(msgid).value;
+            vsckt.ws.send(msg);
+        };
+    </script>
+
+    <h1>WebSocket Echo Test</h1>
+    <form onsubmit="send('message1'); return false;">
+        <p>
+            Message: <input id="message1" type="text" value='{"source":101,"flavor":"start_touch","choice":"right","word":""}'>
+        </p>
+    </form>
+    <button onclick="send('message1');">Send Message</button>
+
+    <form onsubmit="send('message2'); return false;">
+        <p>
+            Message: <input id="message2" type="text" value='{"source":101,"flavor":"end_touch","choice":"right","word":""}'>
+        </p>
+    </form>
+    <button onclick="send('message2');">Send Message</button>
+
+</body>
+</html>

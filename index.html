@@ -11,15 +11,16 @@
 </head>
 
 <body>
- 
 
-<script src="build/three.js"></script>    
+
+<script src="build/three.js"></script>
 <script src="js/renderers/Projector.js"></script>
 <script src="js/renderers/CanvasRenderer.js"></script>
 <script src="js/libs/stats.min.js"></script>
 
-<script src="js/libs/d3.min.js"></script>    
+<script src="js/libs/d3.min.js"></script>
 <!-- <script src="js/viz.js"></script> -->
+<script src="js/vtr.js"></script> <!-- mikes websocket thing -->
 
 
 <script>
@@ -27,17 +28,17 @@
     var SEPARATION = 100, AMOUNTX = 40, AMOUNTY = 40;
     var MIN_R = 5, MAX_R = 15; //for edgy
     // var MIN_R = 48, MAX_R = 96; //for blurry
-    
+
     var TOTAL_ANSWERS =14;
-    
+
 
     var container, stats;
     var camera, scene, renderer;
 
     var particles, particle; //, count = 0;
-    var lines; 
+    var lines;
 
-    var showDataLinksInLines = false; 
+    var showDataLinksInLines = false;
 
 
     var mouseX = 0, mouseY = 0;
@@ -46,19 +47,19 @@
     var windowHalfY = window.innerHeight / 2;
 
     var data
-    var isDataReady = false; 
-    
+    var isDataReady = false;
+
     var particleMaterial
     var lineMaterial
 
     var simulation
 
-    var buttons 
+    var buttons
 
-    var svg 
+    var svg
 
-    var colors 
-  
+    var colors
+
     var PI2 = Math.PI * 2;
 
     var THREEcenterShiftX = -300;
@@ -66,18 +67,26 @@
 
 
 
-    var triangleGroups ; //geometry 
+    var triangleGroups ; //geometry
     var edgeObjects, faceObjects;
 
     var backgroundGroup;
 
-
+    var vsckt = null;
+    var wsuri = "ws://127.0.0.1:8888";
+    var btnfilename = "data/buttons.json";
 
 
     init();
     animate();
 
     function init() {
+
+        // vote station websocket listens for incoming start and end vote
+        // events and calls triggerbutton down and up with station id
+        // read from json file
+        vsckt = new vtr.sckt(
+          wsuri, btnfilename, triggerButtonDown, triggerButtonUp);
 
         container = document.createElement( 'div' );
         container.setAttribute("z-index", 1);
@@ -92,7 +101,7 @@
         // scene.fog = new THREE.FogExp2( 0xff0000 ); //0xefd1b5
 
         particles = new Array();
-        lines = new Array();    
+        lines = new Array();
         triangleGroups = new Array();
         edgeObjects = new Array();
         faceObjects = new Array();
@@ -102,49 +111,49 @@
             color: 0X666666//0xaaaaaa
         });
 
-       
+
 
         colors = [
-                 "#009872",  
+                 "#009872",
                  "#28C17D",
                  "#225588",
                  "#22AADD",
                  "#2CFCFD",
-                 "#FFAA11",  
+                 "#FFAA11",
                  "#FF5533",
                  "#EA3040",
                  "#D948D6",
-                 "#8F319A",  
+                 "#8F319A",
                  "#C991D3",
                  "#4B295E",
                  "#5C33FB",
                  "#99BBEE",
 
-                 "#A8DBA8",  
+                 "#A8DBA8",
                  "#79BD9A",
                  "#3B8686",
                  "#0B486B"
                 ];
 
-        
+
        drawBackground();
 
        drawButtons();
 
-        //load data from json  
+        //load data from json
         d3.json("data/data.json", function(error, dataset){
                 if (error) {
                     console.log(error);
                 }else{
-                    isDataReady = true; 
+                    isDataReady = true;
                     data = dataset ;
                     prep(data);
-                       
+
                 }
         });
-         
-        
-        ///THREEJS 
+
+
+        ///THREEJS
         // Lights
 
         scene.add( new THREE.AmbientLight( 0x222222 ) );
@@ -182,14 +191,14 @@
     }
 
     function getSpriteMaterial( r, groupID ){
-       // //blurry sprite  
+       // //blurry sprite
        //  return new THREE.SpriteMaterial( {
        //              map: new THREE.CanvasTexture( generateSprite() ),
        //              blending: THREE.AdditiveBlending,
        //          } );
 
         return  new THREE.SpriteCanvasMaterial( {
-            color: colors[groupID], 
+            color: colors[groupID],
             // opacity: 0.8,
             // blending: THREE.AdditiveBlending,
             program: function ( context ) {
@@ -205,18 +214,18 @@
 
     //for the triangles
     function getEdgeMaterial (answerID){
-        return new THREE.MeshBasicMaterial( { 
-            color: colors[answerID], 
-            // color: 0X666666, 
-            opacity: 0.3,//0.3, 
+        return new THREE.MeshBasicMaterial( {
+            color: colors[answerID],
+            // color: 0X666666,
+            opacity: 0.3,//0.3,
             wireframe: true
              } )
     }
 
     function getFaceMaterial (answerID){
         return new THREE.MeshBasicMaterial( { color: colors[answerID], opacity:0.2,
-            side: THREE.DoubleSide , 
-            transparent: true, 
+            side: THREE.DoubleSide ,
+            transparent: true,
             blending: THREE.AdditiveBlending } );
 
 
@@ -224,14 +233,14 @@
 
     function prep(data){
         var mesh;
-        //add triangle mesh one time 
+        //add triangle mesh one time
         //this will be automatically updated as new triangles gets added to triangleGeom
         for (var i = 0; i< TOTAL_ANSWERS; i ++){
             triangleGroups[i] = new THREE.Geometry();
             // var materials = [  // SOMEHOW NOT WORKING
             //     getEdgeMaterial(i),
             //     getFaceMaterial(i)
-                
+
             //     ];
             // mesh = new THREE.Mesh( triangleGroups[i], new THREE.MultiMaterial( materials ) );
             // scene.add(mesh);
@@ -244,34 +253,34 @@
             faceObjects.push(mesh);
             scene.add(mesh);
 
-           
+
 
 
         }
 
-        for (var i =0; i < data.nodes.length; i++){          
+        for (var i =0; i < data.nodes.length; i++){
             particle = particles[ i ] = new THREE.Sprite( getSpriteMaterial( data.nodes[i].r , data.nodes[i].group ));
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
             particle.position.z = ~~d3.randomUniform(-300, 300)();
-            scene.add( particle );           
+            scene.add( particle );
 
             triangleGroups[data.nodes[i].group].vertices.push(particles[i].position);
 
 
             // mesh= new THREE.Mesh( triangleGeom, getEdgeMaterial( data.nodes[i].group));
             // scene.add(mesh)
-            
+
             // mesh= new THREE.Mesh( triangleGeom, getFaceMaterial( data.nodes[i].group));
             // scene.add(mesh)
 
         }
-        
+
         data.links.forEach(function(d){
            addLineBetweenTwoParticles(d.source, d.target);
         })
-          
-      
+
+
 
         simulation = d3.forceSimulation()
             .force("link", d3.forceLink()
@@ -279,13 +288,13 @@
                 .distance(function(d){return d.value})
                 .strength(0.3)
                 // .strength(function(d){
-                //     return .1/d.value 
+                //     return .1/d.value
                 // })
                 )
 
             .force("collide",d3.forceCollide( function(d){  return d.r + 20 }).iterations(5) ) //2//16
             .force("charge", d3.forceManyBody(0)
-                .strength(-30)  //negative:repell 
+                .strength(-30)  //negative:repell
                 .distanceMax(20)
                 )
             .force("center", d3.forceCenter(windowHalfX / 2 + THREEcenterShiftX, windowHalfY / 2 + THREEcenterShiftY)) // keeps nodes in the center of the viewport
@@ -293,24 +302,24 @@
             .force("x", d3.forceX(0).strength(0.001)) //0.05
 
         // var ticked = function() { ///TODO function?
-        // }  
+        // }
 
         simulation
             .velocityDecay(0.6) //default 0.4
             .alphaTarget(0.2) //defaualt 0
             .nodes(data.nodes)
-            // .on("tick", ticked) //updates are handled by the THREE render function 
+            // .on("tick", ticked) //updates are handled by the THREE render function
             .force("link")
             .links(data.links);
 
-        
+
     }
 
     function addLineBetweenTwoParticles(sourceInd,targetInd){
 
         //make sure indexes are in range
         if (sourceInd < particles.length && targetInd < particles.length){
-            var newLineIndex = lines.length; 
+            var newLineIndex = lines.length;
             var geometryLine = new THREE.Geometry()
             var t = particles[targetInd];
             var s = particles[sourceInd];
@@ -324,11 +333,11 @@
             if (showDataLinksInLines ){
                 scene.add(lineTemp);
             }
-            
-        
-        //    console.log("line " + newLineIndex + " added between " + sourceInd + " & " + targetInd) ; 
+
+
+        //    console.log("line " + newLineIndex + " added between " + sourceInd + " & " + targetInd) ;
         }
-      
+
     }
 
 
@@ -380,52 +389,52 @@
     }
 
     function pushBubble(bx, by, br, bi){
-           
-            var newNodeID = data.nodes.length; 
-             
-            //find other nodes within the same group 
+
+            var newNodeID = data.nodes.length; // node 2d -> particle 3d
+
+            //find other nodes within the same group
             //do this before adding itself to avoiding linking to self
-            var sameGroup = data.nodes.filter ( 
-                    function(d){ 
-                        return +d.group == bi; 
+            var sameGroup = data.nodes.filter (
+                    function(d){
+                        return +d.group == bi;
                     } // +turn string to number
                 )
 
             data.nodes.push({
-                id:  newNodeID, 
-                r: br, 
+                id:  newNodeID,
+                r: br,
                 x: bx,
                 y: by,
                 group:  bi });
 
 
-            
-            // var particle = particles[ newNodeID ] = new THREE.Sprite( getSpriteMaterial( br , bi ) ); 
-            // particle.position.x = bx;
-            // particle.position.y = by; 
-            // particle.position.z = ~~d3.randomUniform(-500, 300)();
-            // scene.add( particle );       
-            
 
-            //2d links  & 3D lines 
+            // var particle = particles[ newNodeID ] = new THREE.Sprite( getSpriteMaterial( br , bi ) );
+            // particle.position.x = bx;
+            // particle.position.y = by;
+            // particle.position.z = ~~d3.randomUniform(-500, 300)();
+            // scene.add( particle );
+
+
+            //2d links  & 3D lines
 
             if (sameGroup.length>0){
-                //add first link 
-                var j = ~~d3.randomUniform(0, sameGroup.length)(); 
-                var targetInd = sameGroup[j].id; 
-                data.links.push ({source: newNodeID , 
-                    target: targetInd, 
+                //add first link
+                var j = ~~d3.randomUniform(0, sameGroup.length)();
+                var targetInd = sameGroup[j].id;
+                data.links.push ({source: newNodeID ,
+                    target: targetInd,
                     value:~~d3.randomUniform(1, 5)()
                 })
                 addLineBetweenTwoParticles(newNodeID, targetInd)
 
                 //add second link
-                var k = ~~d3.randomUniform(0, sameGroup.length)(); 
+                var k = ~~d3.randomUniform(0, sameGroup.length)();
                 if ( k!=j){
-                    targetInd = sameGroup[k].id; 
+                    targetInd = sameGroup[k].id;
                     data.links.push ({source: newNodeID , target: targetInd, value:~~d3.randomUniform(1, 5 )() })
                     addLineBetweenTwoParticles(newNodeID, targetInd)
-                   
+
                 }
             }
 
@@ -437,7 +446,7 @@
             // var nearestPointInd = 0 ;
             // var nearestDistSq = -1;
             // sameGroup.forEach(function(target){
-                
+
             //     var x = target.x - bx;
             //     var y = target.y - by;
             //     var tempDistSq  =  x * x + y * y
@@ -450,13 +459,13 @@
             //     }
             // });
             // debugger
-            // //find non repeating random numbers 
-            // // var a = ~~d3.randomUniform(0, sameGroup.length)(); 
+            // //find non repeating random numbers
+            // // var a = ~~d3.randomUniform(0, sameGroup.length)();
             // var a = nearestPointInd;
             // var b = sameGroup[~~d3.randomUniform(0, sameGroup.length)()].id;
             // var b = sameGroup[sameGroup.length-1]
-            // var c = ~~d3.randomUniform(0, sameGroup.length)(); 
-            
+            // var c = ~~d3.randomUniform(0, sameGroup.length)();
+
                 // if (sameGroup.length>1 && d3.randomUniform(0, 1)()>0.5){
                 //     var a = sameGroup[sameGroup.length-1].id;
                 //     var b = sameGroup[sameGroup.length-2].id;
@@ -466,9 +475,9 @@
             // if (a!=b && b!=c && c!=a){
             // if (a!=b ){
 
-            //     addTriangle(a, b, newNodeID);     
+            //     addTriangle(a, b, newNodeID);
             // }
-            
+
             for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
 
                 var object = edgeObjects[ i ];
@@ -484,25 +493,25 @@
             restart(data);
         }
 
-        function addTriangle(groupID ){  
-            
-            var l = triangleGroups[groupID].vertices.length;        
-             if (l>2 ){  
+        function addTriangle(groupID ){
+
+            var l = triangleGroups[groupID].vertices.length;
+             if (l>2 ){
                 var a = l-1 //the new node
                 var b = ~~d3.randomUniform(0, l)();
                 var c = ~~d3.randomUniform(0, l)();
                 if (a!=b && c!=a){
-                    triangleGroups[groupID].faces.push( new THREE.Face3( a,b,c ) );        
-                    triangleGroups[groupID].computeFaceNormals();  
+                    triangleGroups[groupID].faces.push( new THREE.Face3( a,b,c ) );
+                    triangleGroups[groupID].computeFaceNormals();
                 }
             }
 
         }
 
-        
+
 
         function restart(data) {
-          
+
           // // Apply the general update pattern to the nodes.
           //   node = node.data(data.nodes, function(d) { return d.id;});
           //   node.exit().remove();
@@ -511,7 +520,7 @@
           //       .attr("fill", function(d) { return color(d.group); })
           //       // .attr("fill", function(d) { return color(~~d3.randomUniform(20)()); })
           //       .merge(node);
-    
+
           // // Apply the general update pattern to the links.
           //   link = link.data(data.links, function(d) { return d.source.id + "-" + d.target.id; });
           //   link.exit().remove();
@@ -527,19 +536,19 @@
 
     function drawButtons(){
          svg = d3.select('body').append('svg')
-        
+
          d3.json("data/buttons.json", function(error, dataset){
-             
+
                 if (error) {
                     console.log(error);
                 }else{
                         svg
                         .selectAll("polygon")
-                        .data(dataset.buttons)
+                        .data(dataset)
                         .enter()
                         .append("polygon")
                         .attr("class", "button")
-                        // .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space 
+                        // .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space
                         // .attr("y3", function(d){ return d.y3;})
                         .attr("id", function(d){ return d.id;}  )
                         .attr("timer", 0)
@@ -559,24 +568,24 @@
                             return d.poly;
                         })
                         .attr("fill", function (d,i){ return colors[i]; })
-                    
+
                     //initialize buttons array
                     // debugger
-                    for (var i=0; i < dataset.buttons.length ; i ++){
+                    for (var i=0; i < dataset.length ; i ++){
                         buttons[i] = {
                             buttonID: i, // out of 6 buttons.
                             answerID: i, //out of 14 answers
-                            timer: 0, //for button event 
+                            timer: 0, //for button event
                             event: null,
                             particleID: -1 ,// for the new particle being added
                             r: -1,
-                            x3: dataset.buttons[i].x3,
-                            y3: dataset.buttons[i].y3,
+                            x3: dataset[i].x3,
+                            y3: dataset[i].y3,
                             animation: null
                         };
 
                     }
-                 
+
 
                      d3.selectAll(".button")
                         .on("mousedown", function(){
@@ -585,7 +594,7 @@
                         .on("mouseup", function() {
                             triggerButtonUp(d3.select(this).attr("id"));
                     })
-                       
+
                 }
         });
 
@@ -597,27 +606,27 @@
         // console.log("mousedown on button: " + id);
         buttons[id].event = MOUSE_DOWN;
         buttons[id].timer = Date.now() ;
-        var newNodeID = buttons[id].particleID = particles.length; 
+        var newNodeID = buttons[id].particleID = particles.length;
         var newNodeR = buttons[id].r = 1;//~~d3.randomUniform(MIN_R,MAX_R)();
 
-        //add particle in THREEJS 
-        var particle = particles[ newNodeID ] 
-            = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[id].answerID ) ); 
+        //add particle in THREEJS
+        var particle = particles[ newNodeID ]
+            = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[id].answerID ) );
         particle.position.x = buttons[id].x3;
-        particle.position.y = buttons[id].y3; 
+        particle.position.y = buttons[id].y3;
         particle.position.z = ~~d3.randomUniform(-500, 300)()
-        scene.add( particle );      
-     
+        scene.add( particle );
+
     }
-    
+
 
     function triggerButtonUp(id){
-        if( buttons[id].timer == 0 || buttons[id].event != MOUSE_DOWN ){ 
+        if( buttons[id].timer == 0 || buttons[id].event != MOUSE_DOWN ){
             //with mouse event,  button up can be triggered without button down
             return;
         }
 
-        buttons[id].event = MOUSE_UP; 
+        buttons[id].event = MOUSE_UP;
         buttons[id].animation =  ~~d3.randomUniform(0,5)()
         buttons[id].timer = Date.now();
 
@@ -631,16 +640,16 @@
         // }else {
         //     console.log("fetching", pID, "from particles array. length:", particles.length );
         // }
-        
 
-        
+
+
         pushBubble(
-            buttons[id].x3, //turn string to int 
-            buttons[id].y3, 
-            ~~d3.randomUniform(MIN_R,MAX_R)(), 
+            buttons[id].x3, //turn string to int
+            buttons[id].y3,
+            ~~d3.randomUniform(MIN_R,MAX_R)(),
             buttons[id].answerID
             );
-      
+
     }
 
     function generateSprite() {
@@ -670,16 +679,16 @@
         backgroundGroup = new THREE.Group();
 
         //    /////base wall; eliminate clitches.
-        // var material = new THREE.SpriteCanvasMaterial( { 
+        // var material = new THREE.SpriteCanvasMaterial( {
         //     color: 0x000000,//0xffffff,
         //     program: function ( context ) {
         //         context.beginPath();
-        //         context.arc( 0, 0, 1, 0, 0, true ); //actually not visiable. 
-        //         context.fill(); 
+        //         context.arc( 0, 0, 1, 0, 0, true ); //actually not visiable.
+        //         context.fill();
         //     }
         // } );
 
-        //blurry sprite  
+        //blurry sprite
          var material = new THREE.SpriteMaterial( {
                     map: new THREE.CanvasTexture( generateSprite() ),
                     blending: THREE.AdditiveBlending,
@@ -726,40 +735,40 @@
         //mouse controlled camera pan
         // camera.position.x += ( mouseX - camera.position.x ) * .05;
         // camera.position.y += ( - mouseY - camera.position.y ) * .05;
-        
+
         //timer controlled camera pan
         var currentTime = Date.now();
-        var t = 0.0002 * currentTime; 
-    
+        var t = 0.0002 * currentTime;
+
         camera.position.x = Math.cos( t ) * 800 ;  //130
         camera.position.y = Math.sin( t ) * 400; //80
 
         camera.lookAt( scene.position );
 
-        //move all the stars so they look random 
-        backgroundGroup.rotation.z = - Math.cos( 0.1*t )*5;  
+        //move all the stars so they look random
+        backgroundGroup.rotation.z = - Math.cos( 0.1*t )*5;
 
         //geometry updates
-        if (isDataReady){ //render could be called few times before json is loaded, causing errors. 
-                       
+        if (isDataReady){ //render could be called few times before json is loaded, causing errors.
+
             //setting up boundary
             xMax = 900;
             xMin = -900;
             yMax = 900;
             yMin = -300;
             for (var i =0; i < data.nodes.length; i++){
-                    
+
                 data.nodes[i].x = Math.max(xMin, Math.min(xMax, data.nodes[i].x)); ;
                 data.nodes[i].y = Math.max(yMin, Math.min(yMax, data.nodes[i].y)); ;
 
                 particles[ i ].position.x = data.nodes[i].x;
                 particles[ i ].position.y = data.nodes[i].y;
-                
-            } 
-            // console.log("updating: " + data.nodes[0].x + " " +data.nodes[0].y); 
-            
+
+            }
+            // console.log("updating: " + data.nodes[0].x + " " +data.nodes[0].y);
+
             if(showDataLinksInLines){
-                //update lines connecting dots 
+                //update lines connecting dots
                 data.links.forEach(function(d,i){
                     // debugger
                     var t = particles[d.target.id];
@@ -773,10 +782,10 @@
                     lines[i].geometry.vertices[1].y = t.position.y;
                     lines[i].geometry.vertices[1].z = t.position.z;
 
-                    // lines[i].geometry.verticesNeedUpdate = true; 
+                    // lines[i].geometry.verticesNeedUpdate = true;
 
 
-                });   
+                });
             }
 
 
@@ -799,22 +808,22 @@
 
             var timeToC = d3.scalePow() ; // d3.scaleLinear();
             timeToC.clamp(true);
-        
-           
+
+
             // button updates
             for (var i = 0; i < buttons.length; i ++) {
-                
-                if (buttons[i].timer > 0){ 
+
+                if (buttons[i].timer > 0){
                     var deltaT = currentTime - buttons[i].timer;
 
                     if(buttons[i].event == MOUSE_DOWN){
                         //button is being pushed
 
-                        timeToC 
+                        timeToC
                           .domain([0,1000])
                           .range(["white", colors[buttons[i].answerID] ]);
 
-                        
+
                         var r = timeToR(deltaT);
                         var pID = buttons[i].particleID;
                         // console.log(i, deltaT, timeToR(deltaT) )
@@ -830,7 +839,7 @@
                         if(deltaT<T){
                             //do an animation
                             switch ( buttons[i].animation){
-                                case 0: //zoom z 
+                                case 0: //zoom z
                                 backgroundGroup.position.z +=100 ;
                                 break;
 
@@ -840,7 +849,7 @@
 
                                 case 2:
 
-                                    timeToC 
+                                    timeToC
                                       .domain([0,T])
                                       .range(["white", colors[buttons[i].answerID] ]);
 
@@ -849,26 +858,26 @@
                                      object = faceObjects[ buttons[i]. answerID ];
                                     object.material.color.set(timeToC(deltaT));
 
-                                    
+
 
                                     // object.position.x = 100 * Math.cos( 0.5* PI2* deltaT / T)  ;
                                     // object.position.y = 100 * Math.sin( PI2* deltaT / T) *Math.random();
-                                    // object.scale .x = object.scale.y = object.scale.z 
+                                    // object.scale .x = object.scale.y = object.scale.z
                                     // =Math.random()*3;// Math.cos( 4* PI2* deltaT / T);
                                     // object.rotation.x = 0.05;
                                     // object.rotation.y = 0.1;
 
-                                
+
                                 break;
                             }
-                            
-                            
+
+
                         }else{
                             //reset
                             switch ( buttons[i].animation){
-                                case 0: //zoom z 
+                                case 0: //zoom z
                                 backgroundGroup.position.z =0;
-                                backgroundGroup.rotation.x += 1; 
+                                backgroundGroup.rotation.x += 1;
                                 break;
 
                                 case 1:
@@ -880,7 +889,7 @@
                                     // object.material.color.set(colors[buttons[i].answerID]);
                                     //   object = edgeObjects[ buttons[i]. answerID ];
                                     // object.material.color.set(colors[buttons[i].answerID]);
-                                    
+
 
                                     // var object = edgeObjects[ buttons[i]. answerID ];
                                     // object.position.x =0 ;
@@ -889,22 +898,22 @@
                                 break;
                             }
 
-                           
-                           
+
+
                             buttons[i].timer = 0;
                             buttons[i].particleID = -1;
                             buttons[i].event = null;
                             }
-                       
-                        
+
+
 
                     }
 
-                    
-                   
+
+
                 }
 
-                    
+
             }
 
         }

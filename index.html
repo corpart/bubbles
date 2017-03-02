@@ -581,7 +581,7 @@
                             r: -1,
                             x3: dataset[i].x3,
                             y3: dataset[i].y3,
-                            animation: null
+                            animation: -1
                         };
 
                     }
@@ -603,9 +603,12 @@
     }
 
     function triggerButtonDown(id){
+        resetEndOfVoteAnimation(id);
         // console.log("mousedown on button: " + id);
         buttons[id].event = MOUSE_DOWN;
         buttons[id].timer = Date.now() ;
+        buttons[id].animation =  ~~d3.randomUniform(0,5)()
+
         var newNodeID = buttons[id].particleID = particles.length;
         var newNodeR = buttons[id].r = 1;//~~d3.randomUniform(MIN_R,MAX_R)();
 
@@ -627,7 +630,7 @@
         }
 
         buttons[id].event = MOUSE_UP;
-        buttons[id].animation =  ~~d3.randomUniform(0,5)()
+       
         buttons[id].timer = Date.now();
 
         var pID = buttons[id].particleID;
@@ -873,39 +876,9 @@
 
 
                         }else{
-                            //reset
-                            switch ( buttons[i].animation){
-                                case 0: //zoom z
-                                backgroundGroup.position.z =0;
-                                backgroundGroup.rotation.x += 1;
-                                break;
+                            resetEndOfVoteAnimation(i);
 
-                                case 1:
-                                break;
-
-                                case 2:
-
-                                    // var object = faceObjects[ buttons[i]. answerID ];
-                                    // object.material.color.set(colors[buttons[i].answerID]);
-                                    //   object = edgeObjects[ buttons[i]. answerID ];
-                                    // object.material.color.set(colors[buttons[i].answerID]);
-
-
-                                    // var object = edgeObjects[ buttons[i]. answerID ];
-                                    // object.position.x =0 ;
-                                    // object.position.y = 0 ;
-                                    // object.scale .x = object.scale.y = object.scale.z = 1 ;
-                                break;
-                            }
-
-
-
-                            buttons[i].timer = 0;
-                            buttons[i].particleID = -1;
-                            buttons[i].event = null;
-                            }
-
-
+                        }
 
                     }
 
@@ -922,6 +895,40 @@
 
         // count += 0.1;
 
+    }
+
+    function resetEndOfVoteAnimation (i) {
+        
+        switch ( buttons[i].animation){
+            case 0: //zoom z
+            backgroundGroup.position.z =0;
+            backgroundGroup.rotation.x += 1;
+            break;
+
+            case 1:
+            break;
+
+            case 2:
+
+                var object = faceObjects[ buttons[i]. answerID ];
+                object.material.color.set(colors[buttons[i].answerID]);
+                object = edgeObjects[ buttons[i]. answerID ];
+                object.material.color.set(colors[buttons[i].answerID]);
+
+
+                // var object = edgeObjects[ buttons[i]. answerID ];
+                // object.position.x =0 ;
+                // object.position.y = 0 ;
+                // object.scale .x = object.scale.y = object.scale.z = 1 ;
+            break;
+        }
+
+
+
+        buttons[i].timer = 0;
+        buttons[i].particleID = -1;
+        buttons[i].event = null;
+        
     }
 
 </script>

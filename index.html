@@ -471,11 +471,11 @@
                 if (error) {
                     console.log(error);
                 }else{
-                        svg
-                        .selectAll("polygon")
-                        .data(dataset)
-                        .enter()
-                        .append("polygon")
+                    svg
+                    .selectAll("polygon")
+                    .data(dataset)
+                    .enter()
+                    .append("polygon")
                         .attr("class", "button")
                         // .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space
                         // .attr("y3", function(d){ return d.y3;})
@@ -497,6 +497,24 @@
                             return d.poly;
                         })
                         .attr("fill", function (d,i){ return colors[i]; })
+                    
+                    svg.selectAll("text")
+                   .data(dataset)
+                   .enter()
+                   .append("text")
+                   .text(function(d) {
+                       return "test ";
+                   })
+                   .attr("x", function(d) {
+                        return d.x+d.tx;
+                   })
+                   .attr("y", function(d) {
+                        return d.y+d.ty;
+                   })
+                   .attr("text-anchro", "middle")
+                   .attr("font-family", "sans-serif")
+                   .attr("font-size", "13px")
+                   .attr("fill", "white");
 
                     //initialize buttons array
                     // debugger

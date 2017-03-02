@@ -255,6 +255,7 @@
         }
 
         for (var i =0; i < data.nodes.length; i++){
+
             particle = particles[ i ] = new THREE.Sprite( getSpriteMaterial( data.nodes[i].r , data.nodes[i].group ));
             particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
             particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
@@ -262,7 +263,6 @@
             scene.add( particle );
 
             triangleGroups[data.nodes[i].group].vertices.push(particles[i].position);
-
 
             // mesh= new THREE.Mesh( triangleGeom, getEdgeMaterial( data.nodes[i].group));
             // scene.add(mesh)
@@ -384,7 +384,7 @@
 
     }
 
-    function pushBubble(bx, by, br, bi){
+    function pushBubble(bx, by, br, bGroup, bi){
 
             var newNodeID = data.nodes.length; // node 2d -> particle 3d
 
@@ -401,7 +401,9 @@
                 r: br,
                 x: bx,
                 y: by,
-                group:  bi });
+                group:  bGroup,
+                particleID: bi
+            });
 
 
 
@@ -648,7 +650,8 @@
             buttons[id].x3, //turn string to int
             buttons[id].y3,
             particles[id].scale.x,
-            buttons[id].answerID
+            buttons[id].answerID,
+            pID
             );
 
       

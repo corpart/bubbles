@@ -384,7 +384,7 @@
 
     }
 
-    function pushBubble(bx, by, br, bGroup, bi){
+    function pushBubble(bx, by, br, bGroup, pi){
 
             var newNodeID = data.nodes.length; // node 2d -> particle 3d
 
@@ -392,7 +392,7 @@
             //do this before adding itself to avoiding linking to self
             var sameGroup = data.nodes.filter (
                     function(d){
-                        return +d.group == bi;
+                        return +d.group == bGroup;
                     } // +turn string to number
                 )
 
@@ -402,7 +402,7 @@
                 x: bx,
                 y: by,
                 group:  bGroup,
-                particleID: bi
+                particleID: pi
             });
 
 
@@ -437,9 +437,9 @@
             }
 
             // triangleGeom.vertices.push(particles[newNodeID].position);
-            triangleGroups[bi].vertices.push(particles[newNodeID].position);
+            triangleGroups[bGroup].vertices.push(particles[pi].position);
             // console.log(triangleGroups[bi].vertices.length)
-            addTriangle(bi);
+            addTriangle(bGroup);
 
             // var nearestPointInd = 0 ;
             // var nearestDistSq = -1;
@@ -763,12 +763,14 @@
             yMax = 900;
             yMin = -300;
             for (var i =0; i < data.nodes.length; i++){
-
+                //constrain to screen size 
                 data.nodes[i].x = Math.max(xMin, Math.min(xMax, data.nodes[i].x)); ;
                 data.nodes[i].y = Math.max(yMin, Math.min(yMax, data.nodes[i].y)); ;
 
-                particles[ i ].position.x = data.nodes[i].x;
-                particles[ i ].position.y = data.nodes[i].y;
+                
+                var ind = data.nodes[i].particleID 
+                particles[ ind ].position.x = data.nodes[i].x;
+                particles[ ind ].position.y = data.nodes[i].y;
 
             }
             // console.log("updating: " + data.nodes[0].x + " " +data.nodes[0].y);

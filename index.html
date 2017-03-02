@@ -240,7 +240,6 @@
             // var materials = [  // SOMEHOW NOT WORKING
             //     getEdgeMaterial(i),
             //     getFaceMaterial(i)
-
             //     ];
             // mesh = new THREE.Mesh( triangleGroups[i], new THREE.MultiMaterial( materials ) );
             // scene.add(mesh);
@@ -252,9 +251,6 @@
             mesh = new THREE.Mesh( triangleGroups[i], getFaceMaterial(i));
             faceObjects.push(mesh);
             scene.add(mesh);
-
-
-
 
         }
 
@@ -578,10 +574,12 @@
                             timer: 0, //for button event
                             event: null,
                             particleID: -1 ,// for the new particle being added
+                            nodeID: -1, //for the new node being added 
                             r: -1,
                             x3: dataset[i].x3,
                             y3: dataset[i].y3,
-                            animation: -1
+                            animation: -1,
+                            
                         };
 
                     }
@@ -629,12 +627,12 @@
             return;
         }
 
-        buttons[id].event = MOUSE_UP;
-       
+        buttons[id].event = MOUSE_UP;       
         buttons[id].timer = Date.now();
 
+
         var pID = buttons[id].particleID;
-        // console.log( particles[pID].scale.x )
+      
         //if (pID < particles.length){
         if(particles[pID].scale.x > MAX_R){
             particles[pID].scale.x = particles[pID].scale.y = MAX_R;
@@ -649,9 +647,11 @@
         pushBubble(
             buttons[id].x3, //turn string to int
             buttons[id].y3,
-            ~~d3.randomUniform(MIN_R,MAX_R)(),
+            particles[id].scale.x,
             buttons[id].answerID
             );
+
+      
 
     }
 
@@ -692,7 +692,7 @@
         // } );
 
         //blurry sprite
-         var material = new THREE.SpriteMaterial( {
+        var material = new THREE.SpriteMaterial( {
                     map: new THREE.CanvasTexture( generateSprite() ),
                     blending: THREE.AdditiveBlending,
                 } );
@@ -787,11 +787,8 @@
 
                     // lines[i].geometry.verticesNeedUpdate = true;
 
-
                 });
             }
-
-
 
             for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
 
@@ -923,12 +920,10 @@
             break;
         }
 
-
-
         buttons[i].timer = 0;
         buttons[i].particleID = -1;
         buttons[i].event = null;
-        
+        buttons[i].nodeID = -1;
     }
 
 </script>

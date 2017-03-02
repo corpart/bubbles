@@ -192,16 +192,8 @@
     }
 
     function getSpriteMaterial( r, groupID ){
-       // //blurry sprite
-       //  return new THREE.SpriteMaterial( {
-       //              map: new THREE.CanvasTexture( generateSprite() ),
-       //              blending: THREE.AdditiveBlending,
-       //          } );
-
         return  new THREE.SpriteCanvasMaterial( {
             color: colors[groupID],
-            // opacity: 0.8,
-            // blending: THREE.AdditiveBlending,
             program: function ( context ) {
                 context.beginPath();
                 context.arc( 0, 0, r, 0, PI2, true );
@@ -218,7 +210,7 @@
         return new THREE.MeshBasicMaterial( {
             color: colors[answerID],
             // color: 0X666666,
-            opacity: 0.3,//0.3,
+            opacity: 0.3,
             wireframe: true
              } )
     }
@@ -238,13 +230,7 @@
         //this will be automatically updated as new triangles gets added to triangleGeom
         for (var i = 0; i< TOTAL_ANSWERS; i ++){
             triangleGroups[i] = new THREE.Geometry();
-            // var materials = [  // SOMEHOW NOT WORKING
-            //     getEdgeMaterial(i),
-            //     getFaceMaterial(i)
-            //     ];
-            // mesh = new THREE.Mesh( triangleGroups[i], new THREE.MultiMaterial( materials ) );
-            // scene.add(mesh);
-
+       
             mesh = new THREE.Mesh( triangleGroups[i], getEdgeMaterial(i));
             edgeObjects.push(mesh);
             scene.add(mesh);
@@ -264,13 +250,6 @@
             scene.add( particle );
 
             triangleGroups[data.nodes[i].group].vertices.push(particles[i].position);
-
-            // mesh= new THREE.Mesh( triangleGeom, getEdgeMaterial( data.nodes[i].group));
-            // scene.add(mesh)
-
-            // mesh= new THREE.Mesh( triangleGeom, getFaceMaterial( data.nodes[i].group));
-            // scene.add(mesh)
-
         }
 
         data.links.forEach(function(d){
@@ -284,9 +263,6 @@
                 .id(function(d) { return d.index })
                 .distance(function(d){return d.value})
                 .strength(0.3)
-                // .strength(function(d){
-                //     return .1/d.value
-                // })
                 )
 
             .force("collide",d3.forceCollide( function(d){  return d.r + 20 }).iterations(5) ) //2//16
@@ -330,8 +306,6 @@
             if (showDataLinksInLines ){
                 scene.add(lineTemp);
             }
-
-
         //    console.log("line " + newLineIndex + " added between " + sourceInd + " & " + targetInd) ;
         }
 
@@ -406,17 +380,7 @@
                 particleID: pi
             });
 
-
-
-            // var particle = particles[ newNodeID ] = new THREE.Sprite( getSpriteMaterial( br , bi ) );
-            // particle.position.x = bx;
-            // particle.position.y = by;
-            // particle.position.z = ~~d3.randomUniform(-500, 300)();
-            // scene.add( particle );
-
-
             //2d links  & 3D lines
-
             if (sameGroup.length>0){
                 //add first link
                 var j = ~~d3.randomUniform(0, sameGroup.length)();
@@ -442,40 +406,6 @@
             // console.log(triangleGroups[bi].vertices.length)
             addTriangle(bGroup);
 
-            // var nearestPointInd = 0 ;
-            // var nearestDistSq = -1;
-            // sameGroup.forEach(function(target){
-
-            //     var x = target.x - bx;
-            //     var y = target.y - by;
-            //     var tempDistSq  =  x * x + y * y
-            //     if (nearestDistSq < 0){
-            //         nearestDistSq =  tempDistSq ;
-            //     }
-            //     else if ((x * x + y * y) < nearestDistSq) {
-            //         nearestPointInd = target.id;
-            //         nearestDistSq = (x * x + y * y);
-            //     }
-            // });
-            // debugger
-            // //find non repeating random numbers
-            // // var a = ~~d3.randomUniform(0, sameGroup.length)();
-            // var a = nearestPointInd;
-            // var b = sameGroup[~~d3.randomUniform(0, sameGroup.length)()].id;
-            // var b = sameGroup[sameGroup.length-1]
-            // var c = ~~d3.randomUniform(0, sameGroup.length)();
-
-                // if (sameGroup.length>1 && d3.randomUniform(0, 1)()>0.5){
-                //     var a = sameGroup[sameGroup.length-1].id;
-                //     var b = sameGroup[sameGroup.length-2].id;
-                //     addTriangle(bi,a,b,newNodeID);
-                // }
-
-            // if (a!=b && b!=c && c!=a){
-            // if (a!=b ){
-
-            //     addTriangle(a, b, newNodeID);
-            // }
 
             for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
 
@@ -685,16 +615,6 @@
     function addBackground(){
         backgroundGroup = new THREE.Group();
 
-        //    /////base wall; eliminate clitches.
-        // var material = new THREE.SpriteCanvasMaterial( {
-        //     color: 0x000000,//0xffffff,
-        //     program: function ( context ) {
-        //         context.beginPath();
-        //         context.arc( 0, 0, 1, 0, 0, true ); //actually not visiable.
-        //         context.fill();
-        //     }
-        // } );
-
         //blurry sprite
         var material = new THREE.SpriteMaterial( {
                     map: new THREE.CanvasTexture( generateSprite() ),
@@ -768,7 +688,7 @@
                 var ind = data.nodes[i].particleID 
                 particles[ ind ].position.x = data.nodes[i].x;
                 particles[ ind ].position.y = data.nodes[i].y;
-                console.log("node",i, "particle",ind);
+                // console.log("node",i, "particle",ind);
             }
             
 

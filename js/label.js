@@ -1,14 +1,28 @@
+function changeTextSprite(message,group){
+  var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+  
+  var message = "It works!";
 
+  context.fillStyle = "rgba(0, 0, 0, 1.0)"; // CLEAR WITH COLOR BLACK (new BG color)
+  context.fill(); // FILL THE CONTEXT
+  context.fillStyle = "rgba(255, 0, 0, 1.0)"; // RED COLOR FOR TEXT
+  context.fillText(message, context.lineWidth, 24 + context.lineWidth); // WRITE TEXT
+
+  labels[group].map.needsUpdate = true; // AND UPDATE THE IMAGE..
+
+}
 
 function makeTextSprite( message, parameters )
 {
+
   if ( parameters === undefined ) parameters = {};
   
   var fontface = parameters.hasOwnProperty("fontface") ? 
     parameters["fontface"] : "Arial";
   
   var fontsize = parameters.hasOwnProperty("fontsize") ? 
-    parameters["fontsize"] : 18;
+    parameters["fontsize"] : 100;
 
   var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
     parameters["borderThickness"] : 4;
@@ -21,8 +35,6 @@ function makeTextSprite( message, parameters )
 
   var textColor = parameters.hasOwnProperty("backgroundColor") ?
     parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
-
-  
 
   // var spriteAlignment = THREE.SpriteAlignment.topLeft;
     
@@ -56,7 +68,7 @@ function makeTextSprite( message, parameters )
   texture.needsUpdate = true;
 
   var spriteMaterial = new THREE.SpriteMaterial( 
-    { map: texture, useScreenCoordinates: false} );
+    { map: texture} );
   var sprite = new THREE.Sprite( spriteMaterial );
   sprite.scale.set(100,50,1.0);
   return sprite;  

@@ -83,13 +83,18 @@
     init();
     animate();
 
+    // TODO -> write function newStationWord(sid, word)
+    function newStationWord(sid, word) {
+      console.log("setting button " + sid + " word to " + word)
+    }
+
     function init() {
 
         // vote station websocket listens for incoming start and end vote
         // events and calls triggerbutton down and up with station id
         // read from json file
         vsckt = new vtr.sckt(
-          wsuri, btnfilename, triggerButtonDown, triggerButtonUp);
+          wsuri, btnfilename, triggerButtonDown, triggerButtonUp, newStationWord);
 
         container = document.createElement( 'div' );
         container.setAttribute("z-index", 1);
@@ -194,7 +199,7 @@
 
     }
 
-  
+
 
     function prep(data){
         var mesh;
@@ -202,7 +207,7 @@
         //this will be automatically updated as new triangles gets added to triangleGeom
         for (var i = 0; i< TOTAL_ANSWERS; i ++){
             triangleGroups[i] = new THREE.Geometry();
-       
+
             mesh = new THREE.Mesh( triangleGroups[i], getEdgeMaterial(i));
             edgeObjects.push(mesh);
             scene.add(mesh);
@@ -211,7 +216,7 @@
             faceObjects.push(mesh);
             scene.add(mesh);
 
-        
+
         }
 
 
@@ -278,7 +283,7 @@
             var lineTemp = lines[newLineIndex] = new THREE.Line(geometryLine, lineMaterial)
 
             if (showDataLinksInLines ){
-                scene.add(lineTemp); 
+                scene.add(lineTemp);
             }
         //    console.log("line " + newLineIndex + " added between " + sourceInd + " & " + targetInd) ;
         }
@@ -375,22 +380,22 @@
                 }
 
                 if (sameGroup.length > 5 && labels[bGroup] == null ){
-                    
+
                     console.log('add labels for answer group', bGroup);
                     var s = "test " + bGroup;
-                    var ind = sameGroup[0].particleID; //pick the first dot 
+                    var ind = sameGroup[0].particleID; //pick the first dot
                     labels[bGroup] = makeTextSprite(s);
-                   
-                   // labels[bGroup].position.copy( particles[ind].position) ; //.clone(); 
+
+                   // labels[bGroup].position.copy( particles[ind].position) ; //.clone();
 
                     scene.add(labels[bGroup]);
-                   
+
                 }
-                    
+
 
             }
 
-          
+
 
 
             // triangleGeom.vertices.push(particles[newNodeID].position);
@@ -489,7 +494,7 @@
                             return d.poly;
                         })
                         .attr("fill", function (d,i){ return colors[i]; })
-                    
+
                     svg.selectAll("text")
                    .data(dataset)
                    .enter()
@@ -517,12 +522,12 @@
                             timer: 0, //for button event
                             event: null,
                             particleID: -1 ,// for the new particle being added
-                            nodeID: -1, //for the new node being added 
+                            nodeID: -1, //for the new node being added
                             r: -1,
                             x3: dataset[i].x3,
                             y3: dataset[i].y3,
                             animation: -1,
-                            
+
                         };
 
                     }
@@ -570,12 +575,12 @@
             return;
         }
 
-        buttons[id].event = MOUSE_UP;       
+        buttons[id].event = MOUSE_UP;
         buttons[id].timer = Date.now();
 
 
         var pID = buttons[id].particleID;
-      
+
         //if (pID < particles.length){
         if(particles[pID].scale.x > MAX_R){
             particles[pID].scale.x = particles[pID].scale.y = MAX_R;
@@ -667,18 +672,18 @@
         //geometry updates
         if (isDataReady){ //render could be called few times before json is loaded, causing errors.
 
-            //setting up boundary        
+            //setting up boundary
             for (var i =0; i < data.nodes.length; i++){
-                //constrain to screen size 
+                //constrain to screen size
                 data.nodes[i].x = Math.max(THREE_MIN_X, Math.min(THREE_MAX_X, data.nodes[i].x)); ;
                 data.nodes[i].y = Math.max(THREE_MIN_Y, Math.min(THREE_MAX_Y, data.nodes[i].y)); ;
 
-                var ind = data.nodes[i].particleID 
+                var ind = data.nodes[i].particleID
                 particles[ ind ].position.x = data.nodes[i].x;
                 particles[ ind ].position.y = data.nodes[i].y;
                 // console.log("node",i, "particle",ind);
             }
-            
+
 
             if(showDataLinksInLines){
                 //update lines connecting dots
@@ -782,8 +787,8 @@
                     textPos.x = triangleGroups[i].vertices[0].x
                     textPos.y = triangleGroups[i].vertices[0].y
                     textPos.z = 310;// triangleGroups[i].boundingBox.max.z +10;
-                    labels[i].position.copy( textPos) ; 
-                    
+                    labels[i].position.copy( textPos) ;
+
                 }
             }
 
@@ -797,7 +802,7 @@
     }
 
     function resetEndOfVoteAnimation (i) {
-        
+
         switch ( buttons[i].animation){
             case 0: //zoom z
             backgroundGroup.position.z =0;

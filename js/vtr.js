@@ -4,7 +4,7 @@ console.log("loading vtr.sckt!");
 var vtr = {};
 
 
-vtr.sckt = function (wsuri, btnfilename, startvote, endvote) {
+vtr.sckt = function (wsuri, btnfilename, startvote, endvote, newword) {
   var self = this; // http://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback
 
   self.wsuri = wsuri; // websocket uri to connect to
@@ -55,16 +55,11 @@ vtr.sckt.prototype = {
       console.log("cant handle unexpected message format: " + msg);
       return;
     }
-
-    // only handle start & end touch messages
-    if (! (msg.flavor === "start_touch" || msg.flavor === "end_touch")) {
-      return;
-    }
-
+    
     // build vote station key & check that key is in station index
     var k = msg.source + msg.choice;
     if (! (k in this.stns)) {
-      console.log("cant accept touch from unexpected source: " + msg);
+      console.log("cant accept msg from unexpected source: " + msg);
       return;
     }
 
@@ -79,8 +74,14 @@ vtr.sckt.prototype = {
     }
 
     // otherwise call end vote
-    console.log("ending vote for station: " + sid);
-    this.endvote(sid);
-    return;
+    if (msg.flavor === "end_touch") {
+      console.log("ending vote for station: " + sid);
+      this.endvote(sid);
+      return;
+    }
+
+    if (msg.flavor === "new_word") {
+      this.newword(sid, msg.word)
+    }
   }
 }

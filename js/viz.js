@@ -164,7 +164,7 @@ function drawButtons(){
                  .attr("y", function(d) {
                       return d.y+d.ty;
                  })
-                 .attr("text-anchro", "middle")
+                 .attr("text-anchor", "middle")
                  .attr("font-family", "sans-serif")
                  .attr("font-size", "13px")
                  .attr("fill", "white");

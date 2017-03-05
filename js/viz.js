@@ -41,14 +41,14 @@ function prep(data){
             .strength(0.3)
             )
 
-        .force("collide",d3.forceCollide( function(d){  return d.r + 20 }).iterations(5) ) //2//16
+        .force("collide",d3.forceCollide( function(d){  return d.r + 30 }).iterations(5) ) //2//16
         .force("charge", d3.forceManyBody(0)
             .strength(-30)  //negative:repell
             .distanceMax(20)
             )
         .force("center", d3.forceCenter(windowHalfX / 2 + THREEcenterShiftX, windowHalfY / 2 + THREEcenterShiftY)) // keeps nodes in the center of the viewport
         .force("y", d3.forceY(0))
-        .force("x", d3.forceX(0).strength(0.001)) //0.05
+        .force("x", d3.forceX(0).strength(0.005)) //0.05
 
     // var ticked = function() { ///TODO function?
     // }
@@ -71,8 +71,9 @@ function newStationWord(sid, word) {
    
     d3.select("#text"+sid).text(word);
     d3.select("[id='"+sid +"']").attr("fill", getColorOfWord(word) );
+    buttons[sid].answerID = getIndOfWord(word);
 
-    console.log("%c setting button " + sid + " word to " + word ,
+    console.log("%c button " + sid + " set to " + word ,
      'color:'+ getColorOfWord(word) +'; display: block;' )
     //'background: green; color:'+ getColorOfWord(word) +'; display: block;'
 
@@ -83,6 +84,7 @@ function getIndOfWord (s){
   while( i-- ) {
       if( answers[i].word.toLowerCase() === s.toLowerCase() ) return i ;
   }
+  console.error( s , "is not on the word list");
   return -1;
 }
 
@@ -134,7 +136,7 @@ function drawButtons(){
                  .append("text")
                  .attr("id", function(d){ return "text"+d.id; })
                  .text(function(d) {
-                     return "test ";
+                     return answers[d.id].word; ///initialize to the first few words 
                  })
                  .attr("x", function(d) {
                       return d.x+d.tx;
@@ -278,7 +280,7 @@ function pushBubble(bx, by, br, bGroup, pi){
             if (sameGroup.length > 5 && labels[bGroup] == null ){
 
                 console.log('add labels for answer group', bGroup);
-                var s = "test " + bGroup;
+                var s = answers[bGroup].word;
                 var ind = sameGroup[0].particleID; //pick the first dot
                 labels[bGroup] = makeTextSprite(s);
 

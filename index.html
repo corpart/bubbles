@@ -30,7 +30,8 @@
     var SEPARATION = 200, AMOUNTX = 20, AMOUNTY = 20;
     var MIN_R = 5, MAX_R = 15; //for edgy
     // var MIN_R = 48, MAX_R = 96; //for blurry
-    var THREE_MAX_X = 900, THREE_MIN_X = -900, THREE_MAX_Y = 900, THREE_MIN_Y = 0
+    var THREE_MAX_X = 1200, THREE_MIN_X = -1200;
+    var THREE_MAX_Y = 1200, THREE_MIN_Y = -300;
 
     var THREEcenterShiftX = -300;
     var THREEcenterShiftY = -10 ;
@@ -146,6 +147,17 @@
 
        addBackground();
 
+
+        //load answers from json
+        d3.json("data/answers.json", function(error, dataset){
+                if (error) {
+                    console.log(error);
+                }else{
+                    answers = dataset;
+
+                }
+        });
+
        drawButtons();
 
         //load data from json
@@ -160,16 +172,7 @@
                 }
         });
 
-        //load data from json
-        d3.json("data/answers.json", function(error, dataset){
-                if (error) {
-                    console.log(error);
-                }else{
-                    answers = dataset;
-
-                }
-        });
-
+     
 
         ///THREEJS
         // Lights
@@ -401,8 +404,8 @@
                     var textPos = new THREE.Vector3();
                     triangleGroups[i].computeBoundingBox();
                     textPos.x = triangleGroups[i].vertices[0].x
-                    textPos.y = triangleGroups[i].vertices[0].y
-                    textPos.z = 310;// triangleGroups[i].boundingBox.max.z +10;
+                    textPos.y = triangleGroups[i].vertices[0].y - 20
+                    textPos.z = triangleGroups[i].boundingBox.max.z - 10;
                     labels[i].position.copy( textPos) ;
 
                 }

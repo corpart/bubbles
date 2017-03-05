@@ -1,17 +1,17 @@
-function changeTextSprite(message,group){
-  var canvas = document.createElement('canvas');
-  var context = canvas.getContext('2d');
+// function changeTextSprite(message,group){
+//   var canvas = document.createElement('canvas');
+//   var context = canvas.getContext('2d');
   
-  var message = "It works!";
+//   var message = "It works!";
 
-  context.fillStyle = "rgba(0, 0, 0, 1.0)"; // CLEAR WITH COLOR BLACK (new BG color)
-  context.fill(); // FILL THE CONTEXT
-  context.fillStyle = "rgba(255, 0, 0, 1.0)"; // RED COLOR FOR TEXT
-  context.fillText(message, context.lineWidth, 24 + context.lineWidth); // WRITE TEXT
+//   context.fillStyle = "rgba(0, 0, 0, 1.0)"; // CLEAR WITH COLOR BLACK (new BG color)
+//   context.fill(); // FILL THE CONTEXT
+//   context.fillStyle = "rgba(255, 0, 0, 1.0)"; // RED COLOR FOR TEXT
+//   context.fillText(message, context.lineWidth, 24 + context.lineWidth); // WRITE TEXT
 
-  labels[group].map.needsUpdate = true; // AND UPDATE THE IMAGE..
+//   labels[group].map.needsUpdate = true; // AND UPDATE THE IMAGE..
 
-}
+// }
 
 function makeTextSprite( message, parameters )
 {

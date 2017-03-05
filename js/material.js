@@ -1,6 +1,6 @@
   function getSpriteMaterial( r, groupID ){
         return  new THREE.SpriteCanvasMaterial( {
-            color: colors[groupID],
+            color: answers[groupID].color,
             program: function ( context ) {
                 context.beginPath();
                 context.arc( 0, 0, r, 0, PI2, true );
@@ -15,7 +15,7 @@
     //for the triangles
     function getEdgeMaterial (answerID){
         return new THREE.MeshBasicMaterial( {
-            color: colors[answerID],
+            color: answers[answerID].color,
             // color: 0X666666,
             opacity: 0.3,
             wireframe: true
@@ -23,7 +23,7 @@
     }
 
     function getFaceMaterial (answerID){
-        return new THREE.MeshBasicMaterial( { color: colors[answerID], opacity:0.2,
+        return new THREE.MeshBasicMaterial( { color: answers[answerID].color, opacity:0.2,
             side: THREE.DoubleSide ,
             transparent: true,
             blending: THREE.AdditiveBlending } );

@@ -107,6 +107,26 @@ function drawButtons(){
           if (error) {
               console.log(error);
           }else{
+
+                          //initialize buttons array
+              // debugger
+              for (var i=0; i < dataset.length ; i ++){
+                  buttons[i] = {
+                      buttonID: i, // out of 6 buttons.
+                      answerID: i, //out of 14 answers
+                      timer: 0, //for button event
+                      event: null,
+                      particleID: -1 ,// for the new particle being added
+                      nodeID: -1, //for the new node being added
+                      r: -1,
+                      x3: dataset[i].x3,
+                      y3: dataset[i].y3,
+                      animation: -1,
+
+                  };
+
+              }
+
               svg
               .selectAll("polygon")
               .data(dataset)
@@ -128,7 +148,7 @@ function drawButtons(){
                       // console.log(d.poly)
                       return d.poly;
                   })
-                  .attr("fill", function (d,i){ return colors[i]; })
+                  .attr("fill", function (d,i){ return answers[buttons[i].answerID].color ; })
 
               svg.selectAll("text")
                  .data(dataset)
@@ -149,24 +169,7 @@ function drawButtons(){
                  .attr("font-size", "13px")
                  .attr("fill", "white");
 
-              //initialize buttons array
-              // debugger
-              for (var i=0; i < dataset.length ; i ++){
-                  buttons[i] = {
-                      buttonID: i, // out of 6 buttons.
-                      answerID: i, //out of 14 answers
-                      timer: 0, //for button event
-                      event: null,
-                      particleID: -1 ,// for the new particle being added
-                      nodeID: -1, //for the new node being added
-                      r: -1,
-                      x3: dataset[i].x3,
-                      y3: dataset[i].y3,
-                      animation: -1,
 
-                  };
-
-              }
 
 
                d3.selectAll(".button")
@@ -219,7 +222,7 @@ function triggerButtonUp(id){
     if(particles[pID].scale.x > MAX_R){
         particles[pID].scale.x = particles[pID].scale.y = MAX_R;
     }
-    particles[pID].material.color.set(colors[buttons[id].answerID] ); //force into same color //matt
+    particles[pID].material.color.set(answers[buttons[id].answerID].color); //force into same color //matt
     // }else {
     //     console.log("fetching", pID, "from particles array. length:", particles.length );
     // }
@@ -368,9 +371,9 @@ function resetEndOfVoteAnimation (i) {
 
         case 2:
             var object = faceObjects[ buttons[i]. answerID ];
-            object.material.color.set(colors[buttons[i].answerID]);
+            object.material.color.set(answers[buttons[i].answerID].color);
             object = edgeObjects[ buttons[i]. answerID ];
-            object.material.color.set(colors[buttons[i].answerID]);
+            object.material.color.set(answers[buttons[i].answerID].color);
         break;
     }
 

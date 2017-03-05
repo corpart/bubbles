@@ -65,7 +65,7 @@
 
     var svg
 
-    var colors
+
 
 
     var PI2 = Math.PI * 2;
@@ -120,29 +120,6 @@
             color: 0X666666//0xaaaaaa
         });
 
-
-
-        colors = [
-                 "#009872",
-                 "#28C17D",
-                 "#225588",
-                 "#22AADD",
-                 "#2CFCFD",
-                 "#FFAA11",
-                 "#FF5533",
-                 "#EA3040",
-                 "#D948D6",
-                 "#8F319A",
-                 "#C991D3",
-                 "#4B295E",
-                 "#5C33FB",
-                 "#99BBEE",
-
-                 "#A8DBA8",
-                 "#79BD9A",
-                 "#3B8686",
-                 "#0B486B"
-                ];
 
 
        addBackground();
@@ -351,7 +328,7 @@
 
                         timeToC
                           .domain([0,1000])
-                          .range(["#000000", colors[buttons[i].answerID] ]);
+                          .range(["#000000", answers[buttons[i].answerID].color ]);
 
 
                         var r = timeToR(deltaT);
@@ -381,7 +358,7 @@
 
                                     timeToC
                                       .domain([0,T])
-                                      .range(["white", colors[buttons[i].answerID] ]);
+                                      .range(["white", answers[buttons[i].answerID].color ]);
 
                                     var object = edgeObjects[ buttons[i]. answerID ];
                                     object.material.color.set(timeToC(deltaT));

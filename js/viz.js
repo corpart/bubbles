@@ -99,7 +99,7 @@ function getColorOfWord (s){
 }
 
 
-function drawButtons(){
+function addButtons(){
    svg = d3.select('body').append('svg')
 
    d3.json("data/buttons.json", function(error, dataset){
@@ -169,7 +169,20 @@ function drawButtons(){
                  .attr("font-size", "13px")
                  .attr("fill", "white");
 
-
+              svg.selectAll("circle")
+                 .data(dataset)
+                 .enter()
+                 .append("circle")
+                 .attr("class","circle")
+                 .attr("id", function(d){ return "circle"+d.id; })
+                 .attr("opacity", 0.8)
+                 .attr("cx", function(d) {
+                      return d.x+d.tx;
+                 })
+                 .attr("cy", function(d) {
+                      return d.y+d.ty - 30; //offset about text 
+                 })
+                 .attr("r", 0); //invisiable for now 
 
 
                d3.selectAll(".button")
@@ -192,16 +205,11 @@ function triggerButtonDown(id){
     buttons[id].timer = Date.now() ;
     buttons[id].animation =  ~~d3.randomUniform(0,5)()
 
-    var newNodeID = buttons[id].particleID = particles.length;
-    var newNodeR = buttons[id].r = 1;//~~d3.randomUniform(MIN_R,MAX_R)();
+   
 
-    //add particle in THREEJS
-    var particle = particles[ newNodeID ]
-        = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[id].answerID ) );
-    particle.position.x = buttons[id].x3;
-    particle.position.y = buttons[id].y3;
-    particle.position.z = ~~d3.randomUniform(-500, 300)()
-    scene.add( particle );
+
+    //todo add SVG circcle here 
+
 
 }
 
@@ -214,6 +222,28 @@ function triggerButtonUp(id){
 
     buttons[id].event = MOUSE_UP;
     buttons[id].timer = Date.now();
+
+
+    //if r is too small, do nothing 
+    var circleR = d3.select("#circle"+id).attr("r");
+    if (circleR < CIRCEL_R_THRESHOLD) {
+      d3.select("#circle"+id).attr("r", 0);
+      return;
+    }
+    d3.select("#circle"+id).attr("r", 0);
+    //add particle in THREEJS
+     var newNodeID = buttons[id].particleID = particles.length;
+    var newNodeR = buttons[id].r = circleR ;//~~d3.randomUniform(MIN_R,MAX_R)();
+
+    
+    var particle = particles[ newNodeID ]
+        = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[id].answerID ) );
+    particle.position.copy( htmlToScene (buttons[id].x, buttons[id].y));
+    particle.position.z = ~~d3.randomUniform(-300,300)();
+    console.log("button down", particle.position);
+    
+    scene.add( particle );
+
 
 
     var pID = buttons[id].particleID;
@@ -229,8 +259,9 @@ function triggerButtonUp(id){
 
 
 
+
     pushBubble(
-        buttons[id].x3, //turn string to int
+        buttons[id].x3, //x, y for d3
         buttons[id].y3,
         particles[id].scale.x,
         buttons[id].answerID,

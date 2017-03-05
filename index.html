@@ -21,6 +21,7 @@
 <script src="js/libs/d3.min.js"></script>
 <script src="js/material.js"></script>
 <script src="js/label.js"></script>
+<script src="js/transform.js"></script>
 <script src="js/viz.js"></script>
 <script src="js/vtr.js"></script> <!-- mikes websocket thing -->
 
@@ -32,6 +33,7 @@
     // var MIN_R = 48, MAX_R = 96; //for blurry
     var THREE_MAX_X = 1200, THREE_MIN_X = -1200;
     var THREE_MAX_Y = 1200, THREE_MIN_Y = -300;
+    var CIRCEL_R_THRESHOLD =  8 ;//8;
 
     var THREEcenterShiftX = -300;
     var THREEcenterShiftY = -10 ;
@@ -135,7 +137,7 @@
                 }
         });
 
-       drawButtons();
+       addButtons();
 
         //load data from json
         d3.json("data/data.json", function(error, dataset){
@@ -246,6 +248,7 @@
 
     }
 
+    var count = 0
     function render() {
 
         ////camera
@@ -260,11 +263,29 @@
         camera.position.x = Math.cos( t ) * 800 ;  //130
         camera.position.y = Math.sin( t ) * 400; //80
 
+        // var clicking = false; 
+        // for (var i = 0; i < buttons.length; i ++) {
+        //     clicking = clicking | (buttons[i].event == MOUSE_DOWN);
+        // }
+        // // console.log(clicking);
+        // if (!clicking){
+        //     camera.position.x = Math.cos( count ) * 800 ;  //130
+        //     camera.position.y = Math.sin( count ) * 400; //80
+        //     // backgroundGroup.rotation.z =  Math.cos( 0.1*t )*5;
+
+        //     count += 0.003;
+
+        // }
+        
+        //move all the stars so they look random
+        backgroundGroup.rotation.z =  Math.cos( 0.1*t )*5;
+
+        
+
+        
         camera.lookAt( scene.position );
 
-        //move all the stars so they look random
-        backgroundGroup.rotation.z = - Math.cos( 0.1*t )*5;
-
+     
         //geometry updates
         if (isDataReady){ //render could be called few times before json is loaded, causing errors.
 
@@ -311,7 +332,7 @@
 
             var timeToR = d3.scalePow() //the growth gets slower over time
                           .domain([0,1000])
-                          .range([MIN_R, MAX_R*3]);
+                          .range([MIN_R, MAX_R*1.2]);
             timeToR.clamp(true);
 
             var timeToC = d3.scalePow() ; // d3.scaleLinear();
@@ -328,15 +349,23 @@
 
                         timeToC
                           .domain([0,1000])
-                          .range(["#000000", answers[buttons[i].answerID].color ]);
+                          .range(["#ffffff", answers[buttons[i].answerID].color ]);
 
 
                         var r = timeToR(deltaT);
-                        var pID = buttons[i].particleID;
+                        // var pID = buttons[i].particleID;
                         // console.log(i, deltaT, timeToR(deltaT) )
 
-                        particles [pID] .scale. set (r,r,1);
-                        particles [pID] .material. color . set (timeToC(deltaT));
+                        // particles [pID] .scale. set (r,r,1);
+                        // particles [pID] .material. color . set (timeToC(deltaT));
+ 
+                      
+                        d3.select("#circle"+i)
+                            .attr("r", timeToR(deltaT))
+                            .attr("fill", timeToC(deltaT) )
+
+                     
+
                     }
 
 
@@ -393,12 +422,10 @@
 
         renderer.render( scene, camera );
 
-        // count += 0.1;
+        
 
     }
 
 </script>
-
-
 </body>
 </html>

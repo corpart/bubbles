@@ -12,6 +12,16 @@ svg{
     top: 0px;
 }
 
+
+
+@-webkit-keyframes pulse {
+  0% { box-shadow:0 0 8px #ffffff, inset 0 0 8px #ea4c89; }
+  50% { box-shadow:0 0 16px #ffffff, inset 0 0 14px #ea4c89; }
+  100% { box-shadow:0 0 8px #ffffff, inset 0 0 8px #ea4c89; }
+}
+
+
+
 .button {
   -webkit-animation-duration: 3s;
   -webkit-animation-iteration-count: infinite;
@@ -52,6 +62,10 @@ svg{
   -webkit-animation-delay: 2.75s;
   animation-delay: 2.75s;
 }
+
+
+
+
 
 
 

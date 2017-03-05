@@ -76,6 +76,7 @@ function newStationWord(sid, word) {
    
     var totalLength = path.node().getTotalLength() * POLYGON_SCALE;
 
+    //ease out current graphics
     path
       .attr("stroke-dasharray", totalLength + " " + totalLength)
       .attr("stroke-dashoffset", 0)
@@ -101,22 +102,31 @@ function newStationWord(sid, word) {
        
 
     ///then bring up the new word 
-    d3.select("#text"+sid)
-      .transition()
-      .delay(STATION_COUNTDOWN)
-        .duration(1000)
-        .attr("fill-opacity", 1)
-        .text(word)
-
-       
-
     path
       .transition()
       .delay(STATION_COUNTDOWN)
         .duration(3000)
         // .ease("linear")
         .attr("stroke-dashoffset", 0)
-        .attr("color", newColor);
+        .attr("stroke", newColor);
+    
+    poly
+      .transition()
+        .delay(STATION_COUNTDOWN)
+        .duration(3000)
+        .attr("fill", newColor)
+        .attr("opacity", 1);
+
+    d3.select("#text"+sid)
+      .transition()
+      .delay(STATION_COUNTDOWN)
+        .duration(3000)
+        .attr("fill-opacity", 1)
+        .text(word)
+
+       
+
+   
 
 
 

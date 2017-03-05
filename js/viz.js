@@ -102,6 +102,35 @@ function getColorOfWord (s){
 function addButtons(){
    svg = d3.select('body').append('svg')
 
+
+   var defs = svg.append("defs");
+   //innerglow
+   var filter = defs.append("filter")
+     .attr("id","inner-glow")
+   filter.append ( "feGaussianBlur")
+     .attr("stdDeviation",6/POLYGON_SCALE)
+     .attr("result","offset-blur");
+   filter.append ( "feComposite")
+     .attr("operator","out")
+     .attr("in","SourceGraphic")
+     .attr("in2","offset-blur")
+     .attr("result","inverse");  
+
+  //Filter for the outside glow
+  var defs = svg.append("defs");
+    var filter = defs.append("filter")
+    .attr("id","glow");
+  filter.append("feGaussianBlur")
+    .attr("stdDeviation","3")
+    .attr("result","coloredBlur");
+  var feMerge = filter.append("feMerge");
+  feMerge.append("feMergeNode")
+    .attr("in","coloredBlur");
+  feMerge.append("feMergeNode")
+    .attr("in","SourceGraphic");
+
+
+
    d3.json("data/buttons.json", function(error, dataset){
 
           if (error) {
@@ -141,14 +170,15 @@ function addButtons(){
                   // .attr("class", "glow")  //add a glow effect
                   .attr("transform", function(d){
                        // "translate(480,480)scale(23)rotate(180)"
-                       var s = "translate("+ d.x + "," + d.y + ")scale(6)" ;
-                       return s
+                       var s = "translate("+ d.x + "," + d.y + ")scale("+POLYGON_SCALE+")" ;
+                       return s;
                   })
                   .attr("points", function(d){
                       // console.log(d.poly)
                       return d.poly;
                   })
                   .attr("fill", function (d,i){ return answers[buttons[i].answerID].color ; })
+                  .style("filter","url(#inner-glow)");
 
               svg.selectAll("text")
                  .data(dataset)
@@ -182,7 +212,8 @@ function addButtons(){
                  .attr("cy", function(d) {
                       return d.y+d.ty - 30; //offset about text 
                  })
-                 .attr("r", 0); //invisiable for now 
+                 .attr("r", 0) //invisiable for now 
+                 .style("filter","url(#glow)");
 
 
                d3.selectAll(".button")

@@ -20,22 +20,48 @@ svg{
   100% { box-shadow:0 0 8px #ffffff, inset 0 0 8px #ea4c89; }
 }
 
-
-
-.button {
-  -webkit-animation-duration: 3s;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-timing-function: ease-in;
-  -webkit-animation-direction: alternate;
-  
-  animation-duration: 3s;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in;
-  animation-direction: alternate;
-    
-  -webkit-animation-name: glow-white; 
-  animation-name: glow-white; 
+.buttons {
+  /*fill: hsl(7, 50%, 38%);*/
+  /*filter: url(#inner-glow);*/
 }
+
+.button.loading {
+  -webkit-animation: light-pulse 3s infinite;
+  -moz-animation: light-pulse 3s infinite;
+  animation: light-pulse 3s infinite;
+}
+
+@keyframes light-pulse {
+  1%   { fill: hsl(7, 50%, 38%); }
+  50%  { fill: hsl(7, 50%, 78%); }
+  100% { fill: hsl(7, 50%, 38%); }
+}
+
+@-webkit-keyframes light-pulse {
+  1%   { fill: hsl(7, 50%, 38%); }
+  50%  { fill: hsl(7, 50%, 78%); }
+  100% { fill: hsl(7, 50%, 38%); }
+}
+
+@-webkit-keyframes pulse {
+  1%   { -webkit-transform: scale(0.7); }
+  25%  { -webkit-transform: scale(1.1); }
+  45%  { -webkit-transform: scale(0.9); }
+  63%  { -webkit-transform: scale(1.05); }
+  79%  { -webkit-transform: scale(0.95); }
+  100% { -webkit-transform: scale(1.0); }
+}
+
+@keyframes pulse {
+  1%   { transform: scale(0.7); }
+  25%  { transform: scale(1.1); }
+  45%  { transform: scale(0.9); }
+  63%  { transform: scale(1.05); }
+  79%  { transform: scale(0.95); }
+  100% { transform: scale(1.0); }
+}
+
+
 
 
 

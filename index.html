@@ -382,7 +382,7 @@
                     triangleGroups[i].computeBoundingBox();
                     textPos.x = triangleGroups[i].vertices[0].x
                     textPos.y = triangleGroups[i].vertices[0].y - 20
-                    textPos.z = triangleGroups[i].boundingBox.max.z - 10;
+                    textPos.z = triangleGroups[i].boundingBox.max.z +0.1;
                     labels[i].position.copy( textPos) ;
 
                 }

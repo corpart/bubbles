@@ -286,9 +286,6 @@ function pushBubble(bx, by, br, bGroup, pi){
                 var s = answers[bGroup].word;
                 var ind = sameGroup[0].particleID; //pick the first dot
                 labels[bGroup] = makeTextSprite(s);
-
-               // labels[bGroup].position.copy( particles[ind].position) ; //.clone();
-
                 scene.add(labels[bGroup]);
 
             }

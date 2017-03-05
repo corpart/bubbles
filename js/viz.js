@@ -68,15 +68,64 @@ function prep(data){
     // TODO -> write function newStationWord(sid, word)
 function newStationWord(sid, word) {
   
+    var newInd = getIndOfWord(word);
+    var newColor = getColorOfWord(word);
+    //countdown on the station sid with animation
+    var path = svg.select("#path"+sid)
+    var poly = svg.select("[id='"+sid +"']") // button polygon
    
-    d3.select("#text"+sid).text(word);
-    d3.select("[id='"+sid +"']").attr("fill", getColorOfWord(word) );
-    buttons[sid].answerID = getIndOfWord(word);
+    var totalLength = path.node().getTotalLength() * POLYGON_SCALE;
+
+    path
+      .attr("stroke-dasharray", totalLength + " " + totalLength)
+      .attr("stroke-dashoffset", 0)
+      .transition()
+        .duration(STATION_COUNTDOWN)
+        // .ease("linear")
+        .attr("stroke-dashoffset", totalLength);
+    
+    poly
+      .attr("opacity", 1)
+      .transition()
+        .delay(STATION_COUNTDOWN/2)
+        .duration(STATION_COUNTDOWN/2)
+        .attr("opacity", 0);
+  
+
+    d3.select("#text"+sid)
+      .attr("fill-opacity",1 )
+      .transition()
+      .delay(STATION_COUNTDOWN/2)
+        .duration(STATION_COUNTDOWN/2)
+        .attr("fill-opacity", 0)
+       
+
+    ///then bring up the new word 
+    d3.select("#text"+sid)
+      .transition()
+      .delay(STATION_COUNTDOWN)
+        .duration(1000)
+        .attr("fill-opacity", 1)
+        .text(word)
+
+       
+
+    path
+      .transition()
+      .delay(STATION_COUNTDOWN)
+        .duration(3000)
+        // .ease("linear")
+        .attr("stroke-dashoffset", 0)
+        .attr("color", newColor);
+
+
+
+    // d3.select("[id='"+sid +"']").attr("fill", newColor);
+    buttons[sid].answerID = newInd;
 
     console.log("%c button " + sid + " set to " + word ,
-     'color:'+ getColorOfWord(word) +'; display: block;' )
+     'color:'+ newColor +'; display: block;' )
     //'background: green; color:'+ getColorOfWord(word) +'; display: block;'
-
 }
 
 function getIndOfWord (s){
@@ -162,8 +211,6 @@ function addButtons(){
               .enter()
               .append("polygon")
                   .attr("class", "button") //"button loading"
-                  // .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space
-                  // .attr("y3", function(d){ return d.y3;})
                   .attr("id", function(d){ return d.id;}  )
                   .attr("label", function(d){return d.label;})
                   .attr("timer", 0)
@@ -221,8 +268,8 @@ function addButtons(){
                 .data(dataset)
                 .enter()
                 .append("path")
+                      .attr("id", function(d, i) {return "path"+i; })
                       .attr("d", function(d){
-                        console.log(d.poly)
                         return lineFunction(d.poly)
                       })
                        .attr("transform", function(d){

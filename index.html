@@ -40,7 +40,7 @@
     var THREEcenterShiftY = -10 ;
 
     var TOTAL_ANSWERS =14;
-
+    var STATION_COUNTDOWN = 4000;
 
     var container, stats;
     var camera, scene, renderer;
@@ -89,6 +89,11 @@
 
     init();
     animate();
+
+    //debugging: click anywhere on canvas to change word
+    svg.on("click", function(){
+        newStationWord( ~~d3.randomUniform(0,6)(),"Present");
+    });
 
 
     function init() {
@@ -414,6 +419,8 @@
         
 
     }
+
+
 
 </script>
 </body>

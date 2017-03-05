@@ -139,7 +139,7 @@ function addButtons(){
 
                           //initialize buttons array
               // debugger
-              for (var i=0; i < dataset.length ; i ++){
+            for (var i=0; i < dataset.length ; i ++){
                   buttons[i] = {
                       buttonID: i, // out of 6 buttons.
                       answerID: i, //out of 14 answers
@@ -161,7 +161,7 @@ function addButtons(){
               .data(dataset)
               .enter()
               .append("polygon")
-                  .attr("class", "button")
+                  .attr("class", "button") //"button loading"
                   // .attr("x3", function(d){ return d.x3;}) //approximate location in threejs space
                   // .attr("y3", function(d){ return d.y3;})
                   .attr("id", function(d){ return d.id;}  )
@@ -215,6 +215,26 @@ function addButtons(){
                  .attr("r", 0) //invisiable for now 
                  .style("filter","url(#glow)");
 
+              var lineFunction = d3.line(); //.curve(d3.curveBasis);
+
+              svg.selectAll("path")
+                .data(dataset)
+                .enter()
+                .append("path")
+                      .attr("d", function(d){
+                        console.log(d.poly)
+                        return lineFunction(d.poly)
+                      })
+                       .attr("transform", function(d){
+                        var s = "translate("+ d.x + "," + d.y + ")scale("+POLYGON_SCALE+")" ;
+                        return s
+                      })
+                      .attr("stroke", function (d,i){ return answers[buttons[i].answerID].color ; })
+                      .attr("stroke-width", 1)
+                      .attr("vector-effect", "non-scaling-stroke")
+                      .attr("fill", "none")
+                      // .style("filter","url(#glow)")
+                      ;    
 
                d3.selectAll(".button")
                   .on("mousedown", function(){

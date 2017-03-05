@@ -123,7 +123,7 @@
             color: 0X666666//0xaaaaaa
         });
 
-        
+
 
 
        addBackground();
@@ -250,7 +250,7 @@
 
     }
 
-    var count = 0
+    
     function render() {
 
         ////camera
@@ -265,20 +265,7 @@
         camera.position.x = Math.cos( t ) * 800 ;  //130
         camera.position.y = Math.sin( t ) * 400; //80
 
-        // var clicking = false; 
-        // for (var i = 0; i < buttons.length; i ++) {
-        //     clicking = clicking | (buttons[i].event == MOUSE_DOWN);
-        // }
-        // // console.log(clicking);
-        // if (!clicking){
-        //     camera.position.x = Math.cos( count ) * 800 ;  //130
-        //     camera.position.y = Math.sin( count ) * 400; //80
-        //     // backgroundGroup.rotation.z =  Math.cos( 0.1*t )*5;
-
-        //     count += 0.003;
-
-        // }
-        
+      
         //move all the stars so they look random
         backgroundGroup.rotation.z =  Math.cos( 0.1*t )*5;
 

@@ -98,17 +98,23 @@ function newStationWord(sid, word) {
   
 
     d3.select("#text"+sid)
-      .attr("fill-opacity",1 )
+      .attr("fill-opacity", 10 )
       .transition()
+      // .ease(d3.easeBounce)
       .delay(STATION_COUNTDOWN/2)
         .duration(STATION_COUNTDOWN/2)
         .attr("fill-opacity", 0)
+        // .on("end", function(){
+        //   return  this.attr("fill-opacity",0);
+        // });
+
        
 
     ///then bring up the new word 
     path
       .transition()
       .delay(STATION_COUNTDOWN)
+        .attr("stroke", "white")
         .duration(1200)
         .attr("stroke-dashoffset", 0)
         .attr("stroke", newColor);
@@ -331,6 +337,7 @@ function triggerButtonUp(id){
 
 
     if (cirR < CIRCEL_R_THRESHOLD) {
+      buttons[id].animation = -1; //no animation
       return;
     }
 

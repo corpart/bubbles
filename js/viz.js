@@ -304,6 +304,8 @@ function pushBubble(bx, by, br, bGroup, pi){
             particleID: pi
         });
 
+        //todo add triangles?
+
         //2d links  & 3D lines
         if (sameGroup.length>0){
             //add first link
@@ -336,14 +338,11 @@ function pushBubble(bx, by, br, bGroup, pi){
 
 
         }
-
-
-
-
-        // triangleGeom.vertices.push(particles[newNodeID].position);
-        triangleGroups[bGroup].vertices.push(particles[pi].position);
-        // console.log(triangleGroups[bi].vertices.length)
-        addTriangle(bGroup);
+   
+        
+        //todo return the value of dots 
+        //return a list 
+        addTriangle(bGroup, pi);
 
 
         for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
@@ -384,16 +383,23 @@ function restart(data) {
 }
 
 
-function addTriangle(groupID ){
+function addTriangle(groupID, pi ){
+
+    triangleGroups[groupID].vertices.push(particles[pi].position);
 
     var l = triangleGroups[groupID].vertices.length;
+   
      if (l>2 ){
         var a = l-1 //the new node
         var b = ~~d3.randomUniform(0, l)();
         var c = ~~d3.randomUniform(0, l)();
+        //todo keep finding random number till it's not the same 
+        //up to l-1
+        //constrained by dropping probability - density constant? 
         if (a!=b && c!=a){
             triangleGroups[groupID].faces.push( new THREE.Face3( a,b,c ) );
             triangleGroups[groupID].computeFaceNormals();
+
         }
     }
 

@@ -309,12 +309,17 @@
         
         camera.lookAt( scene.position );
 
-     
+        
         //geometry updates
         if (isDataReady){ //render could be called few times before json is loaded, causing errors.
-
+            var MAX_DOTS = 500 ;
+            var startDot = 0;
             //setting up boundary
-            for (var i =0; i < data.nodes.length; i++){
+            // if (data.nodes.length>MAX_DOTS){
+            //     var startDot = data.nodes.length - MAX_DOTS ;
+            // }
+
+            for (var i =startDot; i < data.nodes.length; i++){
                 //constrain to screen size
                 data.nodes[i].x = Math.max(THREE_MIN_X, Math.min(THREE_MAX_X, data.nodes[i].x)); ;
                 data.nodes[i].y = Math.max(THREE_MIN_Y, Math.min(THREE_MAX_Y, data.nodes[i].y)); ;
@@ -324,6 +329,8 @@
                 particles[ ind ].position.y = data.nodes[i].y;
                 // console.log("node",i, "particle",ind);
             }
+            ///todo move first dots ???
+            
 
 
             if(showDataLinksInLines){
@@ -442,7 +449,7 @@
             }
 
         }
-
+        console.log("total particles", particles.length);
 
         renderer.render( scene, camera );
 

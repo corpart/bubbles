@@ -82,8 +82,12 @@ function newStationWord(sid, word) {
       .attr("stroke-dashoffset", 0)
       .transition()
         .duration(STATION_COUNTDOWN)
-        // .ease("linear")
-        .attr("stroke-dashoffset", totalLength);
+        .ease(d3.easeQuad)
+        .attr("stroke-dashoffset", totalLength)
+        .on("end", function(){
+          buttons[sid].answerID = newInd;
+          console.log("set button",sid, "to answer No.", buttons[sid].answerID );
+        });
     
     poly
       .attr("opacity", 1)
@@ -105,33 +109,24 @@ function newStationWord(sid, word) {
     path
       .transition()
       .delay(STATION_COUNTDOWN)
-        .duration(3000)
-        // .ease("linear")
+        .duration(1200)
         .attr("stroke-dashoffset", 0)
         .attr("stroke", newColor);
     
     poly
       .transition()
         .delay(STATION_COUNTDOWN)
-        .duration(3000)
+        .duration(500)
         .attr("fill", newColor)
         .attr("opacity", 1);
 
     d3.select("#text"+sid)
       .transition()
       .delay(STATION_COUNTDOWN)
-        .duration(3000)
+        .duration(500)
         .attr("fill-opacity", 1)
-        .text(word)
+        .text(word)  
 
-       
-
-   
-
-
-
-    // d3.select("[id='"+sid +"']").attr("fill", newColor);
-    buttons[sid].answerID = newInd;
 
     console.log("%c button " + sid + " set to " + word ,
      'color:'+ newColor +'; display: block;' )
@@ -267,7 +262,7 @@ function addButtons(){
                       return d.x+d.tx;
                  })
                  .attr("cy", function(d) {
-                      return d.y+d.ty - 30; //offset about text 
+                      return d.y+d.ty - 25; //offset aboves text 
                  })
                  .attr("r", 0) //invisiable for now 
                  .style("filter","url(#glow)");
@@ -312,13 +307,6 @@ function triggerButtonDown(id){
     buttons[id].event = MOUSE_DOWN;
     buttons[id].timer = Date.now() ;
     buttons[id].animation =  ~~d3.randomUniform(0,5)()
-
-   
-
-
-    //todo add SVG circcle here 
-
-
 }
 
 
@@ -332,17 +320,24 @@ function triggerButtonUp(id){
     buttons[id].timer = Date.now();
 
 
-    //if r is too small, do nothing 
-    var circleR = d3.select("#circle"+id).attr("r");
-    if (circleR < CIRCEL_R_THRESHOLD) {
-      d3.select("#circle"+id).attr("r", 0);
+    //if r is too small, do nothing
+    var cir = d3.select("#circle"+id);
+    var cirR = cir.attr("r");
+
+    cir.transition()
+        .ease(d3.easeExp)
+        .duration(150)
+        .attr("r", 0)
+
+
+    if (cirR < CIRCEL_R_THRESHOLD) {
       return;
     }
-    d3.select("#circle"+id).attr("r", 0);
-    //add particle in THREEJS
-     var newNodeID = buttons[id].particleID = particles.length;
-    var newNodeR = buttons[id].r = circleR ;//~~d3.randomUniform(MIN_R,MAX_R)();
 
+    //add particle in THREEJS
+    var newNodeID = buttons[id].particleID = particles.length;
+    var newNodeR = buttons[id].r = cirR ;//~~d3.randomUniform(MIN_R,MAX_R)();
+ 
     
     var particle = particles[ newNodeID ]
         = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[id].answerID ) );

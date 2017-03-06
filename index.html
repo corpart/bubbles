@@ -312,7 +312,7 @@
         
         //geometry updates
         if (isDataReady){ //render could be called few times before json is loaded, causing errors.
-            var MAX_DOTS = 500 ;
+            var MAX_DOTS = 30 ;
             var startDot = 0;
             //setting up boundary
             // if (data.nodes.length>MAX_DOTS){
@@ -449,7 +449,7 @@
             }
 
         }
-        console.log("total particles", particles.length);
+        
 
         renderer.render( scene, camera );
 

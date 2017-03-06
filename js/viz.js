@@ -281,6 +281,8 @@ function triggerButtonUp(id){
         pID
         );
 
+    console.log("total particles", particles.length);
+
 }
 
 function pushBubble(bx, by, br, bGroup, pi){

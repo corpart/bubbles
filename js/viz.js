@@ -22,6 +22,7 @@ function prep(data){
         particle.position.x = ~~d3.randomUniform(-300, 300)()//data.nodes[i].x;
         particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
         particle.position.z = ~~d3.randomUniform(-300, 300)();
+        particle.name = i;
         scene.add( particle );
 
         triangleGroups[data.nodes[i].group].vertices.push(particles[i].position);
@@ -246,7 +247,8 @@ function triggerButtonUp(id){
     }
 
     //add particle in THREEJS
-    var newNodeID = buttons[id].particleID = particles.length;
+    var newNodeID = buttons[id].particleID 
+      = data.nodes[data.nodes.length-1]['id']+1;//increment on node id 
     var newNodeR = buttons[id].r = cirR ;//~~d3.randomUniform(MIN_R,MAX_R)();
  
     
@@ -255,7 +257,7 @@ function triggerButtonUp(id){
     particle.position.copy( htmlToScene (buttons[id].x, buttons[id].y));
     particle.position.z = ~~d3.randomUniform(-300,300)();
     // console.log("button down", particle.position);
-    
+    particle.name = newNodeID; 
     scene.add( particle );
 
 
@@ -282,7 +284,10 @@ function triggerButtonUp(id){
         pID
         );
 
-    
+    if ( data.nodes.length > MAX_NODE_CNT) {
+      removeNodeByIndex(0);
+      //todo check if remove label 
+    }
 
 }
 

@@ -31,7 +31,9 @@ function removeNodeByIndex(nodeInd){
     }
    
     data.nodes.splice(nodeInd, 1);
-    console.log("new nodes size ", data.nodes.length);
+
+    removeParticleByName(n.particleID);
+    // console.log("new nodes size ", data.nodes.length);
     
 }
 
@@ -43,7 +45,7 @@ function removeNodeByID(nodeID){
         console.log ("no node with ID", nodeID, "found");
         return ;
     }
-    console.log("remove node", findNodeIndex(nodeID));
+    
     while(i<data.links.length){
         if( (data.links[i]['source'] == n )||(data.links[i]['target']==n)){
             console.log("remove link source", data.links[i]['source'].id, "target", data.links[i]['target'].id);
@@ -51,10 +53,24 @@ function removeNodeByID(nodeID){
         }
         else i++;
     }
-   
-    data.nodes.splice(findNodeIndex(nodeID), 1);
-    console.log("new nodes size ", data.nodes.length);
     
+    console.log("remove node", findNodeIndex(nodeID));
+    data.nodes.splice(findNodeIndex(nodeID), 1);
+
+    removeParticleByName(n.particleID);
+
+    // console.log("new nodes size ", data.nodes.length);
+    
+}
+
+function removeParticleByName(name){
+    var selectedParticle = scene.getObjectByName(name);
+    if (selectedParticle !== undefined){
+        console.log("remvoe particle ", name);
+        scene.remove(selectedParticle);
+    }else{
+        console.log("cannot find particle ", name);
+    }
 }
 
 
@@ -67,14 +83,14 @@ function addLink(nodeID1, nodeID2){
     // addLineBetweenTwoParticles(nodeID1, nodeID2)
 }
 
-function removeLink (source, target) {
-    for (var i = 0; i < nodes.links.length; i++) {
-        if (nodes.links[i].source.id == source && nodes.links[i].target.id == target) {
-            nodes.links.splice(i, 1);
-            break;
-        }
-    }
-};
+// function removeLink (source, target) {
+//     for (var i = 0; i < nodes.links.length; i++) {
+//         if (nodes.links[i].source.id == source && nodes.links[i].target.id == target) {
+//             nodes.links.splice(i, 1);
+//             break;
+//         }
+//     }
+// };
 
 
 

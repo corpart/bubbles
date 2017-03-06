@@ -1,15 +1,15 @@
 {
   "nodes": [
     {"id": 0, "r":12, "group": 5, "particleID": 0},
-    {"id": 1, "r":8, "group": 0, "particleID": 1},
-    {"id": 2, "r":15, "group": 0, "particleID": 2},
+    {"id": 1, "r":8, "group": 5, "particleID": 1},
+    {"id": 2, "r":15, "group": 5, "particleID": 2},
     {"id": 3, "r":5, "group": 3, "particleID": 3},
     {"id": 4, "r":12, "group": 4, "particleID": 4},    
     {"id": 5, "r":10, "group": 0, "particleID": 5},
     {"id": 6, "r":8, "group": 2, "particleID": 6},
-    {"id": 7, "r":15, "group": 0, "particleID": 7},
+    {"id": 7, "r":15, "group": 5, "particleID": 7},
     {"id": 8, "r":10, "group": 3, "particleID": 8},
-    {"id": 9, "r":10, "group": 4, "particleID": 9},    
+    {"id": 9, "r":10, "group": 1, "particleID": 9},    
     {"id": 10, "r":10, "group": 1, "particleID": 10},
     {"id": 11, "r":10, "group": 6, "particleID": 11},
     {"id": 12, "r":10, "group": 7, "particleID": 12},
@@ -25,6 +25,8 @@
     {"source": "0", "target": "1", "value": 5},
     {"source": "0", "target": "2", "value": 1},
     {"source": "0", "target": "7", "value": 5},
-    {"source": "8", "target": "3", "value": 2}
+    {"source": "8", "target": "3", "value": 2},
+    {"source": "19", "target": "18", "value": 2},
+    {"source": "10", "target": "9", "value": 2}
 	]   
 }

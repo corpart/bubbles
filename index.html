@@ -21,13 +21,13 @@
 <script src="js/libs/d3.min.js"></script>
 <script src="js/material.js"></script>
 <script src="js/label.js"></script>
-<script src="js/transform.js"></script>
+<script src="js/animation.js"></script>
 <script src="js/viz.js"></script>
 <script src="js/vtr.js"></script> <!-- mikes websocket thing -->
 
 
 <script>
-    var IS_DEBUGGING = false;
+    var IS_DEBUGGING = true;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
     var SEPARATION = 200, AMOUNTX = 20, AMOUNTY = 20;
     var MIN_R = 5, MAX_R = 15; //for edgy
@@ -189,8 +189,8 @@
         container.appendChild( renderer.domElement );
 
         if(IS_DEBUGGING){
-        stats = new Stats();
-        container.appendChild( stats.dom );
+            stats = new Stats();
+            container.appendChild( stats.dom );
         }
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         document.addEventListener( 'touchstart', onDocumentTouchStart, false );
@@ -256,7 +256,9 @@
         requestAnimationFrame( animate );
 
         render();
-        stats.update();
+        if(IS_DEBUGGING){
+            stats.update();
+        }
 
     }
 

@@ -20,8 +20,6 @@
     {"id": 17, "r":10, "group": 12, "particleID": 17},
     {"id": 18, "r":10, "group": 13, "particleID": 18},
     {"id": 19, "r":10, "group": 13, "particleID": 19}
-
-
 	],
   "links": [
     {"source": "0", "target": "1", "value": 5},

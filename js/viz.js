@@ -39,7 +39,7 @@ function prep(data){
             .strength(0.3)
             )
 
-        .force("collide",d3.forceCollide( function(d){  return d.r + 30 }).iterations(5) ) //2//16
+        .force("collide",d3.forceCollide( function(d){  return d.r + 30 }).iterations(2) ) //2//16
         .force("charge", d3.forceManyBody(0)
             .strength(-30)  //negative:repell
             .distanceMax(20)
@@ -344,7 +344,7 @@ function pushBubble(bx, by, br, bGroup, pi){
         
         //todo return the value of dots 
         //return a list 
-        addTriangle(bGroup, pi);
+      //  addTriangle(bGroup, pi);
 
 
         for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {

@@ -27,13 +27,16 @@
 
 
 <script>
+    var IS_DEBUGGING = false;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
     var SEPARATION = 200, AMOUNTX = 20, AMOUNTY = 20;
     var MIN_R = 5, MAX_R = 15; //for edgy
     // var MIN_R = 48, MAX_R = 96; //for blurry
     var THREE_MAX_X = 1200, THREE_MIN_X = -1200;
     var THREE_MAX_Y = 1200, THREE_MIN_Y = -300;
-    var CIRCEL_R_THRESHOLD =  8 ;//8;
+    
+    var CIRCEL_R_THRESHOLD = 8;
+        if (IS_DEBUGGING) {CIRCEL_R_THRESHOLD = 0; } //so that it works with mouse clicks 
     var POLYGON_SCALE = 6;
 
     var THREEcenterShiftX = -300;
@@ -90,11 +93,11 @@
     init();
     animate();
 
-    //debugging: click anywhere on canvas to change word
-    svg.on("click", function(){
-        // newStationWord( 3,"Adventurous");
-        newStationWord( ~~d3.randomUniform(0,6)(),"Adventurous");
-    });
+    // //debugging: click anywhere on canvas to change word
+    // svg.on("click", function(){
+    //     // newStationWord( 3,"Adventurous");
+    //     newStationWord( ~~d3.randomUniform(0,6)(),"Adventurous");
+    // });
 
 
     function init() {
@@ -185,9 +188,10 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         container.appendChild( renderer.domElement );
 
+        if(IS_DEBUGGING){
         stats = new Stats();
         container.appendChild( stats.dom );
-
+        }
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         document.addEventListener( 'touchstart', onDocumentTouchStart, false );
         document.addEventListener( 'touchmove', onDocumentTouchMove, false );
@@ -256,7 +260,8 @@
 
     }
 
-    
+    var lastTime = 0 ;
+    var testingButton = -1;
     function render() {
 
         ////camera
@@ -275,8 +280,30 @@
         //move all the stars so they look random
         backgroundGroup.rotation.z =  Math.cos( 0.1*t )*5;
 
-        
+        if (IS_DEBUGGING){
+        //fire at will ------
+        /*fires every 1s
+        60 votes per minute 
+        */
+            if (currentTime - lastTime > 1000 && testingButton!=-1){
 
+                triggerButtonUp(testingButton);
+                newStationWord( ~~d3.randomUniform(0,6)(),answers[ ~~d3.randomUniform(0,14)()].word);
+
+                testingButton= -1;
+                lastTime = currentTime;
+            }
+            else if (currentTime - lastTime > 800){
+                if (testingButton == -1){
+                    testingButton = ~~d3.randomUniform(0,6)();
+                    triggerButtonDown(testingButton);    
+                }
+                
+            }
+        }
+        
+        
+        //------------fire at will 
         
         camera.lookAt( scene.position );
 

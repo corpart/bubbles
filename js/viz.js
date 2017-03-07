@@ -1,3 +1,4 @@
+
 function prep(data){
     var mesh;
     //add triangle mesh one time
@@ -281,7 +282,7 @@ function triggerButtonUp(id){
         pID
         );
 
-    console.log("total particles", particles.length);
+    
 
 }
 
@@ -297,66 +298,46 @@ function pushBubble(bx, by, br, bGroup, pi){
                 } // +turn string to number
             )
 
-        data.nodes.push({
-            id:  newNodeID,
-            r: br,
-            x: bx,
-            y: by,
-            group:  bGroup,
-            particleID: pi
-        });
+        //note that sameGroup dosen't have the new node
+        addNode(newNodeID, br, bGroup, bx, by, pi);
+        
 
-        //todo add triangles?
-
-        //2d links  & 3D lines
+        //2d links 
         if (sameGroup.length>0){
             //add first link
             var j = ~~d3.randomUniform(0, sameGroup.length)();
             var targetInd = sameGroup[j].id;
-            data.links.push ({source: newNodeID ,
-                target: targetInd,
-                value:~~d3.randomUniform(1, 5)()
-            })
-            addLineBetweenTwoParticles(newNodeID, targetInd)
+            addLink(newNodeID, targetInd);
 
-            //add second link
+            //sometimes add a second link
             var k = ~~d3.randomUniform(0, sameGroup.length)();
             if ( k!=j){
                 targetInd = sameGroup[k].id;
-                data.links.push ({source: newNodeID , target: targetInd, value:~~d3.randomUniform(1, 5 )() })
-                addLineBetweenTwoParticles(newNodeID, targetInd)
-
+                addLink(newNodeID, targetInd);
             }
 
+            //add label in THREE
             if (sameGroup.length > 5 && labels[bGroup] == null ){
-
                 console.log('add labels for answer group', bGroup);
                 var s = answers[bGroup].word;
-                var ind = sameGroup[0].particleID; //pick the first dot
+                var ind = sameGroup[0].particleID; //pick a random dot
                 labels[bGroup] = makeTextSprite(s);
                 scene.add(labels[bGroup]);
-
             }
-
-
         }
    
         
         //todo return the value of dots 
         //return a list 
-      //  addTriangle(bGroup, pi);
 
+        //  addTriangle(bGroup, pi);
 
-        for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
-
-            var object = edgeObjects[ i ];
-
-            // object.rotation.x += 0.01;
-            // object.rotation.y += 0.005;
-            object.rotation.x = 0.05;
-            object.rotation.y = 0.1;
-
-        }
+        // //slightly twist the edge to not match the triangles
+        // for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
+        //     var object = edgeObjects[ i ];
+        //     object.rotation.x = 0.05;
+        //     object.rotation.y = 0.1;
+        // }
 
 
         restart(data);
@@ -381,7 +362,7 @@ function restart(data) {
   // Update and restart the simulation.
     simulation.nodes(data.nodes);
     simulation.force("link").links(data.links);
-    // simulation.alpha(1).restart();
+    simulation.alpha(1).restart();
 }
 
 
@@ -394,7 +375,9 @@ function addTriangle(groupID, pi ){
      if (l>2 ){
         var a = l-1 //the new node
         var b = ~~d3.randomUniform(0, l)();
+
         var c = ~~d3.randomUniform(0, l)();
+        while (c = a)
         //todo keep finding random number till it's not the same 
         //up to l-1
         //constrained by dropping probability - density constant? 

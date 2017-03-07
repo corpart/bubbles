@@ -14,23 +14,6 @@ vtr.sckt = function (wsuri, btnfilename, startvote, endvote, newword) {
   self.endvote = endvote;
   self.newword = newword;
 
-  // open websocket to control server
-  self.ws = new WebSocket(self.wsuri);
-
-  self.ws.onopen = function() {
-      console.log("connected to " + wsuri);
-  }
-
-  self.ws.onclose = function(e) {
-      console.log("connection closed (" + e.code + ")");
-  }
-
-  // pass messages to handle message method
-  self.ws.onmessage = function(e) {
-      console.log("message received: " + e.data);
-      self.handlemsg(JSON.parse(e.data));
-  }
-
   // load vote station data
   self.stns = {};
   d3.json(btnfilename, function(error, data) {
@@ -42,6 +25,25 @@ vtr.sckt = function (wsuri, btnfilename, startvote, endvote, newword) {
         "choice": d.choice
       };
     });
+
+
+    // open websocket to control server
+    self.ws = new WebSocket(self.wsuri);
+
+    self.ws.onopen = function() {
+        console.log("connected to " + wsuri);
+    }
+
+    self.ws.onclose = function(e) {
+        console.log("connection closed (" + e.code + ")");
+    }
+
+    // pass messages to handle message method
+    self.ws.onmessage = function(e) {
+        console.log("message received: " + e.data);
+        self.handlemsg(JSON.parse(e.data));
+    }
+
   });
 }
 

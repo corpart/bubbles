@@ -45,29 +45,13 @@ function checkLonelyNodes(){
         var s = "Node ID " + nodeID + " connections: " ;
 
         while(i<data.links.length){
-            // debugger
-
-            
             if( (data.links[i]['source'].id === nodeID )||(data.links[i]['target'].id === nodeID)){
                 s += data.links[i]['source'].id;
                 s += '+'
                 s += data.links[i]['target'].id;
                 s += ',';
-               // break;
-
-               
             } 
-            // else {
-            //     console.log("no match for " + nodeID + ": " +  data.links[i]['source'].id + " | " + data.links[i]['target'].id)
-            // }
             i++;
-            // else {
-            //     i++;
-            //     if (i == data.links.length){
-            //         console.log("not connected", nodeID, data.nodes[j]);
-            //     }
-
-            // }
         }
         s+='\n';
         console.log(s);

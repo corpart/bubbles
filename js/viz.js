@@ -244,10 +244,10 @@ function triggerButtonUp(id){
         .attr("r", 0)
 
 
-    if (cirR < CIRCEL_R_THRESHOLD) {
-      buttons[id].animation = -1; //no animation
-      return;
-    }
+    // if (cirR < CIRCLE_R_THRESHOLD) {
+    //   buttons[id].animation = -1; //no animation
+    //   return;
+    // }
 
     //add particle in THREEJS
     var newNodeID = buttons[id].particleID 
@@ -291,7 +291,7 @@ function triggerButtonUp(id){
       removeNodeByIndex(0);
       //todo check if remove label 
 
-      checkLonelyNodes();
+     // checkLonelyNodes();
     }
 
 }

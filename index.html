@@ -30,7 +30,7 @@
 
 <script>
     var IS_DEBUGGING = true;
-    var MAX_NODE_CNT = 30;
+    var MAX_NODE_CNT = 300;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
     var SEPARATION = 200, AMOUNTX = 20, AMOUNTY = 20;
     var MIN_R = 5, MAX_R = 15; //for edgy
@@ -38,8 +38,8 @@
     var THREE_MAX_X = 1200, THREE_MIN_X = -1200;
     var THREE_MAX_Y = 1200, THREE_MIN_Y = -300;
     
-    var CIRCEL_R_THRESHOLD = 8;
-        if (IS_DEBUGGING) {CIRCEL_R_THRESHOLD = 0; } //so that it works with mouse clicks 
+    var CIRCLE_R_THRESHOLD = 8;
+        if (IS_DEBUGGING) {CIRCLE_R_THRESHOLD = 0; } //so that it works with mouse clicks 
     var POLYGON_SCALE = 6;
 
     var THREEcenterShiftX = -300;
@@ -298,7 +298,7 @@
         /*fires every 1s
         60 votes per minute 
         */
-            if (currentTime - lastTime > 1000 && testingButton!=-1){
+            if (currentTime - lastTime > 250 && testingButton!=-1){
 
                 triggerButtonUp(testingButton);
                 newStationWord( ~~d3.randomUniform(0,6)(),answers[ ~~d3.randomUniform(0,14)()].word);
@@ -306,7 +306,7 @@
                 testingButton= -1;
                 lastTime = currentTime;
             }
-            else if (currentTime - lastTime > 800){
+            else if (currentTime - lastTime > 200){
                 if (testingButton == -1){
                     testingButton = ~~d3.randomUniform(0,6)();
                     triggerButtonDown(testingButton);    

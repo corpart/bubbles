@@ -23,6 +23,7 @@ function prep(data){
         particle.position.y = ~~d3.randomUniform(-300, 300)(); //data.nodes[i].y;
         particle.position.z = ~~d3.randomUniform(-300, 300)();
         particle.name = i;
+        particle.groupID = data.nodes[i].group ; 
         scene.add( particle );
 
         triangleGroups[data.nodes[i].group].vertices.push(particles[i].position);
@@ -260,6 +261,7 @@ function triggerButtonUp(id){
     particle.position.copy( htmlToScene (buttons[id].x, buttons[id].y));
     particle.position.z = ~~d3.randomUniform(-300,300)();
     // console.log("button down", particle.position);
+    particle.groupID = buttons[id].answerID ; 
     particle.name = newNodeID; 
     scene.add( particle );
 
@@ -298,7 +300,7 @@ function triggerButtonUp(id){
 
 function pushBubble(bx, by, br, bGroup, pi){
 
-        var newNodeID = pi;/// data.nodes.length; // node 2d -> particle 3d
+        var newNodeID = pi; // node 2d -> particle 3d
 
 
         //find other nodes within the same group
@@ -341,7 +343,7 @@ function pushBubble(bx, by, br, bGroup, pi){
         //todo return the value of dots 
         //return a list 
 
-        //  addTriangle(bGroup, pi);
+         addTriangle(bGroup, pi);
 
         // //slightly twist the edge to not match the triangles
         // for ( var i = 0, l = edgeObjects.length; i < l; i ++ ) {
@@ -377,28 +379,29 @@ function restart(data) {
 }
 
 
-function addTriangle(groupID, pi ){
+function addTriangle(groupID, pid ){
 
-    triangleGroups[groupID].vertices.push(particles[pi].position);
+    triangleGroups[groupID].vertices.push(particles[pid].position);
 
     var l = triangleGroups[groupID].vertices.length;
-   
+    //TODO change probablility for this based on l 
+    //constrained by dropping probability - density constant? 
      if (l>2 ){
         var a = l-1 //the new node
-        var b = ~~d3.randomUniform(0, l)();
+        var b = ~~d3.randomUniform(0, l-1)(); //this range does not include a.
+        var c = ~~d3.randomUniform(0, l-1)(); 
 
-        var c = ~~d3.randomUniform(0, l)();
-        while (c = a)
-        //todo keep finding random number till it's not the same 
-        //up to l-1
-        //constrained by dropping probability - density constant? 
-        if (a!=b && c!=a){
-            triangleGroups[groupID].faces.push( new THREE.Face3( a,b,c ) );
-            triangleGroups[groupID].computeFaceNormals();
-
-        }
+        // keep finding random number till it's not the same 
+        while (c == b){
+           c = ~~d3.randomUniform(0, l-1)(); 
+        }      
+        triangleGroups[groupID].faces.push( new THREE.Face3( a,b,c ) );
+        triangleGroups[groupID].computeFaceNormals();
     }
+}
 
+function deleteTriangleByParticleID(pid){
+    // var gid = 
 }
 
 function resetEndOfVoteAnimation (i) {
@@ -470,7 +473,6 @@ function addBackground(){
             particle.position.x = doubleX * (Math.random()-0.5) ;
             particle.position.y = doubleY * (Math.random()-0.5) ;
             particle.position.z = doubleZ * (Math.random()-0.5);
-
             particle.scale.x = particle.scale.y = Math.random() * 8 + 12;
             backgroundGroup.add( particle );
         }

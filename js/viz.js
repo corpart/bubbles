@@ -213,6 +213,7 @@ function addButtons(){
 
 
 function triggerButtonDown(id){
+  // debugger
     resetEndOfVoteAnimation(id);
     // console.log("mousedown on button: " + id);
     buttons[id].event = MOUSE_DOWN;
@@ -222,6 +223,8 @@ function triggerButtonDown(id){
 
 
 function triggerButtonUp(id){
+
+
     if( buttons[id].timer == 0 || buttons[id].event != MOUSE_DOWN ){
         //with mouse event,  button up can be triggered without button down
         return;
@@ -287,13 +290,16 @@ function triggerButtonUp(id){
     if ( data.nodes.length > MAX_NODE_CNT) {
       removeNodeByIndex(0);
       //todo check if remove label 
+
+      checkLonelyNodes();
     }
 
 }
 
 function pushBubble(bx, by, br, bGroup, pi){
 
-        var newNodeID = data.nodes.length; // node 2d -> particle 3d
+        var newNodeID = pi;/// data.nodes.length; // node 2d -> particle 3d
+
 
         //find other nodes within the same group
         //do this before adding itself to avoiding linking to self

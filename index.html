@@ -29,8 +29,8 @@
 
 
 <script>
-    var IS_DEBUGGING = false;
-    var MAX_NODE_CNT = 21;
+    var IS_DEBUGGING = true;
+    var MAX_NODE_CNT = 30;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
     var SEPARATION = 200, AMOUNTX = 20, AMOUNTY = 20;
     var MIN_R = 5, MAX_R = 15; //for edgy
@@ -265,25 +265,33 @@
 
     }
 
+
+
     var lastTime = 0 ;
     var testingButton = -1;
     function render() {
 
-        ////camera
+               //timer controlled camera pan
+            var currentTime = Date.now();
+            var t = 0.0002 * currentTime;
+
+
+        if(!IS_DEBUGGING){
+                 ////camera
         //mouse controlled camera pan
         // camera.position.x += ( mouseX - camera.position.x ) * .05;
         // camera.position.y += ( - mouseY - camera.position.y ) * .05;
 
-        //timer controlled camera pan
-        var currentTime = Date.now();
-        var t = 0.0002 * currentTime;
+          
+            camera.position.x = Math.cos( t ) * 800 ;  //130
+            camera.position.y = Math.sin( t ) * 400; //80
 
-        camera.position.x = Math.cos( t ) * 800 ;  //130
-        camera.position.y = Math.sin( t ) * 400; //80
-
+               //move all the stars so they look random
+            backgroundGroup.rotation.z =  Math.cos( 0.1*t )*5;
+        }
+       
       
-        //move all the stars so they look random
-        backgroundGroup.rotation.z =  Math.cos( 0.1*t )*5;
+     
 
         if (IS_DEBUGGING){
         //fire at will ------

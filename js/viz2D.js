@@ -37,6 +37,44 @@ function removeNodeByIndex(nodeInd){
     
 }
 
+function checkLonelyNodes(){
+    var nodeID ;
+    for (var j = 0; j < data.nodes.length; j++) {
+        var i= 0;
+        nodeID = data.nodes[j].id ;
+        var s = "Node ID " + nodeID + " connections: " ;
+
+        while(i<data.links.length){
+            // debugger
+
+            
+            if( (data.links[i]['source'].id === nodeID )||(data.links[i]['target'].id === nodeID)){
+                s += data.links[i]['source'].id;
+                s += '+'
+                s += data.links[i]['target'].id;
+                s += ',';
+               // break;
+
+               
+            } 
+            // else {
+            //     console.log("no match for " + nodeID + ": " +  data.links[i]['source'].id + " | " + data.links[i]['target'].id)
+            // }
+            i++;
+            // else {
+            //     i++;
+            //     if (i == data.links.length){
+            //         console.log("not connected", nodeID, data.nodes[j]);
+            //     }
+
+            // }
+        }
+        s+='\n';
+        console.log(s);
+    }
+    
+}
+
 
 function removeNodeByID(nodeID){
     var i = 0;
@@ -76,8 +114,8 @@ function removeParticleByName(name){
 
 function addLink(nodeID1, nodeID2){
     data.links.push ({
-        source: nodeID1 ,
-        target: nodeID2,
+        source: findNodeByID(nodeID1) ,
+        target: findNodeByID(nodeID2),
         value:~~d3.randomUniform(1, 5)()
     })
     // addLineBetweenTwoParticles(nodeID1, nodeID2)
@@ -98,6 +136,7 @@ var findNodeByID = function (id) {
     for (var i in data.nodes) {
         if (data.nodes[i]["id"] === id) return data.nodes[i];
     }
+    console.error("cannot find node with ID"+ id);
     ;
 };
 

@@ -74,7 +74,7 @@ function addButtons(){
    var filter = defs.append("filter")
      .attr("id","inner-glow")
    filter.append ( "feGaussianBlur")
-     .attr("stdDeviation",6/POLYGON_SCALE)
+     .attr("stdDeviation",12/POLYGON_SCALE)
      .attr("result","offset-blur");
    filter.append ( "feComposite")
      .attr("operator","out")
@@ -87,7 +87,7 @@ function addButtons(){
     var filter = defs.append("filter")
     .attr("id","glow");
   filter.append("feGaussianBlur")
-    .attr("stdDeviation","3")
+    .attr("stdDeviation",12/POLYGON_SCALE)
     .attr("result","coloredBlur");
   var feMerge = filter.append("feMerge");
   feMerge.append("feMergeNode")
@@ -160,7 +160,7 @@ function addButtons(){
                  })
                  .attr("text-anchor", "middle")
                  .attr("font-family", "sans-serif")
-                 .attr("font-size", "13px")
+                 .attr("font-size", "20px")
                  .attr("fill", "white");
 
               svg.selectAll("circle")
@@ -194,7 +194,7 @@ function addButtons(){
                         return s
                       })
                       .attr("stroke", function (d,i){ return answers[buttons[i].answerID].color ; })
-                      .attr("stroke-width", 1)
+                      .attr("stroke-width", POLYGON_STROKE_WIDTH)
                       .attr("vector-effect", "non-scaling-stroke")
                       .attr("fill", "none")
                       // .style("filter","url(#glow)")
@@ -332,9 +332,9 @@ function pushBubble(bx, by, br, bGroup, pi){
 
             //add label in THREE
             if (sameGroup.length > 5 && labels[bGroup] == null ){
-                console.log('add labels for answer group', bGroup);
+                // console.log('add labels for answer group', bGroup);
                 var s = answers[bGroup].word;
-                var ind = sameGroup[0].particleID; //pick a random dot
+                // var ind = sameGroup[0].particleID; //pick a random dot
                 labels[bGroup] = makeTextSprite(s);
                 scene.add(labels[bGroup]);
             }
@@ -495,7 +495,7 @@ function addBackground(){
             particle.position.x = doubleX * (Math.random()-0.5) ;
             particle.position.y = doubleY * (Math.random()-0.5) ;
             particle.position.z = doubleZ * (Math.random()-0.5);
-            particle.scale.x = particle.scale.y = Math.random() * 8 + 12;
+            particle.scale.x = particle.scale.y = Math.random() * 16 + 12;
             backgroundGroup.add( particle );
         }
     }

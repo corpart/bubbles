@@ -30,7 +30,7 @@
 
 <script>
     var IS_DEBUGGING = false;
-    var MAX_NODE_CNT = 23;
+    var MAX_NODE_CNT = 450;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
     var SEPARATION = 200, AMOUNTX = 20, AMOUNTY = 20;
     var MIN_R = 5, MAX_R = 15; //for edgy
@@ -40,7 +40,8 @@
     
     var CIRCLE_R_THRESHOLD = 8;
         if (IS_DEBUGGING) {CIRCLE_R_THRESHOLD = 0; } //so that it works with mouse clicks 
-    var POLYGON_SCALE = 6;
+    var POLYGON_SCALE = 12;
+    POLYGON_STROKE_WIDTH = 2;
 
     var THREEcenterShiftX = -300;
     var THREEcenterShiftY = -10 ;

@@ -17,13 +17,13 @@
         return new THREE.MeshBasicMaterial( {
             color: answers[answerID].color,
             // color: 0X666666,
-            opacity: 0.3,
+            opacity: 0.7, //0.3
             wireframe: true
              } )
     }
 
     function getFaceMaterial (answerID){
-        return new THREE.MeshBasicMaterial( { color: answers[answerID].color, opacity:0.2,
+        return new THREE.MeshBasicMaterial( { color: answers[answerID].color, opacity:0.2, //0.2
             side: THREE.DoubleSide ,
             transparent: true,
             blending: THREE.AdditiveBlending } );

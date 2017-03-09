@@ -30,9 +30,9 @@
 
 <script>
     var IS_DEBUGGING = false;
-    var MAX_NODE_CNT = 100;
+    var MAX_NODE_CNT = 400;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
-    var SEPARATION = 200, AMOUNTX = 10, AMOUNTY = 10;
+    var SEPARATION = 200, AMOUNTX = 15, AMOUNTY = 15;
     var MIN_R = 5, MAX_R = 15; //for edgy
     // var MIN_R = 48, MAX_R = 96; //for blurry
     var THREE_MAX_X = 1200, THREE_MIN_X = -1200;
@@ -41,7 +41,7 @@
     var CIRCLE_R_THRESHOLD = 8;
         if (IS_DEBUGGING) {CIRCLE_R_THRESHOLD = 0; } //so that it works with mouse clicks 
     var POLYGON_SCALE = 11;
-    var POLYGON_STROKE_WIDTH = 2; //2
+    var POLYGON_STROKE_WIDTH = 3; //2
 
     var THREEcenterShiftX = -300;
     var THREEcenterShiftY = -10 ;
@@ -155,8 +155,25 @@
                     isDataReady = true;
                     answers = dataset;
                     
+
+                    //add label in THREE
+                    // console.log('add labels for answer group', bGroup);
+                    for (var i= 0; i<answers.length; i++){
+
+                        var s = answers[i].word;
+                        labels[i] = makeTextSprite(s);
+                        labels[i].position.x=labels[i].position.y=0;
+                        labels[i].position.z=20000;
+                        scene.add(labels[i]);
+                    }
+                   
+
+
+
                 }
         });
+
+
 
         addButtons();
 
@@ -287,6 +304,7 @@
 
     var lastTime = 0 ;
     var testingButton = -1;
+
     function render() {
 
                //timer controlled camera pan
@@ -465,7 +483,7 @@
                 }
             }
 
-            for(var i = 0 ; i< triangleGroups.length; i ++){
+            for(var i = 0 ; i< labels.length; i ++){
                 updateLabel(i);
             }
 

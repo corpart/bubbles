@@ -34,7 +34,7 @@ function prep(data){
     })
 
 
-
+    
 
     simulation = d3.forceSimulation()
         .force("link", d3.forceLink()
@@ -50,7 +50,7 @@ function prep(data){
             )
         .force("center", d3.forceCenter(windowHalfX / 2 + THREEcenterShiftX, windowHalfY / 2 + THREEcenterShiftY)) // keeps nodes in the center of the viewport
         .force("y", d3.forceY(0))
-        // .force("x", d3.forceX(0).strength(0.005)) //0.05
+        .force("x", d3.forceX(0).strength(0.001)) //0.05
 
     // var ticked = function() { ///TODO function?
     // }
@@ -123,14 +123,7 @@ function addButtons(){
                 };
 
 
-                //add label in THREE
-                // console.log('add labels for answer group', bGroup);
-                var s = answers[i].word;
-                labels[i] = makeTextSprite(s);
-                labels[i].position.x=labels[i].position.y=0;
-                labels[i].position.z=20000;
-                scene.add(labels[i]);
-
+            
               }
 
               svg
@@ -142,7 +135,6 @@ function addButtons(){
                   .attr("id", function(d){ return d.id;}  )
                   .attr("label", function(d){return d.label;})
                   .attr("timer", 0)
-                  // .attr("class", "glow")  //add a glow effect
                   .attr("transform", function(d){
                        // "translate(480,480)scale(23)rotate(180)"
                        var s = "translate("+ d.x + "," + d.y + ")scale("+POLYGON_SCALE+")" ;
@@ -204,11 +196,12 @@ function addButtons(){
                         var s = "translate("+ d.x + "," + d.y + ")scale("+POLYGON_SCALE+")" ;
                         return s
                       })
+                    
                       .attr("stroke", function (d,i){ return answers[buttons[i].answerID].color ; })
                       .attr("stroke-width", POLYGON_STROKE_WIDTH)
                       .attr("vector-effect", "non-scaling-stroke")
                       .attr("fill", "none")
-                      // .style("filter","url(#glow)")
+                      .style("filter","url(#glow)")
                       ;    
 
                d3.selectAll(".button")
@@ -340,7 +333,7 @@ function pushBubble(bx, by, br, bGroup, pi){
                 targetInd = sameGroup[k].id;
                 addLink(newNodeID, targetInd);
             }
-            updateLabel(bGroup);
+            // updateLabel(bGroup);
         }
    
 

@@ -50,7 +50,7 @@ function prep(data){
             )
         .force("center", d3.forceCenter(windowHalfX / 2 + THREEcenterShiftX, windowHalfY / 2 + THREEcenterShiftY)) // keeps nodes in the center of the viewport
         .force("y", d3.forceY(0))
-        .force("x", d3.forceX(0).strength(0.005)) //0.05
+        // .force("x", d3.forceX(0).strength(0.005)) //0.05
 
     // var ticked = function() { ///TODO function?
     // }
@@ -499,7 +499,7 @@ function addBackground(){
             particle.position.x = doubleX * (Math.random()-0.5) ;
             particle.position.y = doubleY * (Math.random()-0.5) ;
             particle.position.z = doubleZ * (Math.random()-0.5);
-            particle.scale.x = particle.scale.y = Math.random() * 16 + 12;
+            particle.scale.x = particle.scale.y = Math.random() * 10 + 12;
             backgroundGroup.add( particle );
         }
     }

@@ -29,14 +29,16 @@
 
 
 <script>
-    var IS_DEBUGGING = false;
+
+    var IS_DEBUGGING = true;
     var MAX_NODE_CNT = 400;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
-    var SEPARATION = 200, AMOUNTX = 15, AMOUNTY = 15;
+    var SEPARATION = 300, AMOUNTX = 15, AMOUNTY = 15;
     var MIN_R = 5, MAX_R = 15; //for edgy
     // var MIN_R = 48, MAX_R = 96; //for blurry
-    var THREE_MAX_X = 1200, THREE_MIN_X = -1200;
-    var THREE_MAX_Y = 1200, THREE_MIN_Y = -300;
+    var THREE_MAX_X = 2000, THREE_MIN_X = -1000;
+    var THREE_MAX_Y = 900, THREE_MIN_Y = -300;
+    var D3_TO_THREE_OFFSET_X = -600;
     var LABEL_THRESHOLD = 5;
     var CIRCLE_R_THRESHOLD = 8;
         if (IS_DEBUGGING) {CIRCLE_R_THRESHOLD = 0; } //so that it works with mouse clicks 
@@ -319,8 +321,8 @@
         // camera.position.y += ( - mouseY - camera.position.y ) * .05;
 
           
-            camera.position.x = Math.cos( t ) * 800 + 900 ;  //130
-            camera.position.y = Math.sin( t ) * 400; //80
+            camera.position.x = Math.cos( t ) * 800 //+ 900 ;  //130
+            camera.position.y = Math.sin( t ) * 400; //400
 
                //move all the stars so they look random
             backgroundGroup.rotation.z =  Math.cos( 0.1*t )*5;
@@ -334,15 +336,15 @@
         /*fires every 1s
         60 votes per minute 
         */
-            if (currentTime - lastTime > 1250 && testingButton!=-1){
+            if (currentTime - lastTime > 250 && testingButton!=-1){
 
                 triggerButtonUp(testingButton);
-                newStationWord( ~~d3.randomUniform(0,6)(),answers[ ~~d3.randomUniform(0,14)()].word);
+                // newStationWord( ~~d3.randomUniform(0,6)(),answers[ ~~d3.randomUniform(0,14)()].word);
 
                 testingButton= -1;
                 lastTime = currentTime;
             }
-            else if (currentTime - lastTime > 1200){
+            else if (currentTime - lastTime > 200){
                 if (testingButton == -1){
                     testingButton = ~~d3.randomUniform(0,6)();
                     triggerButtonDown(testingButton);    
@@ -355,7 +357,7 @@
         //------------fire at will 
         
         // camera.lookAt( scene.position  );
-        camera.lookAt( new THREE.Vector3(900,0,0)  );
+        camera.lookAt( new THREE.Vector3(0,0,0)  );
         
         //geometry updates
         if (isDataReady){ //render could be called few times before json is loaded, causing errors.
@@ -372,7 +374,7 @@
                 data.nodes[i].y = Math.max(THREE_MIN_Y, Math.min(THREE_MAX_Y, data.nodes[i].y)); ;
 
                 var ind = data.nodes[i].particleID
-                particles[ ind ].position.x = data.nodes[i].x;
+                particles[ ind ].position.x = data.nodes[i].x + D3_TO_THREE_OFFSET_X;
                 particles[ ind ].position.y = data.nodes[i].y;
                 // console.log("node",i, "particle",ind);
             }

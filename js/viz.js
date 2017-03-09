@@ -34,7 +34,7 @@ function prep(data){
     })
 
 
-    
+
 
     simulation = d3.forceSimulation()
         .force("link", d3.forceLink()
@@ -196,7 +196,7 @@ function addButtons(){
                         var s = "translate("+ d.x + "," + d.y + ")scale("+POLYGON_SCALE+")" ;
                         return s
                       })
-                    
+
                       .attr("stroke", function (d,i){ return answers[buttons[i].answerID].color ; })
                       .attr("stroke-width", POLYGON_STROKE_WIDTH)
                       .attr("vector-effect", "non-scaling-stroke")
@@ -264,7 +264,7 @@ function triggerButtonUp(bidx){
     
     var particle = particles[ newNodeID ]
         = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[bidx].answerID ) );
-    particle.position.copy( htmlToScene (buttons[bidx].x, buttons[bidx].y));
+    particle.position.copy( htmlToScene (buttons[bidx].x3, buttons[bidx].y3));
     particle.position.z = ~~d3.randomUniform(-300,300)();
     // console.log("button down", particle.position);
     particle.groupID = buttons[bidx].answerID ; 

@@ -116,11 +116,11 @@ function updateLabel(groupID){
             labels[groupID].position.x = 0;
             labels[groupID].position.y = 0;
             labels[groupID].position.z = 20000;
-            console.log(groupID,"is out of boundary");
+            // console.log(groupID,"is out of boundary");
         } else{
             // getVertexIndexFromParticleId(groupID, name)
             triangleGroups[groupID].computeBoundingBox();
-            labels[groupID].position.x = sameGroup[0].x;//triangleGroups[groupID].vertices[0].x
+            labels[groupID].position.x = sameGroup[0].x + D3_TO_THREE_OFFSET_X ;//triangleGroups[groupID].vertices[0].x
             labels[groupID].position.y = sameGroup[0].y;//triangleGroups[groupID].vertices[0].y - 20
             
             labels[groupID].position.z = triangleGroups[groupID].boundingBox.max.z +0.1;

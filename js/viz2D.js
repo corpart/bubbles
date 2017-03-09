@@ -69,19 +69,17 @@ function removeParticleByName(name){
         return;
     }
 
-
-    var pid = name;//selectedParticle.name;
     var groupID = selectedParticle.groupID;
-    var i = 0;
+    var vidx = getVertexIndexFromParticleId(groupID, name);
     var newfaces = [];
     // console.log(triangleGroups[groupID].faces.length)
-    debugger
-    while (i < triangleGroups[groupID].faces.length){
+    // debugger
+    for(var i = 0; i < triangleGroups[groupID].faces.length; i++){
         // console.log("group",groupID,"face",i,":", triangleGroups[groupID].faces[i].a, 
         // ' ',triangleGroups[groupID].faces[i].b , ' ' ,triangleGroups[groupID].faces[i].c );
-        if(pid == triangleGroups[groupID].faces[i].a 
-            ||pid == triangleGroups[groupID].faces[i].b  
-            ||pid == triangleGroups[groupID].faces[i].c )
+        if(vidx === triangleGroups[groupID].faces[i].a 
+            || vidx === triangleGroups[groupID].faces[i].b  
+            || vidx === triangleGroups[groupID].faces[i].c )
         {
              // console.log("remove face", i, "for particle ",name);
              // scene.remove(triangleGroups[groupID].faces[i]);
@@ -92,8 +90,6 @@ function removeParticleByName(name){
         } else {
             newfaces.push(triangleGroups[groupID].faces[i]);
         }
-
-        i++; 
     }
     triangleGroups[groupID].faces = newfaces;
     triangleGroups[groupID].elementsNeedUpdate = true;

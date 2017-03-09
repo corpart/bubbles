@@ -223,20 +223,20 @@ function triggerButtonDown(id){
 }
 
 
-function triggerButtonUp(id){
+function triggerButtonUp(bidx){
 
 
-    if( buttons[id].timer == 0 || buttons[id].event != MOUSE_DOWN ){
+    if( buttons[bidx].timer == 0 || buttons[bidx].event != MOUSE_DOWN ){
         //with mouse event,  button up can be triggered without button down
         return;
     }
 
-    buttons[id].event = MOUSE_UP;
-    buttons[id].timer = Date.now();
+    buttons[bidx].event = MOUSE_UP;
+    buttons[bidx].timer = Date.now();
 
 
     //if r is too small, do nothing
-    var cir = d3.select("#circle"+id);
+    var cir = d3.select("#circle"+bidx);
     var cirR = cir.attr("r");
 
     cir.transition()
@@ -253,30 +253,29 @@ function triggerButtonUp(id){
 
 
     //add particle in THREEJS
-    var newNodeID = buttons[id].particleID 
-    = data.nodes.length;
+    var newNodeID = buttons[bidx].particleID = ++nextNodeID;
       // = data.nodes[data.nodes.length-1]['id']+1;//increment on node id 
-    var newNodeR = buttons[id].r = cirR ;//~~d3.randomUniform(MIN_R,MAX_R)();
+    var newNodeR = buttons[bidx].r = cirR ;//~~d3.randomUniform(MIN_R,MAX_R)();
  
     
     var particle = particles[ newNodeID ]
-        = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[id].answerID ) );
-    particle.position.copy( htmlToScene (buttons[id].x, buttons[id].y));
+        = new THREE.Sprite( getSpriteMaterial( newNodeR ,  buttons[bidx].answerID ) );
+    particle.position.copy( htmlToScene (buttons[bidx].x, buttons[bidx].y));
     particle.position.z = ~~d3.randomUniform(-300,300)();
     // console.log("button down", particle.position);
-    particle.groupID = buttons[id].answerID ; 
+    particle.groupID = buttons[bidx].answerID ; 
     particle.name = newNodeID; 
     scene.add( particle );
 
 
 
-    var pID = buttons[id].particleID;
+    var pID = buttons[bidx].particleID;
 
     //if (pID < particles.length){
     if(particles[pID].scale.x > MAX_R){
         particles[pID].scale.x = particles[pID].scale.y = MAX_R;
     }
-    particles[pID].material.color.set(answers[buttons[id].answerID].color); //force into same color //matt
+    particles[pID].material.color.set(answers[buttons[bidx].answerID].color); //force into same color //matt
     // }else {
     //     console.log("fetching", pID, "from particles array. length:", particles.length );
     // }
@@ -285,10 +284,10 @@ function triggerButtonUp(id){
 
 
     pushBubble(
-        buttons[id].x3, //x, y for d3
-        buttons[id].y3,
-        particles[id].scale.x,
-        buttons[id].answerID,
+        buttons[bidx].x3, //x, y for d3
+        buttons[bidx].y3,
+        particles[pID].scale.x,
+        buttons[bidx].answerID,
         pID
         );
 

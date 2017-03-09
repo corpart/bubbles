@@ -19,20 +19,23 @@ function removeNodeByIndex(nodeInd){
         console.log("nodeInd is out of boundary");
         return;
     }
-    var i = 0;
-    var n = data.nodes[nodeInd];
-    console.log("remove node", n);
-    while(i<data.links.length){
-        if( (data.links[i]['source'] == n )||(data.links[i]['target']==n)){
+
+    var node = data.nodes[nodeInd];
+    var newlinks = [];
+    console.log("removing node", node);
+    for(var i = 0; i < data.links.length; i++){
+        if ((data.links[i]['source'] === node) || (data.links[i]['target'] === node)) {
             console.log("remove link source", data.links[i]['source'].id, "target", data.links[i]['target'].id);
-            data.links.splice(i, 1);
+            // data.links.splice(i, 1);
+        } else {
+            newlinks.push(data.links[i]);
         }
-        else i++;
     }
+    data.links = newlinks;
    
     data.nodes.splice(nodeInd, 1);
 
-    removeParticleByName(n.particleID);
+    removeParticleByName(node.particleID);
     // console.log("new nodes size ", data.nodes.length);
     
 }
@@ -59,34 +62,6 @@ function checkLonelyNodes(){
     
 }
 
-
-function removeNodeByID(nodeID){
-    var n = findNodeByID(nodeID);
-    if (n==undefined) {
-        console.log ("no node with ID", nodeID, "found");
-        return ;
-    }
-    var newlinks = [];
-    for(var i = 0; i < data.links.length; i++){
-        if( (data.links[i]['source'] === n )||(data.links[i]['target'] === n)){
-            console.log("remove link source", data.links[i]['source'].id, "target", data.links[i]['target'].id);
-            // data.links.splice(i, 1);
-        } else {
-            newlinks.push(data.links[i]);
-        }
-    }
-    data.links = newlinks;
-    
-    console.log("remove node", findNodeIndex(nodeID));
-    data.nodes.splice(findNodeIndex(nodeID), 1);
-
-    removeParticleByName(n.particleID);
-
-    // console.log("new nodes size ", data.nodes.length);
-    
-}
-
-
 function removeParticleByName(name){
     var selectedParticle = scene.getObjectByName(name);
     if (selectedParticle === undefined){
@@ -102,13 +77,13 @@ function removeParticleByName(name){
     // console.log(triangleGroups[groupID].faces.length)
     debugger
     while (i < triangleGroups[groupID].faces.length){
-        console.log("group",groupID,"face",i,":", triangleGroups[groupID].faces[i].a, 
-        ' ',triangleGroups[groupID].faces[i].b , ' ' ,triangleGroups[groupID].faces[i].c );
+        // console.log("group",groupID,"face",i,":", triangleGroups[groupID].faces[i].a, 
+        // ' ',triangleGroups[groupID].faces[i].b , ' ' ,triangleGroups[groupID].faces[i].c );
         if(pid == triangleGroups[groupID].faces[i].a 
             ||pid == triangleGroups[groupID].faces[i].b  
             ||pid == triangleGroups[groupID].faces[i].c )
         {
-             console.log("remove face", i, "for particle ",name);
+             // console.log("remove face", i, "for particle ",name);
              // scene.remove(triangleGroups[groupID].faces[i]);
 
              // triangleGroups[groupID].faces.splice(i,1);
@@ -118,29 +93,13 @@ function removeParticleByName(name){
             newfaces.push(triangleGroups[groupID].faces[i]);
         }
 
-        
-       i++; 
-        
+        i++; 
     }
     triangleGroups[groupID].faces = newfaces;
     triangleGroups[groupID].elementsNeedUpdate = true;
 
-        // FAIL - three.js geometry references vertices by index, deleting them breaks that!
-        // remove vertex from trianglegroup.vertices
-        // var vertexIndex = -1;
-        // i = 0;
-        // while (vertexIndex < 0 && i < triangleGroups[groupID].vertices.length) {
-        //     if (selectedParticle.position === triangleGroups[groupID].vertices[i]) {
-        //         console.log("found vertex!")
-        //         vertexIndex = i;
-        //     }
-        // }
-        // triangleGroups[groupID].vertices.splice(vertexIndex,1);
-
-
-
-        console.log("remove particle ", name);
-        scene.remove(selectedParticle);
+    console.log("remove particle ", name);
+    scene.remove(selectedParticle);
 
 }
 

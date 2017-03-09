@@ -1,12 +1,12 @@
 html, body/*, #graph */{
-    width: 800px;
-    height: 600px;
+    width: 4000px;
+    height: 700px;
     margin: 0;
 }
 
 svg{
     position:absolute;
-    width: 800px;
+    width: 4000px;
     height: 900px;
     left : 0px ;
     top: 0px;

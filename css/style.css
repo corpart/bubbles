@@ -2,6 +2,8 @@ html, body/*, #graph */{
     width: 4000px;
     height: 900px;
     margin: 0;
+    background-color: #000000;
+
 }
 
 svg{

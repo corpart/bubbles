@@ -76,6 +76,8 @@
 
     var svg
 
+    var rendererWidth = 3240 ;
+    var rendererHeight = 756 ;
 
 
 
@@ -118,9 +120,13 @@
 
 
         document.body.appendChild( container );
+        
 
-        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera = new THREE.PerspectiveCamera( 75, rendererWidth / rendererHeight, 1, 10000 );
+           // camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
         camera.position.z = 1000;
+
+       
 
         scene = new THREE.Scene();
         // scene.fog = new THREE.FogExp2( 0xff0000 ); //0xefd1b5
@@ -188,10 +194,14 @@
         // particleLight.add( pointLight );
 
         //
+       
+
         renderer = new THREE.CanvasRenderer();
         renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize( rendererHeight, rendererHeight );
         container.appendChild( renderer.domElement );
+
+         onWindowResize();
 
         if(IS_DEBUGGING){
             stats = new Stats();
@@ -216,10 +226,14 @@
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
 
-        camera.aspect = window.innerWidth / window.innerHeight;
+        rendererWidth =  window.innerWidth;
+        rendererHeight =  window.innerHeight*.7 ;
+
+        camera.aspect = rendererWidth/rendererHeight; //window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        // renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize(rendererWidth, rendererHeight);
 
     }
 

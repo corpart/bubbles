@@ -29,15 +29,15 @@
 
 
 <script>
-    var IS_DEBUGGING = false;
-    var MAX_NODE_CNT = 450;
+    var IS_DEBUGGING = true;
+    var MAX_NODE_CNT = 200;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
     var SEPARATION = 200, AMOUNTX = 20, AMOUNTY = 20;
     var MIN_R = 5, MAX_R = 15; //for edgy
     // var MIN_R = 48, MAX_R = 96; //for blurry
-    var THREE_MAX_X = 1200, THREE_MIN_X = -1200;
+    var THREE_MAX_X = 1200, THREE_MIN_X = -2400;
     var THREE_MAX_Y = 1200, THREE_MIN_Y = -300;
-    
+    var LABEL_THRESHOLD = 5;
     var CIRCLE_R_THRESHOLD = 8;
         if (IS_DEBUGGING) {CIRCLE_R_THRESHOLD = 0; } //so that it works with mouse clicks 
     var POLYGON_SCALE = 12;
@@ -137,27 +137,27 @@
             color: 0X666666//0xaaaaaa
         });
 
-
-
-
        addBackground();
 
 
         //load answers from json
         d3.json("data/answers.json", function(error, dataset){
                 if (error) {
+                    isDataReady = false ;
                     console.log(error);
                 }else{
+                    isDataReady = true;
                     answers = dataset;
-
+                    
                 }
         });
 
-       addButtons();
+        addButtons();
 
         //load data from json
         d3.json("data/data.json", function(error, dataset){
                 if (error) {
+                    isDataReady = false ;
                     console.log(error);
                 }else{
                     isDataReady = true;
@@ -450,15 +450,7 @@
             }
 
             for(var i = 0 ; i< triangleGroups.length; i ++){
-                if (labels[i] !== undefined){
-                    var textPos = new THREE.Vector3();
-                    triangleGroups[i].computeBoundingBox();
-                    textPos.x = triangleGroups[i].vertices[0].x
-                    textPos.y = triangleGroups[i].vertices[0].y - 20
-                    textPos.z = triangleGroups[i].boundingBox.max.z +0.1;
-                    labels[i].position.copy( textPos) ;
-
-                }
+                updateLabel(i);
             }
 
         }

@@ -16,16 +16,16 @@ function addNode(nodeID, nodeR, nodeGroup, nodeX, nodeY, pID){
 function removeNodeByIndex(nodeInd){
     
     if(nodeInd >= data.nodes.length){
-        console.log("nodeInd is out of boundary");
+      //  console.log("nodeInd is out of boundary");
         return;
     }
 
     var node = data.nodes[nodeInd];
     var newlinks = [];
-    console.log("removing node", node);
+   // console.log("removing node", node);
     for(var i = 0; i < data.links.length; i++){
         if ((data.links[i]['source'] === node) || (data.links[i]['target'] === node)) {
-            console.log("remove link source", data.links[i]['source'].id, "target", data.links[i]['target'].id);
+          //  console.log("remove link source", data.links[i]['source'].id, "target", data.links[i]['target'].id);
             // data.links.splice(i, 1);
         } else {
             newlinks.push(data.links[i]);
@@ -94,9 +94,37 @@ function removeParticleByName(name){
     triangleGroups[groupID].faces = newfaces;
     triangleGroups[groupID].elementsNeedUpdate = true;
 
-    console.log("remove particle ", name);
+//    console.log("remove particle ", name);
     scene.remove(selectedParticle);
 
+    updateLabel(groupID);
+
+}
+
+
+function updateLabel(groupID){
+
+  if (labels[groupID] !== undefined){
+        var sameGroup = data.nodes.filter (
+                function(d){
+                    return +d.group == groupID;
+                } // +turn string to number
+            )
+        var gl = sameGroup.length;
+
+        if(gl < LABEL_THRESHOLD){
+            labels[groupID].position.x = 0;
+            labels[groupID].position.y = 0;
+            labels[groupID].position.z = 20000;
+        } else{
+            
+            triangleGroups[groupID].computeBoundingBox();
+            labels[groupID].position.x = triangleGroups[groupID].vertices[0].x
+            labels[groupID].position.y = triangleGroups[groupID].vertices[0].y - 20
+            
+            labels[groupID].position.z = triangleGroups[groupID].boundingBox.max.z +0.1;
+        }
+    }
 }
 
 

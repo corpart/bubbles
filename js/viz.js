@@ -35,6 +35,7 @@ function prep(data){
 
 
 
+
     simulation = d3.forceSimulation()
         .force("link", d3.forceLink()
             .id(function(d) { return d.index })
@@ -100,25 +101,35 @@ function addButtons(){
    d3.json("data/buttons.json", function(error, dataset){
 
           if (error) {
+              isDataReady = false;
               console.log(error);
           }else{
-
+              isDataReady = true;
                           //initialize buttons array
               // debugger
             for (var i=0; i < dataset.length ; i ++){
-                  buttons[i] = {
-                      buttonID: i, // out of 6 buttons.
-                      answerID: i, //out of 14 answers
-                      timer: 0, //for button event
-                      event: null,
-                      particleID: -1 ,// for the new particle being added
-                      nodeID: -1, //for the new node being added
-                      r: -1,
-                      x3: dataset[i].x3,
-                      y3: dataset[i].y3,
-                      animation: -1,
+                buttons[i] = {
+                    buttonID: i, // out of 6 buttons.
+                    answerID: i, //out of 14 answers
+                    timer: 0, //for button event
+                    event: null,
+                    particleID: -1 ,// for the new particle being added
+                    nodeID: -1, //for the new node being added
+                    r: -1,
+                    x3: dataset[i].x3,
+                    y3: dataset[i].y3,
+                    animation: -1,
 
-                  };
+                };
+
+
+                //add label in THREE
+                // console.log('add labels for answer group', bGroup);
+                var s = answers[i].word;
+                labels[i] = makeTextSprite(s);
+                labels[i].position.x=labels[i].position.y=0;
+                labels[i].position.z=20000;
+                scene.add(labels[i]);
 
               }
 
@@ -329,17 +340,10 @@ function pushBubble(bx, by, br, bGroup, pi){
                 targetInd = sameGroup[k].id;
                 addLink(newNodeID, targetInd);
             }
-
-            //add label in THREE
-            if (sameGroup.length > 5 && labels[bGroup] == null ){
-                // console.log('add labels for answer group', bGroup);
-                var s = answers[bGroup].word;
-                // var ind = sameGroup[0].particleID; //pick a random dot
-                labels[bGroup] = makeTextSprite(s);
-                scene.add(labels[bGroup]);
-            }
+            updateLabel(bGroup);
         }
    
+
         
         //todo return the value of dots 
         //return a list 

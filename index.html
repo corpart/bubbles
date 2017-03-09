@@ -29,7 +29,7 @@
 
 
 <script>
-    var IS_DEBUGGING = true;
+    var IS_DEBUGGING = false;
     var MAX_NODE_CNT = 100;
     var MOUSE_DOWN = 1, MOUSE_UP = 2
     var SEPARATION = 200, AMOUNTX = 10, AMOUNTY = 10;
@@ -301,7 +301,7 @@
         // camera.position.y += ( - mouseY - camera.position.y ) * .05;
 
           
-            camera.position.x = Math.cos( t ) * 800 +100 ;  //130
+            camera.position.x = Math.cos( t ) * 800 + 900 ;  //130
             camera.position.y = Math.sin( t ) * 400; //80
 
                //move all the stars so they look random
@@ -336,8 +336,8 @@
         
         //------------fire at will 
         
-        camera.lookAt( scene.position );
-
+        // camera.lookAt( scene.position  );
+        camera.lookAt( new THREE.Vector3(900,0,0)  );
         
         //geometry updates
         if (isDataReady){ //render could be called few times before json is loaded, causing errors.

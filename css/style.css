@@ -1,6 +1,6 @@
 html, body/*, #graph */{
     width: 4000px;
-    height: 900px;
+    height: 1000px;
     margin: 0;
     background-color: black ; 
 
@@ -9,7 +9,7 @@ html, body/*, #graph */{
 svg{
     position:absolute;
     width: 4000px;
-    height: 900px;
+    height: 1000px;
     left : 0px ;
     top: 0px;
 }

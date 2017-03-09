@@ -50,7 +50,7 @@ function prep(data){
             )
         .force("center", d3.forceCenter(windowHalfX / 2 + THREEcenterShiftX, windowHalfY / 2 + THREEcenterShiftY)) // keeps nodes in the center of the viewport
         .force("y", d3.forceY(0))
-        .force("x", d3.forceX(0).strength(0.001)) //0.05
+        .force("x", d3.forceX(0).strength(0.003)) //0.05
 
     // var ticked = function() { ///TODO function?
     // }

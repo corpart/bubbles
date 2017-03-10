@@ -162,6 +162,7 @@ function addButtons(){
                       return d.y+d.ty;
                  })
                  .attr("text-anchor", "middle")
+                 .attr("font-weight","lighter")
                  .attr("font-family", "sans-serif")
                  .attr("font-size", "20px")
                  .attr("fill", "white");

@@ -25,7 +25,7 @@ function makeTextSprite( message, parameters )
     parameters["fontsize"] : 40;
 
   var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
-    parameters["borderThickness"] : 4;
+    parameters["borderThickness"] : 3;
   
   var borderColor = parameters.hasOwnProperty("borderColor") ?
     parameters["borderColor"] : { r:0, g:0, b:0, a:0.0 };
@@ -33,8 +33,12 @@ function makeTextSprite( message, parameters )
   var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
     parameters["backgroundColor"] : { r:255, g:255, b:255, a:0.2 };
 
-  var textColor = parameters.hasOwnProperty("backgroundColor") ?
+  var textColor = parameters.hasOwnProperty("textColor") ?
     parameters["textColor"] : { r:255, g:255, b:255, a:1.0 };
+
+
+  var textColor = parameters.hasOwnProperty("textColor") ?
+    parameters["textColor"] : "ffffff" ;
 
   // var spriteAlignment = THREE.SpriteAlignment.topLeft;
     
@@ -59,8 +63,10 @@ function makeTextSprite( message, parameters )
   // 1.4 is extra height factor for text below baseline: g,j,p,q.
   
   // text color
-  context.fillStyle = "rgba(" + textColor.r + "," + textColor.g + ","
-                  + textColor.b + "," + textColor.a + ")";
+  // context.fillStyle = "rgba(" + textColor.r + "," + textColor.g + ","
+  //                 + textColor.b + "," + textColor.a + ")";
+
+ context.fillStyle = textColor ;                  
 
   context.fillText( message, borderThickness, fontsize + borderThickness);
   

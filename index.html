@@ -163,7 +163,7 @@
                     for (var i= 0; i<answers.length; i++){
 
                         var s = answers[i].word;
-                        labels[i] = makeTextSprite(s);
+                        labels[i] = makeTextSprite(s, {textColor:"#ffffff"});
                         labels[i].position.x=labels[i].position.y=0;
                         labels[i].position.z=20000;
                         scene.add(labels[i]);
